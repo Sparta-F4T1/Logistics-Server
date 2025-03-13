@@ -1,0 +1,4 @@
+rootProject.name = 'logistic'
+
+include 'user-service'
+include 'common-server'
