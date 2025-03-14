@@ -8,5 +8,4 @@ public record CompanyCreateCommand(
     String address,
     String manager,
     Long hubId) {
-
 }

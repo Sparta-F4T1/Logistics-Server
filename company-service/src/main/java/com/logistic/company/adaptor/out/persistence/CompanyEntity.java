@@ -17,9 +17,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "p_company")
 @Getter
 @Builder
+@Table(name = "p_company")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CompanyEntity extends TimeStamped {

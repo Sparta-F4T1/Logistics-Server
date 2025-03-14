@@ -10,13 +10,13 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Company {
-  private final Long id;
-  private final String name;
-  private final CompanyType type;
-  private final Address address;
-  private final String manager;
-  private final Long hubId;
-  private final Boolean isDeleted;
+  private Long id;
+  private String name;
+  private CompanyType type;
+  private Address address;
+  private String manager;
+  private Long hubId;
+  private Boolean isDeleted;
 
   public static Company create(final String name, final CompanyType type, final Address address, final String manager,
                                final Long hubId) {

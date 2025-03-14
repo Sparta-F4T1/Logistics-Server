@@ -3,7 +3,7 @@ package com.logistic.company.adaptor.in.web;
 import com.logistic.common.annotation.WebAdapter;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.company.adaptor.in.web.mapper.CompanyWebMapper;
-import com.logistic.company.adaptor.in.web.request.CompanyCreateRequestDto;
+import com.logistic.company.adaptor.in.web.request.CompanyCreateRequest;
 import com.logistic.company.adaptor.in.web.response.CompanyResponseDto;
 import com.logistic.company.application.port.in.CompanyUseCase;
 import com.logistic.company.domain.Company;
@@ -24,7 +24,7 @@ public class CompanyWebAdaptor {
 
   @PostMapping("")
   public ResponseEntity<ApiResponse<CompanyResponseDto>> createCompany(
-      @Valid @RequestBody CompanyCreateRequestDto request) {
+      @Valid @RequestBody CompanyCreateRequest request) {
     Company company = companyUseCase.createCompany(companyWebMapper.toCreateCommand(request));
     ApiResponse<CompanyResponseDto> response = ApiResponse.success(companyWebMapper.toResponseDto(company));
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
