@@ -1,14 +1,14 @@
 package com.logistic.company.adaptor.out.client;
 
-import com.logistic.company.application.port.out.HubServicePort;
+import com.logistic.company.application.port.out.GpsClientPort;
 import com.logistic.company.domain.vo.Address;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class HubServiceAdaptor implements HubServicePort {
-  private final HubFeignClient hubFeignClient;
+public class GpsClientAdaptor implements GpsClientPort {
+  private final GpsFeignClient gpsFeignClient;
 
   @Override
   public Address getAddress(String road) {

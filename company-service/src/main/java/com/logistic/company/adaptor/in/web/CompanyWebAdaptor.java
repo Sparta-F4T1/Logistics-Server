@@ -22,7 +22,7 @@ public class CompanyWebAdaptor {
   private final CompanyUseCase companyUseCase;
   private final CompanyWebMapper companyWebMapper;
 
-  @PostMapping("")
+  @PostMapping
   public ResponseEntity<ApiResponse<CompanyResponseDto>> createCompany(
       @Valid @RequestBody CompanyCreateRequest request) {
     Company company = companyUseCase.createCompany(companyWebMapper.toCreateCommand(request));
