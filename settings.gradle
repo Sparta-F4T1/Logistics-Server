@@ -2,4 +2,5 @@ rootProject.name = 'logistic'
 
 include 'user-service'
 include 'common-server'
+include 'product-service'
 include 'company-service'

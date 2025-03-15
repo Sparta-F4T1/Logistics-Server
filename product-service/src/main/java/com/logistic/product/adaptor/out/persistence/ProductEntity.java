@@ -1,0 +1,40 @@
+package com.logistic.product.adaptor.out.persistence;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@Builder
+@Table(name = "p_product")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ProductEntity extends TimeStamped {
+
+  @Id
+  @Column(name = "product_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(name = "name", nullable = false)
+  private String name;
+
+  @Embedded
+  private StockValue stock;
+
+  @Column(name = "company_id")
+  private Long companyId;
+
+  @Column(name = "is_deleted", nullable = false)
+  private Boolean isDeleted;
+}
