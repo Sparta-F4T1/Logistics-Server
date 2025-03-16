@@ -1,5 +1,7 @@
 package com.logistic.product.adaptor.out.persistence;
 
+import com.logistic.product.adaptor.out.persistence.vo.ProductInfoValue;
+import com.logistic.product.adaptor.out.persistence.vo.StockValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -26,14 +28,11 @@ public class ProductEntity extends TimeStamped {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "name", nullable = false)
-  private String name;
+  @Embedded
+  private ProductInfoValue info;
 
   @Embedded
   private StockValue stock;
-
-  @Column(name = "company_id")
-  private Long companyId;
 
   @Column(name = "is_deleted", nullable = false)
   private Boolean isDeleted;
