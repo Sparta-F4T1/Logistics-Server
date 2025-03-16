@@ -1,15 +1,13 @@
-package com.logistic.product.application.port.out;
+package com.logistic.product.application.port.in;
 
 import com.logistic.product.adaptor.in.web.request.ProductSearchRequest;
+import com.logistic.product.application.port.in.query.ProductFindQuery;
 import com.logistic.product.domain.Product;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface ProductPersistencePort {
-  Product save(Product product);
-
-  Optional<Product> findById(Long productId);
+public interface ProductQueryUseCase {
+  Product findProduct(ProductFindQuery findQuery);
 
   Page<Product> search(ProductSearchRequest request, Pageable pageable);
 }
