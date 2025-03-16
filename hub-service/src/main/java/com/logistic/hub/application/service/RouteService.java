@@ -34,4 +34,18 @@ public class RouteService implements RouteUseCase {
 
     return routePersistencePort.save(route).orElseThrow(() -> new IllegalArgumentException("경로 생성 실패"));
   }
+
+  @Override
+  public void deleteHubRoute(Long hubRouteId) {
+    Route route = routePersistencePort.findById(hubRouteId)
+        .orElseThrow(() -> new IllegalArgumentException("경로가 존재하지 않습니다"));
+    isDeleted(route);
+    routePersistencePort.delete(route);
+  }
+
+  private static void isDeleted(Route route) {
+    if (route.getIsDeleted()) {
+      throw new IllegalArgumentException("이미 삭제된 허브입니다.");
+    }
+  }
 }

@@ -18,4 +18,18 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
     RouteEntity routeEntity = routeJpaRepository.save(routePersistenceMapper.toEntity(route));
     return Optional.of(routePersistenceMapper.toDomain(routeEntity));
   }
+
+  @Override
+  public Optional<Route> findById(Long hubRouteId) {
+    Optional<RouteEntity> routeEntity = routeJpaRepository.findById(hubRouteId);
+
+    return routeEntity.map(routePersistenceMapper::toDomain);
+  }
+
+  @Override
+  public void delete(Route route) {
+    Optional<RouteEntity> routeEntity = routeJpaRepository.findById(route.getRouteId());
+
+    routeEntity.ifPresent(entity -> entity.delete(true, "test")); //임시
+  }
 }

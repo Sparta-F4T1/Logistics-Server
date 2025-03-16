@@ -14,6 +14,7 @@ public class Route {
   private Long arrivalHubId;
   private Integer distance;
   private Integer duration;
+  private Boolean isDeleted;
 
   public static Route createRoute(RouteCreateCommand routeCreateCommand, RouteInfoCommand routeInfoCommand) {
 
@@ -22,6 +23,7 @@ public class Route {
         .arrivalHubId(routeCreateCommand.arrivalHubId())
         .distance(routeInfoCommand.distance())
         .duration(routeInfoCommand.duration())
+        .isDeleted(false)
         .build();
   }
 }
