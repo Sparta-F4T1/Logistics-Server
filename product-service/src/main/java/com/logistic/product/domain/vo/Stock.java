@@ -9,18 +9,31 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stock {
-  private Integer stock;
+  private Integer quantity;
 
-  public Stock(final Integer stock) {
-    validate(stock);
-    this.stock = stock;
+  public Stock(final Integer quantity) {
+    validate(quantity);
+    this.quantity = quantity;
   }
 
-  private void validate(final Integer stock) {
-    if (stock == null) {
+  public Stock update(final Integer newQuantity) {
+    return new Stock(newQuantity);
+  }
+
+  public Stock add(final Integer addQuantity) {
+    return new Stock(quantity + addQuantity);
+  }
+
+  public Stock decrease(final Integer decreaseQuantity) {
+    return new Stock(quantity - decreaseQuantity);
+  }
+
+  private void validate(final Integer quantity) {
+    // todo 재고 예외처리 수정
+    if (quantity == null) {
       throw new IllegalArgumentException("재고는 null일 수 없습니다.");
     }
-    if (stock < 0) {
+    if (quantity < 0) {
       throw new IllegalArgumentException("재고는 음수일 수 없습니다.");
     }
   }
