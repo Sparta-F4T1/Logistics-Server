@@ -38,7 +38,7 @@ public class ProductQueryAdaptor {
   public ResponseEntity<ApiResponse<Page<ProductResponse>>> search(
       @Valid @ModelAttribute final ProductSearchRequest request,
       @PageableDefault final Pageable pageable) {
-    final Page<ProductResponse> response = productQueryUseCase.search(request, pageable)
+    final Page<ProductResponse> response = productQueryUseCase.search(productWebMapper.toSearchQuery(request, pageable))
         .map(productWebMapper::toProductResponse);
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.success(response));

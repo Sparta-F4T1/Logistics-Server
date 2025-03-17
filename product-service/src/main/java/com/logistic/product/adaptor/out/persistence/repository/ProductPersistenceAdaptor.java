@@ -1,15 +1,14 @@
 package com.logistic.product.adaptor.out.persistence.repository;
 
 import com.logistic.common.annotation.PersistenceAdapter;
-import com.logistic.product.adaptor.in.web.request.ProductSearchRequest;
 import com.logistic.product.adaptor.out.persistence.ProductEntity;
 import com.logistic.product.adaptor.out.persistence.mapper.ProductPersistenceMapper;
+import com.logistic.product.application.port.in.query.ProductSearchQuery;
 import com.logistic.product.application.port.out.ProductPersistencePort;
 import com.logistic.product.domain.Product;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class ProductPersistenceAdaptor implements ProductPersistencePort {
   }
 
   @Override
-  public Page<Product> search(final ProductSearchRequest request, final Pageable pageable) {
-    return queryDslRepository.search(request, pageable).map(productPersistenceMapper::toDomain);
+  public Page<Product> search(final ProductSearchQuery query) {
+    return queryDslRepository.search(query).map(productPersistenceMapper::toDomain);
   }
 }

@@ -14,5 +14,6 @@ public interface ProductInternalMapper {
   StockDecreaseCommand toStockDecreaseCommand(Long productId, Integer quantity);
 
   @Mapping(source = "id", target = "productId")
+  @Mapping(source = "stock.quantity", target = "quantity")
   ProductDto toProductDto(Product product);
 }

@@ -2,8 +2,8 @@ package com.logistic.product.adaptor.out.persistence.repository;
 
 import static com.logistic.product.adaptor.out.persistence.QProductEntity.productEntity;
 
-import com.logistic.product.adaptor.in.web.request.ProductSearchRequest;
 import com.logistic.product.adaptor.out.persistence.ProductEntity;
+import com.logistic.product.application.port.in.query.ProductSearchQuery;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -22,8 +22,11 @@ import org.springframework.stereotype.Component;
 public class ProductQueryDslRepository {
   private final JPAQueryFactory queryFactory;
 
-  public Page<ProductEntity> search(final ProductSearchRequest request, final Pageable pageable) {
-    final BooleanExpression searchExpression = getSearchCondition(request);
+  public Page<ProductEntity> search(final ProductSearchQuery query) {
+    final Long companyId = query.companyId();
+    final String name = query.name();
+    final Pageable pageable = query.pageable();
+    final BooleanExpression searchExpression = getSearchCondition(companyId, name);
 
     final List<ProductEntity> contents = fetchContents(pageable, searchExpression);
 
@@ -42,18 +45,18 @@ public class ProductQueryDslRepository {
         .fetch();
   }
 
-  private BooleanExpression getSearchCondition(final ProductSearchRequest request) {
+  private BooleanExpression getSearchCondition(final Long companyId, final String name) {
     return productEntity.isDeleted.isFalse()
-        .and(isCompanyIdEqual(request.companyId()))
-        .and(containsQuery(request.query()));
+        .and(isCompanyIdEqual(companyId))
+        .and(containsName(name));
   }
 
   private BooleanExpression isCompanyIdEqual(final Long companyId) {
     return (companyId == null) ? null : productEntity.info.companyId.eq(companyId);
   }
 
-  private BooleanExpression containsQuery(final String query) {
-    return (query == null) ? null : productEntity.info.name.containsIgnoreCase(query);
+  private BooleanExpression containsName(final String name) {
+    return (name == null) ? null : productEntity.info.name.containsIgnoreCase(name);
   }
 
   private OrderSpecifier<?>[] getOrderSpecifiers(final Pageable pageable) {

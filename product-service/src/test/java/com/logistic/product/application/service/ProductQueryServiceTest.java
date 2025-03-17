@@ -1,7 +1,7 @@
 package com.logistic.product.application.service;
 
-import com.logistic.product.adaptor.in.web.request.ProductSearchRequest;
 import com.logistic.product.application.port.in.query.ProductFindQuery;
+import com.logistic.product.application.port.in.query.ProductSearchQuery;
 import com.logistic.product.application.port.out.CompanyClientPort;
 import com.logistic.product.application.port.out.ProductPersistencePort;
 import com.logistic.product.domain.Product;
@@ -44,9 +44,9 @@ class ProductQueryServiceTest {
     // given
     saveProducts();
     // when
-    ProductSearchRequest searchRequest = new ProductSearchRequest(1L, "상품");
     Pageable pageable = PageRequest.of(0, 10);
-    Page<Product> search = productQueryService.search(searchRequest, pageable);
+    ProductSearchQuery query = new ProductSearchQuery(1L, "상품", pageable);
+    Page<Product> search = productQueryService.search(query);
     // then
     Assertions.assertThat(search).isNotNull();
     Assertions.assertThat(search.getTotalElements()).isEqualTo(10);
