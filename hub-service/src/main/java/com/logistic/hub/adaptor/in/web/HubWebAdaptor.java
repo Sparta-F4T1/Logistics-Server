@@ -47,7 +47,7 @@ public class HubWebAdaptor {
       @RequestParam(value = "size", defaultValue = "10") int size,
       @RequestParam(value = "searchType", defaultValue = "name") String searchType,
       @RequestParam(value = "search", required = false) String search) {
-    System.out.println(search);
+
     HubHistoryListResponse hubHistoryResponse = hubUseCase.getHubList(page, size, searchType, search);
 
     ApiResponse<HubHistoryListResponse> response = ApiResponse.success(hubHistoryResponse);

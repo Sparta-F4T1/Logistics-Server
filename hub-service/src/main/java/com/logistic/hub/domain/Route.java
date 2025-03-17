@@ -1,7 +1,7 @@
 package com.logistic.hub.domain;
 
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
-import com.logistic.hub.domain.command.RouteInfoCommand;
+import com.logistic.hub.application.port.in.command.RouteInfoCommand;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class Route {
 
-  private Long routeId;
+  private Long id;
   private Long departHubId;
   private Long arrivalHubId;
   private Integer distance;

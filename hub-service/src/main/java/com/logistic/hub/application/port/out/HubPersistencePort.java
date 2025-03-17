@@ -14,4 +14,5 @@ public interface HubPersistencePort {
   Optional<Hub> findById(Long hubId);
 
   void delete(Hub hub);
+
 }

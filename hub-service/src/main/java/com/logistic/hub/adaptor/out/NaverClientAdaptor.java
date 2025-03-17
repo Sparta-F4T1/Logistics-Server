@@ -1,9 +1,9 @@
 package com.logistic.hub.adaptor.out;
 
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
+import com.logistic.hub.application.port.in.command.RouteInfoCommand;
 import com.logistic.hub.application.port.out.NaverClientPort;
 import com.logistic.hub.domain.command.AddressCommand;
-import com.logistic.hub.domain.command.RouteInfoCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

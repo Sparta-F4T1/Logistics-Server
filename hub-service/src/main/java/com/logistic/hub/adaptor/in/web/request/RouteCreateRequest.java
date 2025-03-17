@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record RouteCreateRequest(
     @NotNull Long departHubId,
-    @NotNull String arrivalHubId
+    @NotNull Long arrivalHubId
 ) {
 }

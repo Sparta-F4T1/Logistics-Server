@@ -1,4 +1,4 @@
-package com.logistic.hub.domain.command;
+package com.logistic.hub.application.port.in.command;
 
 import jakarta.validation.constraints.NotNull;
 
