@@ -5,3 +5,5 @@ include 'common-server'
 include 'product-service'
 include 'company-service'
 include 'delivery-service'
+
+include 'auth-core'
