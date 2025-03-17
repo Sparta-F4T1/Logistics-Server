@@ -26,4 +26,9 @@ public class Route {
         .isDeleted(false)
         .build();
   }
+
+  public void update(RouteInfoCommand routeInfoCommand) {
+    this.distance = routeInfoCommand.distance();
+    this.duration = routeInfoCommand.duration();
+  }
 }

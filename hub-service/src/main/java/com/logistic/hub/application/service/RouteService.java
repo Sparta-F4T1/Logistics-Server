@@ -13,6 +13,7 @@ import com.logistic.hub.application.port.out.NaverClientPort;
 import com.logistic.hub.application.port.out.RoutePersistencePort;
 import com.logistic.hub.domain.Route;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +30,8 @@ public class RouteService implements RouteUseCase {
   private final NaverClientPort naverClientPort;
 
   @Override
-  public Route createHubRoute(RouteCreateCommand routeCommand) {
-    RouteInfoCommand routeInfoCommand = naverClientPort.getRouteInfo(routeCommand); //임시
+  public Route createOrUpdateHubRoute(RouteCreateCommand routeCommand) {
+    RouteInfoCommand routeInfoCommand = naverClientPort.getRouteInfo(routeCommand); //임시 ( 좌표정보 보내는걸로 구현 예상)
     Long departHubId = routeCommand.departHubId();
     Long arrivalHubId = routeCommand.arrivalHubId();
     if (departHubId.equals(arrivalHubId)) {
@@ -39,8 +40,14 @@ public class RouteService implements RouteUseCase {
     if (!hubUseCase.existsHub(departHubId) || !hubUseCase.existsHub(departHubId)) {
       throw new IllegalArgumentException("출발 혹은 도착 허브가 존재하지 않습니다");
     }
-    Route route = Route.createRoute(routeCommand, routeInfoCommand);
-
+    Optional<Route> existRoute = routePersistencePort.findByDepartAndArrival(departHubId, arrivalHubId);
+    Route route;
+    if (existRoute.isPresent()) {
+      route = existRoute.get();
+      route.update(routeInfoCommand);
+    } else {
+      route = Route.createRoute(routeCommand, routeInfoCommand);
+    }
     return routePersistencePort.save(route).orElseThrow(() -> new IllegalArgumentException("경로 생성 실패"));
   }
 

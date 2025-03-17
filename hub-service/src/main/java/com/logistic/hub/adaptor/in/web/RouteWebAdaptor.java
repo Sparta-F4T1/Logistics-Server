@@ -33,7 +33,7 @@ public class RouteWebAdaptor {
   public ResponseEntity<ApiResponse<RouteCreateResponse>> createHubRoute(
       @Valid @RequestBody RouteCreateRequest request) {
     RouteCreateCommand command = routeWebMapper.toRouteCreateCommand(request);
-    Route route = routeUseCase.createHubRoute(command);
+    Route route = routeUseCase.createOrUpdateHubRoute(command);
     RouteCreateResponse routeResponse = routeWebMapper.toRouteCreateResponse(route);
     ApiResponse<RouteCreateResponse> response = ApiResponse.success(routeResponse);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -59,7 +59,7 @@ public class RouteWebAdaptor {
     ApiResponse<RouteDetailsResponse> response = ApiResponse.success(routeDetails);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
-
+  
   @DeleteMapping("/{hubRouteId}")
   public ResponseEntity<ApiResponse<String>> deleteHubRoute(@PathVariable Long hubRouteId) {
 

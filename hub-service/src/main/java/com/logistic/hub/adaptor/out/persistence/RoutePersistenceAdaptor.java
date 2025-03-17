@@ -59,6 +59,14 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
     return PageableExecutionUtils.getPage(query, pageable, () -> totalCount.fetchOne());
   }
 
+  @Override
+  public Optional<Route> findByDepartAndArrival(Long departHubId, Long arrivalHubId) {
+    Optional<RouteEntity> routeEntity = routeJpaRepository.findBydepartHubIdAndArrivalHubId(
+        departHubId, arrivalHubId);
+
+    return routeEntity.map(routePersistenceMapper::toDomain);
+  }
+
 
   @Override
   public Optional<Route> findById(Long hubRouteId) {

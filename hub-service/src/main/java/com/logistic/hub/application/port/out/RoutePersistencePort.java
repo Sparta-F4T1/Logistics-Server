@@ -14,4 +14,6 @@ public interface RoutePersistencePort {
   void delete(Route route);
 
   Page<RouteHistoryResponse> findAllBySearch(String search, Pageable pageable);
+
+  Optional<Route> findByDepartAndArrival(Long departHubId, Long arrivalHubId);
 }
