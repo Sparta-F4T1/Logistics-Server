@@ -29,4 +29,18 @@ public class Company {
         .isDeleted(false)
         .build();
   }
+
+  public void updateCompany(final String name, final CompanyType type, final Address address, final String manager,
+                            final Long hubId) {
+    this.name = name;
+    this.type = type;
+    this.address = address;
+    this.manager = manager;
+    this.hubId = hubId;
+  }
+
+  public void softDelete() {
+    // todo 삭제 예외 구현
+    this.isDeleted = true;
+  }
 }
