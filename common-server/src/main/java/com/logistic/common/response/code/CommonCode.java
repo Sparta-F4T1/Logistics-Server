@@ -10,7 +10,7 @@ public enum CommonCode {
   COMMON_SUCCESS("S001", "요청에 대한 응답이 완료되었습니다.");
 
   private final String code;
-  private String message;
+  private final String message;
 
   CommonCode(final String code, final String message) {
     this.code = code;
