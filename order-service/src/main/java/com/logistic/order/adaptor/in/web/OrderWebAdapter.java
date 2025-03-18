@@ -1,6 +1,6 @@
 package com.logistic.order.adaptor.in.web;
 
-import com.logistic.common.annotation.WebAdapter;
+import com.logistic.common.annotation.Adapter;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.order.adaptor.in.web.mapper.OrderWebMapper;
 import com.logistic.order.adaptor.in.web.request.OrderCreateRequest;
@@ -14,16 +14,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@WebAdapter
+@Adapter
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/order")
-public class OrderWebAdaptor {
+public class OrderWebAdapter {
   private final OrderUseCase orderUseCase;
   private final OrderWebMapper orderWebMapper;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<OrderCreateResponse>> createOrder(@Valid @RequestBody OrderCreateRequest orderCreateRequest){
+  public ResponseEntity<ApiResponse<OrderCreateResponse>> createOrder(
+      @Valid @RequestBody OrderCreateRequest orderCreateRequest) {
     Order order = orderUseCase.createOrder(orderWebMapper.toCreateCommand(orderCreateRequest));
     ApiResponse<OrderCreateResponse> response = ApiResponse.success(orderWebMapper.toCreateResponse(order));
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
