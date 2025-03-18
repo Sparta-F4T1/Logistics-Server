@@ -1,13 +1,14 @@
 package com.logistic.order.adaptor.out.persistence;
 
 import com.logistic.order.domain.OrderStatus;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AccessLevel;
@@ -40,7 +41,11 @@ public class OrderEntity extends BaseEntity {
   @Column(name = "status", nullable = false)
   private OrderStatus status;
 
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<OrderProductEntity> orderProducts;
+  @ElementCollection
+  @CollectionTable(
+      name = "p_order_product",
+      joinColumns = @JoinColumn(name= "order_id")
+  )
+  private List<OrderProductValue> orderProducts;
 
 }

@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderProduct {
-  private Long id;
   private Long orderId;
   private Long productId;
   private int amount;

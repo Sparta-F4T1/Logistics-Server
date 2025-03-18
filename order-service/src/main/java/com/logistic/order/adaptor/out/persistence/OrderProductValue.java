@@ -1,6 +1,6 @@
 package com.logistic.order.adaptor.out.persistence;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,21 +18,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "p_order_product")
-@Entity
-public class OrderProductEntity {
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name= "orderId")
-  private OrderEntity order;
+//@Table(name = "p_order_product")
+@Embeddable
+public class OrderProductValue {
 
   private Long productId;
 
   private int amount;
 
   public void setOrder(OrderEntity order){
-    this.order = order;
+//    this.order = order;
   }
 }
