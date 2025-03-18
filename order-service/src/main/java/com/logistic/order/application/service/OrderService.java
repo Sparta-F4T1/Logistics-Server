@@ -5,7 +5,6 @@ import com.logistic.order.application.port.in.OrderUseCase;
 import com.logistic.order.application.port.in.command.OrderCreateCommand;
 import com.logistic.order.domain.Order;
 import com.logistic.order.domain.OrderProduct;
-import com.logistic.order.domain.UserContext;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
