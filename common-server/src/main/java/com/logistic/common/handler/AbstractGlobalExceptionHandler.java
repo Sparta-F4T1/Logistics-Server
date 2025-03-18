@@ -11,11 +11,9 @@ import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-@RestControllerAdvice
 @Slf4j
 public abstract class AbstractGlobalExceptionHandler {
 
@@ -23,10 +21,11 @@ public abstract class AbstractGlobalExceptionHandler {
    * 400 Bad Request - IllegalArgumentException 메시지를 변수로 받음
    */
   @ExceptionHandler(IllegalArgumentException.class)
-  protected ResponseEntity<ApiResponse<IllegalArgumentException>> handleIllegalArgumentException(IllegalArgumentException e) {
+  protected ResponseEntity<ApiResponse<IllegalArgumentException>> handleIllegalArgumentException(
+      IllegalArgumentException e) {
     log.error("handleIllegalArgumentException", e);
     ErrorCode code = ErrorCode.INVALID_INPUT_VALUE;
-    final ApiResponse<IllegalArgumentException> response = ApiResponse.fail(code.getCode(),code.getMessage());
+    final ApiResponse<IllegalArgumentException> response = ApiResponse.fail(code.getCode(), code.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
@@ -36,10 +35,11 @@ public abstract class AbstractGlobalExceptionHandler {
    * @Valid @Validated 사용하여 유효성 검사 실패할 시 발생
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ApiResponse<MethodArgumentNotValidException>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+  public ResponseEntity<ApiResponse<MethodArgumentNotValidException>> handleMethodArgumentNotValidException(
+      MethodArgumentNotValidException e) {
     log.error("handleMethodArgumentNotValidException", e);
     ErrorCode code = ErrorCode.FAIL_REQUEST_PARAMETER_VALIDATION;
-    final ApiResponse<MethodArgumentNotValidException> response = ApiResponse.fail(code.getCode(),code.getMessage());
+    final ApiResponse<MethodArgumentNotValidException> response = ApiResponse.fail(code.getCode(), code.getMessage());
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 
@@ -47,7 +47,8 @@ public abstract class AbstractGlobalExceptionHandler {
    * 400 Bad Request - json 형식 자체가 맞지 않을 경우 발생 콤마가 빠지거나 list형식인데 대괄호가 없음
    */
   @ExceptionHandler(HttpMessageConversionException.class)
-  protected ResponseEntity<ApiResponse<HttpMessageConversionException>> handleHttpMessageConversionException(HttpMessageConversionException e) {
+  protected ResponseEntity<ApiResponse<HttpMessageConversionException>> handleHttpMessageConversionException(
+      HttpMessageConversionException e) {
     log.error("handleHttpMessageConversionException", e);
     ErrorCode code = ErrorCode.INVALID_INPUT_VALUE;
     final ApiResponse<HttpMessageConversionException> response = ApiResponse.fail(code.getCode(), code.getMessage());
@@ -64,7 +65,8 @@ public abstract class AbstractGlobalExceptionHandler {
       MethodArgumentTypeMismatchException e) {
     log.error("handleMethodArgumentTypeMismatchException", e);
     ErrorCode code = ErrorCode.INVALID_INPUT_VALUE;
-    final ApiResponse<MethodArgumentTypeMismatchException> response = ApiResponse.fail(code.getCode(), code.getMessage());
+    final ApiResponse<MethodArgumentTypeMismatchException> response = ApiResponse.fail(code.getCode(),
+        code.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
@@ -87,7 +89,8 @@ public abstract class AbstractGlobalExceptionHandler {
       HttpRequestMethodNotSupportedException e) {
     log.error("handleHttpRequestMethodNotSupportedException", e);
     ErrorCode code = ErrorCode.METHOD_NOT_ALLOWED;
-    final ApiResponse<HttpRequestMethodNotSupportedException> response = ApiResponse.fail(code.getCode(), code.getMessage());
+    final ApiResponse<HttpRequestMethodNotSupportedException> response = ApiResponse.fail(code.getCode(),
+        code.getMessage());
     return new ResponseEntity<>(response, HttpStatus.METHOD_NOT_ALLOWED);
   }
 
@@ -95,7 +98,8 @@ public abstract class AbstractGlobalExceptionHandler {
    * 400 Bad Request - 유효성 검사가 실패했을 때 발생
    */
   @ExceptionHandler(ConstraintViolationException.class)
-  protected ResponseEntity<ApiResponse<ConstraintViolationException>> handleConstraintViolationException(ConstraintViolationException e) {
+  protected ResponseEntity<ApiResponse<ConstraintViolationException>> handleConstraintViolationException(
+      ConstraintViolationException e) {
     log.error("handleConstraintViolationException", e);
     ErrorCode code = ErrorCode.FAIL_REQUEST_PARAMETER_VALIDATION;
     final ApiResponse<ConstraintViolationException> response = ApiResponse.fail(code.getCode(), e.getMessage());
@@ -117,7 +121,8 @@ public abstract class AbstractGlobalExceptionHandler {
    * 404 Not Found Exception - 엔드포인트를 찾을 수 없을떄
    */
   @ExceptionHandler(NoHandlerFoundException.class)
-  protected ResponseEntity<ApiResponse<NoHandlerFoundException>> handleNoHandlerFoundException(NoHandlerFoundException e) {
+  protected ResponseEntity<ApiResponse<NoHandlerFoundException>> handleNoHandlerFoundException(
+      NoHandlerFoundException e) {
     log.error("NoHandlerFoundException", e);
     ErrorCode code = ErrorCode.NOT_FOUND;
     final ApiResponse<NoHandlerFoundException> response = ApiResponse.fail(code.getCode(), code.getMessage());

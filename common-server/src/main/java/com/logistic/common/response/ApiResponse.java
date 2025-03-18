@@ -11,6 +11,10 @@ public record ApiResponse<T>(
     return new ApiResponse<>(code, message, data);
   }
 
+  public static <T> ApiResponse<T> success() {
+    return new ApiResponse<>(CommonCode.COMMON_SUCCESS.getCode(), CommonCode.COMMON_SUCCESS.getMessage(), null);
+  }
+
   public static <T> ApiResponse<T> success(T data) {
     return new ApiResponse<>(CommonCode.COMMON_SUCCESS.getCode(), CommonCode.COMMON_SUCCESS.getMessage(), data);
   }
