@@ -1,4 +1,4 @@
-package com.logistic.order.adaptor.out.persistence;
+package com.logistic.order.adapter.out.persistence;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
