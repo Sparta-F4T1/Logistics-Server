@@ -3,10 +3,10 @@ package com.logistic.hub.application.service;
 import static java.util.Comparator.comparingInt;
 
 import com.logistic.common.annotation.UseCase;
-import com.logistic.hub.adaptor.in.internal.response.HubClientShortestPathResponse;
-import com.logistic.hub.adaptor.in.web.response.RouteDetailsResponse;
-import com.logistic.hub.adaptor.in.web.response.RouteHistoryListResponse;
-import com.logistic.hub.adaptor.in.web.response.RouteHistoryResponse;
+import com.logistic.hub.adapter.in.internal.response.HubClientShortestPathResponse;
+import com.logistic.hub.adapter.in.web.response.RouteDetailsResponse;
+import com.logistic.hub.adapter.in.web.response.RouteHistoryListResponse;
+import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
 import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.RouteUseCase;
 import com.logistic.hub.application.port.in.command.DepartArrivalCommand;

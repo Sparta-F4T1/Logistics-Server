@@ -1,6 +1,6 @@
 package com.logistic.hub.application.port.out.persistence;
 
-import com.logistic.hub.adaptor.in.web.response.RouteHistoryResponse;
+import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
 import com.logistic.hub.domain.Route;
 import java.util.List;
 import java.util.Optional;

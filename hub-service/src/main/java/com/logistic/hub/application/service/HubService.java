@@ -1,8 +1,8 @@
 package com.logistic.hub.application.service;
 
 import com.logistic.common.annotation.UseCase;
-import com.logistic.hub.adaptor.in.web.response.HubHistoryListResponse;
-import com.logistic.hub.adaptor.in.web.response.HubHistoryResponse;
+import com.logistic.hub.adapter.in.web.response.HubHistoryListResponse;
+import com.logistic.hub.adapter.in.web.response.HubHistoryResponse;
 import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.command.DepartArrivalCommand;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;

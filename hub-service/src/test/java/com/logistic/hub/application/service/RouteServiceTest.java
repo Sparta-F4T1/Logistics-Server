@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-import com.logistic.hub.adaptor.in.web.response.RouteDetailsResponse;
-import com.logistic.hub.adaptor.in.web.response.RouteHistoryListResponse;
+import com.logistic.hub.adapter.in.web.response.RouteDetailsResponse;
+import com.logistic.hub.adapter.in.web.response.RouteHistoryListResponse;
 import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.command.DepartArrivalCommand;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;

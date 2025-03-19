@@ -3,7 +3,7 @@ package com.logistic.hub.application.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.logistic.hub.adaptor.in.web.response.HubHistoryListResponse;
+import com.logistic.hub.adapter.in.web.response.HubHistoryListResponse;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
 import com.logistic.hub.domain.Hub;

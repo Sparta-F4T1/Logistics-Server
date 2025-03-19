@@ -1,6 +1,6 @@
 package com.logistic.hub.application.port.out.persistence;
 
-import com.logistic.hub.adaptor.in.web.response.HubHistoryResponse;
+import com.logistic.hub.adapter.in.web.response.HubHistoryResponse;
 import com.logistic.hub.domain.Hub;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
