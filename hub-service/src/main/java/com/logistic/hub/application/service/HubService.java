@@ -11,6 +11,7 @@ import com.logistic.hub.application.port.out.client.GpsInternalPort;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.command.AddressCommand;
+import com.logistic.hub.domain.exception.HubAlreadyDeletedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class HubService implements HubUseCase {
         hubCommand.jibunAddress()); //임시 0, 37로 고정)
     Hub hub = Hub.createHub(hubCommand, addressCommand);
 
-    return hubPersistencePort.save(hub).orElseThrow(() -> new IllegalArgumentException("허브 생성 실패"));
+    return hubPersistencePort.save(hub);
   }
 
   @Override
@@ -49,7 +50,7 @@ public class HubService implements HubUseCase {
 
   @Override
   public void updateHub(Long hubId, HubUpdateCommand command) {
-    Hub hub = hubPersistencePort.findById(hubId).orElseThrow(() -> new IllegalArgumentException("허브가 존재하지 않습니다"));
+    Hub hub = getOrElseThrow(hubId);
     isDeleted(hub);
     AddressCommand addressCommand = gpsInternalPort.getAddressCommand(command.roadAddress(),
         command.jibunAddress()); //임시 (300, 37로 고정)
@@ -60,38 +61,38 @@ public class HubService implements HubUseCase {
 
   @Override
   public void deleteHub(Long hubId) {
-    Hub hub = hubPersistencePort.findById(hubId).orElseThrow(() -> new IllegalArgumentException("허브가 존재하지 않습니다"));
+    Hub hub = getOrElseThrow(hubId);
     isDeleted(hub);
     hubPersistencePort.delete(hub);
   }
 
   @Override
   public Hub getHubDetails(Long hubId) {
-    Hub hub = hubPersistencePort.findById(hubId).orElseThrow(() -> new IllegalArgumentException("허브가 존재하지 않습니다"));
-
+    Hub hub = getOrElseThrow(hubId);
     isDeleted(hub);
-
     return hub;
+  }
+
+  private Hub getOrElseThrow(Long hubId) {
+    return hubPersistencePort.findById(hubId);
   }
 
   @Override
   public boolean existsHub(Long hubId) {
-    return hubPersistencePort.findById(hubId).isPresent();
+    return hubPersistencePort.existsHub(hubId);
   }
 
   @Override
   public DepartArrivalCommand getHubNameInfo(Long departHubId, Long arrivalHubId) {
-    Hub departHub = hubPersistencePort.findById(departHubId)
-        .orElseThrow(() -> new IllegalArgumentException("출발 허브가 존재하지 않습니다."));
-    Hub arrivalHub = hubPersistencePort.findById(arrivalHubId)
-        .orElseThrow(() -> new IllegalArgumentException("도착 허브가 존재하지 않습니다."));
+    Hub departHub = getOrElseThrow(departHubId);
+    Hub arrivalHub = getOrElseThrow(arrivalHubId);
 
     return new DepartArrivalCommand(departHub.getHubName(), arrivalHub.getHubName());
   }
 
   private void isDeleted(Hub hub) {
     if (hub.getIsDeleted()) {
-      throw new IllegalArgumentException("이미 삭제된 허브입니다.");
+      throw new HubAlreadyDeletedException("이미 삭제된 허브입니다.");
     }
   }
 }

@@ -8,6 +8,7 @@ import com.logistic.hub.adaptor.out.persistence.repository.RouteJpaRepository;
 import com.logistic.hub.adaptor.out.persistence.repository.RouteQueryDslRepository;
 import com.logistic.hub.application.port.out.persistence.RoutePersistencePort;
 import com.logistic.hub.domain.Route;
+import com.logistic.hub.domain.exception.RouteNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,9 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
   private final RouteQueryDslRepository routeQueryDslRepository;
 
   @Override
-  public Optional<Route> save(Route route) {
+  public Route save(Route route) {
     RouteEntity routeEntity = routeJpaRepository.save(routePersistenceMapper.toEntity(route));
-    return Optional.of(routePersistenceMapper.toDomain(routeEntity));
+    return routePersistenceMapper.toDomain(routeEntity);
   }
 
   @Override
@@ -50,17 +51,19 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
 
 
   @Override
-  public Optional<Route> findById(Long hubRouteId) {
-    Optional<RouteEntity> routeEntity = routeJpaRepository.findById(hubRouteId);
+  public Route findById(Long hubRouteId) {
+    RouteEntity routeEntity = routeJpaRepository.findById(hubRouteId)
+        .orElseThrow(() -> new RouteNotFoundException("존재하지 않는 경로입니다"));
 
-    return routeEntity.map(routePersistenceMapper::toDomain);
+    return routePersistenceMapper.toDomain(routeEntity);
   }
 
   @Override
   public void delete(Route route) {
-    Optional<RouteEntity> routeEntity = routeJpaRepository.findById(route.getId());
+    RouteEntity routeEntity = routeJpaRepository.findById(route.getId())
+        .orElseThrow(() -> new RouteNotFoundException("존재하지 않는 경로입니다"));
 
-    routeEntity.ifPresent(entity -> entity.delete(true, "test")); //임시
+    routeEntity.delete(true, "test"); //임시
   }
 
 

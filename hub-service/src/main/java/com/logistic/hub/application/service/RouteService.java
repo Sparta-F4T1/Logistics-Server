@@ -16,6 +16,10 @@ import com.logistic.hub.application.port.in.command.RouteInfoCommand;
 import com.logistic.hub.application.port.out.client.GpsInternalPort;
 import com.logistic.hub.application.port.out.persistence.RoutePersistencePort;
 import com.logistic.hub.domain.Route;
+import com.logistic.hub.domain.exception.HubNotFoundException;
+import com.logistic.hub.domain.exception.HubSameSelectionException;
+import com.logistic.hub.domain.exception.RouteAlreadyDeletedException;
+import com.logistic.hub.domain.exception.RouteCalculateFailedException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,10 +49,10 @@ public class RouteService implements RouteUseCase {
     Long departHubId = routeCommand.departHubId();
     Long arrivalHubId = routeCommand.arrivalHubId();
     if (departHubId.equals(arrivalHubId)) {
-      throw new IllegalArgumentException("출발 허브와 도착 허브는 같을 수 없습니다");
+      throw new HubSameSelectionException("출발 허브와 도착 허브는 같을 수 없습니다");
     }
     if (!hubUseCase.existsHub(departHubId) || !hubUseCase.existsHub(departHubId)) {
-      throw new IllegalArgumentException("출발 혹은 도착 허브가 존재하지 않습니다");
+      throw new HubNotFoundException("출발 혹은 도착 허브가 존재하지 않습니다");
     }
     Optional<Route> existRoute = routePersistencePort.findByDepartAndArrival(departHubId, arrivalHubId);
     Route route;
@@ -58,7 +62,7 @@ public class RouteService implements RouteUseCase {
     } else {
       route = Route.createRoute(routeCommand, routeInfoCommand);
     }
-    return routePersistencePort.save(route).orElseThrow(() -> new IllegalArgumentException("경로 생성 실패"));
+    return routePersistencePort.save(route);
   }
 
   @Override
@@ -74,8 +78,7 @@ public class RouteService implements RouteUseCase {
 
   @Override
   public RouteDetailsResponse getRouteDetails(Long hubRouteId) {
-    Route route = routePersistencePort.findById(hubRouteId)
-        .orElseThrow(() -> new IllegalArgumentException("경로가 존재하지 않습니다"));
+    Route route = getOrElseThrow(hubRouteId);
 
     isDeleted(route);
     DepartArrivalCommand command = hubUseCase.getHubNameInfo(route.getDepartHubId(), route.getArrivalHubId());
@@ -84,12 +87,21 @@ public class RouteService implements RouteUseCase {
     return routeDetails;
   }
 
+  private Route getOrElseThrow(Long hubRouteId) {
+    return routePersistencePort.findById(hubRouteId);
+  }
+
   @Override
   public void deleteHubRoute(Long hubRouteId) {
-    Route route = routePersistencePort.findById(hubRouteId)
-        .orElseThrow(() -> new IllegalArgumentException("경로가 존재하지 않습니다"));
+    Route route = getOrElseThrow(hubRouteId);
     isDeleted(route);
     routePersistencePort.delete(route);
+  }
+
+  private void isDeleted(Route route) {
+    if (route.getIsDeleted()) {
+      throw new RouteAlreadyDeletedException("이미 삭제된 허브입니다.");
+    }
   }
 
   @Override
@@ -130,7 +142,7 @@ public class RouteService implements RouteUseCase {
       }
     }
     if (previousPath.isEmpty()) {
-      throw new IllegalArgumentException("경로를 찾을 수 없습니다.");
+      throw new RouteCalculateFailedException("최단경로를 찾을 수 없습니다.");
     }
 
     Long currentId = arrival;
@@ -173,12 +185,6 @@ public class RouteService implements RouteUseCase {
       this.num = num;
       this.distance = distance;
       this.duration = duration;
-    }
-  }
-
-  private void isDeleted(Route route) {
-    if (route.getIsDeleted()) {
-      throw new IllegalArgumentException("이미 삭제된 허브입니다.");
     }
   }
 }

@@ -8,9 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface RoutePersistencePort {
-  Optional<Route> save(Route route);
+  Route save(Route route);
 
-  Optional<Route> findById(Long hubRouteId);
+  Route findById(Long hubRouteId);
 
   void delete(Route route);
 

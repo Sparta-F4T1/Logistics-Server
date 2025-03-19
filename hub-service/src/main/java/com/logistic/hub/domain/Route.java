@@ -2,6 +2,7 @@ package com.logistic.hub.domain;
 
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
 import com.logistic.hub.application.port.in.command.RouteInfoCommand;
+import com.logistic.hub.domain.exception.RouteInvalidInfoException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,7 +18,9 @@ public class Route {
   private Boolean isDeleted;
 
   public static Route createRoute(RouteCreateCommand routeCreateCommand, RouteInfoCommand routeInfoCommand) {
-
+    if (routeInfoCommand.distance() < 0 || routeInfoCommand.duration() < 0) {
+      throw new RouteInvalidInfoException("경로의 거리 혹은 소요시간은 0 이상이어야 합니다.");
+    }
     return Route.builder()
         .departHubId(routeCreateCommand.departHubId())
         .arrivalHubId(routeCreateCommand.arrivalHubId())

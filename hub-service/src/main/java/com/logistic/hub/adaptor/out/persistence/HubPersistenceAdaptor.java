@@ -8,7 +8,7 @@ import com.logistic.hub.adaptor.out.persistence.repository.HubJpaRepository;
 import com.logistic.hub.adaptor.out.persistence.repository.HubQueryDslRepository;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
 import com.logistic.hub.domain.Hub;
-import java.util.Optional;
+import com.logistic.hub.domain.exception.HubNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +21,9 @@ public class HubPersistenceAdaptor implements HubPersistencePort {
   private final HubQueryDslRepository hubQueryDslRepository;
 
   @Override
-  public Optional<Hub> save(Hub hub) {
+  public Hub save(Hub hub) {
     HubEntity hubEntity = hubJpaRepository.save(hubPersistenceMapper.toEntity(hub));
-    return Optional.of(hubPersistenceMapper.toDomain(hubEntity));
+    return hubPersistenceMapper.toDomain(hubEntity);
   }
 
   @Override
@@ -33,17 +33,23 @@ public class HubPersistenceAdaptor implements HubPersistencePort {
   }
 
   @Override
-  public Optional<Hub> findById(Long hubId) {
-    Optional<HubEntity> hubEntity = hubJpaRepository.findById(hubId);
+  public Hub findById(Long hubId) {
+    HubEntity hubEntity = hubJpaRepository.findById(hubId).orElseThrow(() -> new HubNotFoundException("존재하지 않는 허브입니다"));
 
-    return hubEntity.map(hubPersistenceMapper::toDomain);
+    return hubPersistenceMapper.toDomain(hubEntity);
   }
 
   @Override
   public void delete(Hub hub) {
-    Optional<HubEntity> hubEntity = hubJpaRepository.findById(hub.getId());
+    HubEntity hubEntity = hubJpaRepository.findById(hub.getId())
+        .orElseThrow(() -> new HubNotFoundException("존재하지 않는 허브입니다"));
 
-    hubEntity.ifPresent(entity -> entity.delete(true, "test")); //임시
+    hubEntity.delete(true, "test");
+  }
+
+  @Override
+  public boolean existsHub(Long hubId) {
+    return hubJpaRepository.existsById(hubId);
   }
 
 }
