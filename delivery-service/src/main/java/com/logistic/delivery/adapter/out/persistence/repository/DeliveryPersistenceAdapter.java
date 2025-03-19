@@ -1,8 +1,8 @@
-package com.logistic.delivery.adaptor.out.persistence.repository;
+package com.logistic.delivery.adapter.out.persistence.repository;
 
 import com.logistic.common.annotation.Adapter;
-import com.logistic.delivery.adaptor.out.persistence.DeliveryEntity;
-import com.logistic.delivery.adaptor.out.persistence.mapper.DeliveryPersistenceMapper;
+import com.logistic.delivery.adapter.out.persistence.DeliveryEntity;
+import com.logistic.delivery.adapter.out.persistence.mapper.DeliveryPersistenceMapper;
 import com.logistic.delivery.application.port.out.DeliveryPersistencePort;
 import com.logistic.delivery.domain.Delivery;
 import java.util.Optional;

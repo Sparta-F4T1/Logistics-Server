@@ -1,7 +1,7 @@
-package com.logistic.delivery.adaptor.out.persistence;
+package com.logistic.delivery.adapter.out.persistence;
 
-import com.logistic.delivery.adaptor.out.persistence.value.DistanceValue;
-import com.logistic.delivery.adaptor.out.persistence.value.TimeValue;
+import com.logistic.delivery.adapter.out.persistence.value.DistanceValue;
+import com.logistic.delivery.adapter.out.persistence.value.TimeValue;
 import com.logistic.delivery.domain.DeliveryStatus;
 import com.logistic.delivery.domain.vo.Sequence;
 import jakarta.persistence.Column;

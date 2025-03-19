@@ -1,10 +1,10 @@
-package com.logistic.delivery.adaptor.in.web;
+package com.logistic.delivery.adapter.in.web;
 
 import com.logistic.common.annotation.Adapter;
 import com.logistic.common.response.ApiResponse;
-import com.logistic.delivery.adaptor.in.web.mapper.DeliveryWebMapper;
-import com.logistic.delivery.adaptor.in.web.request.DeliveryCreateRequest;
-import com.logistic.delivery.adaptor.in.web.response.DeliveryResponse;
+import com.logistic.delivery.adapter.in.web.mapper.DeliveryWebMapper;
+import com.logistic.delivery.adapter.in.web.request.DeliveryCreateRequest;
+import com.logistic.delivery.adapter.in.web.response.DeliveryResponse;
 import com.logistic.delivery.application.port.in.DeliveryUseCase;
 import com.logistic.delivery.domain.Delivery;
 import jakarta.validation.Valid;

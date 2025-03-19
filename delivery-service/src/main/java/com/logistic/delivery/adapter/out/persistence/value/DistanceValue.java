@@ -1,4 +1,4 @@
-package com.logistic.delivery.adaptor.out.persistence.value;
+package com.logistic.delivery.adapter.out.persistence.value;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

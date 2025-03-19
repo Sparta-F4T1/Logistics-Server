@@ -1,4 +1,4 @@
-package com.logistic.delivery.adaptor.in.web.request;
+package com.logistic.delivery.adapter.in.web.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

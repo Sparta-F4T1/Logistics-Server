@@ -1,8 +1,8 @@
-package com.logistic.delivery.adaptor.out.persistence.mapper;
+package com.logistic.delivery.adapter.out.persistence.mapper;
 
-import com.logistic.delivery.adaptor.out.persistence.DeliveryEntity;
-import com.logistic.delivery.adaptor.out.persistence.value.DistanceValue;
-import com.logistic.delivery.adaptor.out.persistence.value.TimeValue;
+import com.logistic.delivery.adapter.out.persistence.DeliveryEntity;
+import com.logistic.delivery.adapter.out.persistence.value.DistanceValue;
+import com.logistic.delivery.adapter.out.persistence.value.TimeValue;
 import com.logistic.delivery.domain.Delivery;
 import com.logistic.delivery.domain.vo.Distance;
 import com.logistic.delivery.domain.vo.Time;

@@ -1,4 +1,4 @@
-package com.logistic.delivery.adaptor.out.client;
+package com.logistic.delivery.adapter.out.client;
 
 
 import com.logistic.common.annotation.Adapter;

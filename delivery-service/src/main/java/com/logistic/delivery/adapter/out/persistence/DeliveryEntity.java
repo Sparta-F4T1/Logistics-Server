@@ -1,4 +1,4 @@
-package com.logistic.delivery.adaptor.out.persistence;
+package com.logistic.delivery.adapter.out.persistence;
 
 import com.logistic.delivery.domain.DeliveryStatus;
 import jakarta.persistence.CollectionTable;
