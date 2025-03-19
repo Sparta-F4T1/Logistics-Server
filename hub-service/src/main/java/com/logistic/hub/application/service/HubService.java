@@ -14,6 +14,8 @@ import com.logistic.hub.domain.command.AddressCommand;
 import com.logistic.hub.domain.exception.HubAlreadyDeletedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ public class HubService implements HubUseCase {
   private final GpsInternalPort gpsInternalPort;
 
   @Override
+  @CacheEvict(cacheNames = "hubList", allEntries = true)
   public Hub createHub(HubCreateCommand hubCommand) {
     AddressCommand addressCommand = gpsInternalPort.getAddressCommand(hubCommand.roadAddress(),
         hubCommand.jibunAddress()); //임시 0, 37로 고정)
@@ -37,6 +40,7 @@ public class HubService implements HubUseCase {
   }
 
   @Override
+  @Cacheable(cacheNames = "hubList", key = "{ #page,#size,#search }")
   public HubHistoryListResponse getHubList(int page, int size, String searchType,
                                            String search) {
     Sort.Direction direction = Direction.ASC;  //'가'부터 허브명으로 정렬되도록 조회
@@ -49,6 +53,7 @@ public class HubService implements HubUseCase {
   }
 
   @Override
+  @CacheEvict(cacheNames = "hubList", allEntries = true)
   public void updateHub(Long hubId, HubUpdateCommand command) {
     Hub hub = getOrElseThrow(hubId);
     isDeleted(hub);
@@ -60,6 +65,7 @@ public class HubService implements HubUseCase {
   }
 
   @Override
+  @CacheEvict(cacheNames = "hubList", allEntries = true)
   public void deleteHub(Long hubId) {
     Hub hub = getOrElseThrow(hubId);
     isDeleted(hub);

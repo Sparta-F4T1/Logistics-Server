@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +47,10 @@ public class RouteService implements RouteUseCase {
   private final GpsInternalPort gpsInternalPort;
 
   @Override
+  @Caching(evict = {
+      @CacheEvict(cacheNames = "routeList", allEntries = true),
+      @CacheEvict(cacheNames = "shorestPath", allEntries = true)
+  })
   public Route createOrUpdateHubRoute(RouteCreateCommand routeCommand) {
     RouteInfoCommand routeInfoCommand = gpsInternalPort.getRouteInfo(routeCommand); //임시 ( 좌표정보 보내는걸로 구현 예상)
     Long departHubId = routeCommand.departHubId();
@@ -66,6 +73,7 @@ public class RouteService implements RouteUseCase {
   }
 
   @Override
+  @Cacheable(cacheNames = "routeList", key = "search")
   public RouteHistoryListResponse getHubRouteList(int page, int size, String orderBy, String search) {
     Sort.Direction direction = Direction.ASC;  // 오름차순
     Sort sort1 = Sort.by(direction, orderBy); //정렬기준
@@ -92,6 +100,7 @@ public class RouteService implements RouteUseCase {
   }
 
   @Override
+  @CacheEvict(cacheNames = "routeList", allEntries = true)
   public void deleteHubRoute(Long hubRouteId) {
     Route route = getOrElseThrow(hubRouteId);
     isDeleted(route);
@@ -105,6 +114,7 @@ public class RouteService implements RouteUseCase {
   }
 
   @Override
+  @Cacheable(cacheNames = "shortestPath", key = "{ #command.departHubId(),#command.arrivalHubId() }")
   public HubClientShortestPathResponse getShortestPath(DepartArrivalIdCommand command) {
     List<Route> shortestPath = new ArrayList<>(); //반환할 최단 경로
     Map<Long, Route> previousPath = new HashMap<>(); //최단 경로 저장되어 있음 (각 허브id가 목적지인 route map);
@@ -112,7 +122,7 @@ public class RouteService implements RouteUseCase {
     Long departHubId = command.departHubId(); //출발 허브id
     Long arrival = command.arrivalHubId();  //목적 허브id
     int totalDuration = 0;
-    List<Route> routeList = routePersistencePort.findAll();   //db에 저장되어있는 모든 route
+    List<Route> routeList = getAllRoutes();   //db에 저장되어있는 모든 route
 
     PriorityQueue<Node> queue = new PriorityQueue<>(comparingInt(o -> o.distance));
 
@@ -141,7 +151,7 @@ public class RouteService implements RouteUseCase {
 
       }
     }
-    if (previousPath.isEmpty()) {
+    if (previousPath.isEmpty() || previousPath.get(arrival) == null) {
       throw new RouteCalculateFailedException("최단경로를 찾을 수 없습니다.");
     }
 
@@ -155,6 +165,11 @@ public class RouteService implements RouteUseCase {
     Collections.reverse(shortestPath);
 
     return HubClientShortestPathResponse.from(shortestPath, weight.get(arrival), totalDuration);
+  }
+
+  //@Cacheable(cacheNames = "AllRouteList")
+  public List<Route> getAllRoutes() {
+    return routePersistencePort.findAll();
   }
 
   private Map<Long, Integer> initWeight(List<Route> routeList) {
