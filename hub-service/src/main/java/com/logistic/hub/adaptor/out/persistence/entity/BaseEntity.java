@@ -1,4 +1,4 @@
-package com.logistic.hub.adaptor.out.persistence;
+package com.logistic.hub.adaptor.out.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,6 +1,6 @@
 package com.logistic.hub.adaptor.in.web;
 
-import com.logistic.common.annotation.WebAdapter;
+import com.logistic.common.annotation.Adapter;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.hub.adaptor.in.web.mapper.HubWebMapper;
 import com.logistic.hub.adaptor.in.web.request.HubCreateRequest;
@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@WebAdapter
+@Adapter
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/hubs")
 public class HubWebAdaptor {

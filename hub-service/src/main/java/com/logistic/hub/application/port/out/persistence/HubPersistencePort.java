@@ -1,4 +1,4 @@
-package com.logistic.hub.application.port.out;
+package com.logistic.hub.application.port.out.persistence;
 
 import com.logistic.hub.adaptor.in.web.response.HubHistoryResponse;
 import com.logistic.hub.domain.Hub;

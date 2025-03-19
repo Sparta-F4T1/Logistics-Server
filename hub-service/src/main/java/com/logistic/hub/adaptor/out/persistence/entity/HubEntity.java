@@ -1,5 +1,6 @@
-package com.logistic.hub.adaptor.out.persistence;
+package com.logistic.hub.adaptor.out.persistence.entity;
 
+import com.logistic.hub.adaptor.out.persistence.AddressValue;
 import com.logistic.hub.domain.HubType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;

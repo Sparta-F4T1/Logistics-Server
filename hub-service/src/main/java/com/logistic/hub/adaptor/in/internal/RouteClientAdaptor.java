@@ -1,6 +1,6 @@
 package com.logistic.hub.adaptor.in.internal;
 
-import com.logistic.common.annotation.WebAdapter;
+import com.logistic.common.annotation.Adapter;
 import com.logistic.hub.adaptor.in.internal.response.HubClientShortestPathResponse;
 import com.logistic.hub.application.port.in.RouteUseCase;
 import com.logistic.hub.application.port.in.command.DepartArrivalIdCommand;
@@ -8,8 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@WebAdapter
+@Adapter
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/internal/v1/hubRoutes")
 public class RouteClientAdaptor {

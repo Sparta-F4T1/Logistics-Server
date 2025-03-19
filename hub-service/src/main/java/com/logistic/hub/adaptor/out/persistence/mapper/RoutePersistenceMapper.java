@@ -1,6 +1,6 @@
 package com.logistic.hub.adaptor.out.persistence.mapper;
 
-import com.logistic.hub.adaptor.out.persistence.RouteEntity;
+import com.logistic.hub.adaptor.out.persistence.entity.RouteEntity;
 import com.logistic.hub.domain.Route;
 import org.mapstruct.Mapper;
 

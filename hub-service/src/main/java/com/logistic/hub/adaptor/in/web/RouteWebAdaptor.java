@@ -1,6 +1,6 @@
 package com.logistic.hub.adaptor.in.web;
 
-import com.logistic.common.annotation.WebAdapter;
+import com.logistic.common.annotation.Adapter;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.hub.adaptor.in.web.mapper.RouteWebMapper;
 import com.logistic.hub.adaptor.in.web.request.RouteCreateRequest;
@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@WebAdapter
+@Adapter
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/hubRoutes")
 public class RouteWebAdaptor {
@@ -59,7 +61,7 @@ public class RouteWebAdaptor {
     ApiResponse<RouteDetailsResponse> response = ApiResponse.success(routeDetails);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
-  
+
   @DeleteMapping("/{hubRouteId}")
   public ResponseEntity<ApiResponse<String>> deleteHubRoute(@PathVariable Long hubRouteId) {
 
