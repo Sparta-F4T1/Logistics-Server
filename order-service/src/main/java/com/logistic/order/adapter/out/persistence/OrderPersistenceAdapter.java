@@ -6,6 +6,8 @@ import com.logistic.order.adapter.out.persistence.repository.OrderJpaRepository;
 import com.logistic.order.adapter.out.persistence.repository.OrderQueryDslRepository;
 import com.logistic.order.application.port.OrderPersistencePort;
 import com.logistic.order.domain.Order;
+import com.logistic.order.domain.OrderException.OrderIsDeletedException;
+import com.logistic.order.domain.OrderException.OrderNotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -30,9 +32,14 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
   }
 
   @Override
-  public Optional<Order> findById(Long orderId) {
-    Optional<OrderEntity> orderEntity = orderJpaRepository.findById(orderId);
+  public Order findById(Long orderId) {
+    OrderEntity orderEntity = orderJpaRepository.findById(orderId)
+        .orElseThrow(OrderNotFoundException::new);
 
-    return orderEntity.map(orderPersistenceMapper::toDomain);
+    if (orderEntity.isDeleted) {
+      throw new OrderIsDeletedException();
+    }
+
+    return orderPersistenceMapper.toDomain(orderEntity);
   }
 }

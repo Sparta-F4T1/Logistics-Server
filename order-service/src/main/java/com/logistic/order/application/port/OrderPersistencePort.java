@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface OrderPersistencePort {
   Order save(Order order);
 
-  Optional<Order> findById(Long orderId);
+  Order findById(Long orderId);
 
   void delete(Long orderId, String userId);
 }
