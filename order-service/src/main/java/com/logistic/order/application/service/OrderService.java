@@ -15,13 +15,14 @@ public class OrderService implements OrderUseCase {
 
   private final OrderPersistencePort orderPersistencePort;
 
-  public Order createOrder(OrderCreateCommand command){
+  @Override
+  public Order createOrder(CreateOrderCommand command) {
     Order order = Order.create(
         command.sellerId(),
         command.buyerId(),
         command.memo(),
         command.orderProducts().stream()
-            .map(orderProduct -> OrderProduct.create(orderProduct.productId(), orderProduct.amount()))
+            .map(orderProduct -> OrderProduct.create(orderProduct.productId(), orderProduct.quantity()))
             .collect(Collectors.toList())
     );
     return orderPersistencePort.save(order);

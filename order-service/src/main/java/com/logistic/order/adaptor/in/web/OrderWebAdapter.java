@@ -25,10 +25,10 @@ public class OrderWebAdapter {
   private final OrderWebMapper orderWebMapper;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<OrderCreateResponse>> createOrder(
-      @Valid @RequestBody OrderCreateRequest orderCreateRequest) {
-    Order order = orderUseCase.createOrder(orderWebMapper.toCreateCommand(orderCreateRequest));
-    ApiResponse<OrderCreateResponse> response = ApiResponse.success(orderWebMapper.toCreateResponse(order));
+  public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
+      @Valid @RequestBody CreateOrderRequest createOrderRequest) {
+    Order order = orderUseCase.createOrder(orderWebMapper.toCreateCommand(createOrderRequest));
+    ApiResponse<CreateOrderResponse> response = ApiResponse.success(orderWebMapper.toCreateResponse(order));
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 

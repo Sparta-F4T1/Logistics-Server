@@ -8,6 +8,9 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface OrderWebMapper {
-  OrderCreateCommand toCreateCommand(OrderCreateRequest orderCreateRequest);
-  OrderCreateResponse toCreateResponse(Order order);
+  CreateOrderCommand toCreateCommand(CreateOrderRequest createOrderRequest);
+
+  CreateOrderResponse toCreateResponse(Order order);
+
+  UpdateOrderResponse toUpdateResponse(Order order);
 }

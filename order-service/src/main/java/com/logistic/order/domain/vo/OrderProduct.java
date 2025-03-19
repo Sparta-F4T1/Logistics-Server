@@ -1,4 +1,4 @@
-package com.logistic.order.domain;
+package com.logistic.order.domain.vo;
 
 
 import lombok.AccessLevel;
@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 public class OrderProduct {
   private Long orderId;
   private Long productId;
-  private int amount;
+  private int quantity;
 
-  public static OrderProduct create(Long productId, int amount) {
+  public static OrderProduct create(Long productId, int quantity) {
     return OrderProduct.builder()
         .productId(productId)
-        .amount(amount)
+        .quantity(quantity)
         .build();
   }
 }
