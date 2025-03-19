@@ -10,4 +10,6 @@ public interface OrderUseCase {
   Order updateOrder(Long orderId, OrderStatus status);
 
   void deleteOrder(Long orderId, String userId);
+
+  Order findOrder(Long orderId);
 }

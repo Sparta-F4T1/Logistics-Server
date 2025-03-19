@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +51,13 @@ public class OrderWebAdapter {
   public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable Long orderId) {
     orderUseCase.deleteOrder(orderId, "userId");
     ApiResponse<Void> response = ApiResponse.success();
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+  }
+
+  @GetMapping("/{orderId}")
+  public ResponseEntity<ApiResponse<ReadOrderResponse>> findOrder(@PathVariable Long orderId) {
+    Order order = orderUseCase.findOrder(orderId);
+    ApiResponse<ReadOrderResponse> response = ApiResponse.success(orderWebMapper.toReadOrderResponse(order));
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }
 }

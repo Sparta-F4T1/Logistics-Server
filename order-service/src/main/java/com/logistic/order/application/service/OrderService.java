@@ -9,9 +9,11 @@ import com.logistic.order.domain.vo.OrderProduct;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class OrderService implements OrderUseCase {
 
   private final OrderPersistencePort orderPersistencePort;
@@ -31,8 +33,7 @@ public class OrderService implements OrderUseCase {
 
   @Override
   public Order updateOrder(Long orderId, OrderStatus orderStatus) {
-    Order order = orderPersistencePort.findById(orderId)
-        .orElseThrow();
+    Order order = orderPersistencePort.findById(orderId);
     order.updateStatus(orderStatus);
     return orderPersistencePort.save(order);
   }
@@ -40,5 +41,10 @@ public class OrderService implements OrderUseCase {
   @Override
   public void deleteOrder(Long orderId, String userId) {
     orderPersistencePort.delete(orderId, userId);
+  }
+
+  @Override
+  public Order findOrder(Long orderId) {
+    return orderPersistencePort.findById(orderId);
   }
 }

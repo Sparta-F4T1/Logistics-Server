@@ -7,8 +7,10 @@ import com.logistic.order.adapter.in.web.response.ReadOrderResponse;
 import com.logistic.order.adapter.in.web.response.SearchOrderResponse;
 import com.logistic.order.adapter.in.web.response.UpdateOrderResponse;
 import com.logistic.order.application.port.in.command.CreateOrderCommand;
+import com.logistic.order.application.port.in.query.SearchOrderQuery;
 import com.logistic.order.domain.Order;
 import org.mapstruct.Mapper;
+import org.springframework.data.web.PagedModel;
 
 @Mapper(componentModel = "spring")
 public interface OrderWebMapper {
@@ -17,4 +19,10 @@ public interface OrderWebMapper {
   CreateOrderResponse toCreateResponse(Order order);
 
   UpdateOrderResponse toUpdateResponse(Order order);
+
+  ReadOrderResponse toReadOrderResponse(Order order);
+
+  SearchOrderQuery toSearchQuery(SearchOrderRequest searchOrderRequest);
+
+  PagedModel<SearchOrderResponse> toSearchOrderResponse(PagedModel<Order> orders);
 }
