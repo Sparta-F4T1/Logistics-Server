@@ -4,11 +4,15 @@ import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
 import com.logistic.hub.domain.command.AddressCommand;
 import com.logistic.hub.domain.vo.Address;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Hub {
 
   private Long id;
