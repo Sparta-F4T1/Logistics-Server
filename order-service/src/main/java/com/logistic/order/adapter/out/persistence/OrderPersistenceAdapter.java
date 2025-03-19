@@ -1,8 +1,9 @@
-package com.logistic.order.adaptor.out.persistence;
+package com.logistic.order.adapter.out.persistence;
 
 import com.logistic.common.annotation.Adapter;
-import com.logistic.order.adaptor.out.persistence.mapper.OrderPersistenceMapper;
-import com.logistic.order.adaptor.out.persistence.repository.OrderJpaRepository;
+import com.logistic.order.adapter.out.persistence.mapper.OrderPersistenceMapper;
+import com.logistic.order.adapter.out.persistence.repository.OrderJpaRepository;
+import com.logistic.order.adapter.out.persistence.repository.OrderQueryDslRepository;
 import com.logistic.order.application.port.OrderPersistencePort;
 import com.logistic.order.domain.Order;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.logistic.order.adaptor.in.web.request;
+package com.logistic.order.adapter.in.web.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;

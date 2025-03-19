@@ -1,7 +1,7 @@
-package com.logistic.order.adaptor.out.persistence.mapper;
+package com.logistic.order.adapter.out.persistence.mapper;
 
 
-import com.logistic.order.adaptor.out.persistence.OrderEntity;
+import com.logistic.order.adapter.out.persistence.OrderEntity;
 import com.logistic.order.domain.Order;
 import org.mapstruct.Mapper;
 

@@ -1,4 +1,4 @@
-package com.logistic.order.adaptor.in.web.response;
+package com.logistic.order.adapter.in.web.response;
 
 import java.util.List;
 
