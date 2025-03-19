@@ -61,10 +61,18 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
 
   @Override
   public Optional<Route> findByDepartAndArrival(Long departHubId, Long arrivalHubId) {
-    Optional<RouteEntity> routeEntity = routeJpaRepository.findBydepartHubIdAndArrivalHubId(
+    Optional<RouteEntity> routeEntity = routeJpaRepository.findBydepartHubIdAndArrivalHubIdAndIsDeletedFalse(
         departHubId, arrivalHubId);
 
     return routeEntity.map(routePersistenceMapper::toDomain);
+  }
+
+  @Override
+  public List<Route> findAll() {
+    List<RouteEntity> all = routeJpaRepository.findAllByIsDeletedFalse();
+    List<Route> routeList = all.stream().map(routePersistenceMapper::toDomain).toList();
+
+    return routeList;
   }
 
 

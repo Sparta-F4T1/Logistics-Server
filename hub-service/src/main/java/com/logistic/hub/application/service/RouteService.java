@@ -1,19 +1,29 @@
 package com.logistic.hub.application.service;
 
+import static java.util.Comparator.comparingInt;
+
 import com.logistic.common.annotation.UseCase;
+import com.logistic.hub.adaptor.in.internal.response.HubClientShortestPathResponse;
 import com.logistic.hub.adaptor.in.web.response.RouteDetailsResponse;
 import com.logistic.hub.adaptor.in.web.response.RouteHistoryListResponse;
 import com.logistic.hub.adaptor.in.web.response.RouteHistoryResponse;
 import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.RouteUseCase;
 import com.logistic.hub.application.port.in.command.DepartArrivalCommand;
+import com.logistic.hub.application.port.in.command.DepartArrivalIdCommand;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
 import com.logistic.hub.application.port.in.command.RouteInfoCommand;
 import com.logistic.hub.application.port.out.NaverClientPort;
 import com.logistic.hub.application.port.out.RoutePersistencePort;
 import com.logistic.hub.domain.Route;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.PriorityQueue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -74,13 +84,96 @@ public class RouteService implements RouteUseCase {
     return routeDetails;
   }
 
-
   @Override
   public void deleteHubRoute(Long hubRouteId) {
     Route route = routePersistencePort.findById(hubRouteId)
         .orElseThrow(() -> new IllegalArgumentException("경로가 존재하지 않습니다"));
     isDeleted(route);
     routePersistencePort.delete(route);
+  }
+
+  @Override
+  public HubClientShortestPathResponse getShortestPath(DepartArrivalIdCommand command) {
+    List<Route> shortestPath = new ArrayList<>(); //반환할 최단 경로
+    Map<Long, Route> previousPath = new HashMap<>(); //최단 경로 저장되어 있음 (각 허브id가 목적지인 route map);
+
+    Long departHubId = command.departHubId(); //출발 허브id
+    Long arrival = command.arrivalHubId();  //목적 허브id
+    int totalDuration = 0;
+    List<Route> routeList = routePersistencePort.findAll();   //db에 저장되어있는 모든 route
+
+    PriorityQueue<Node> queue = new PriorityQueue<>(comparingInt(o -> o.distance));
+
+    Map<Long, List<Route>> graph = initGraph(routeList);
+    Map<Long, Integer> weight = initWeight(routeList); ///거리로 판단
+
+    weight.put(departHubId, 0); //시작점 거리 초기화
+    queue.add(new Node(departHubId, 0, 0)); //출발지 queue에 추가
+
+    while (!queue.isEmpty()) {
+      Node currentNode = queue.poll();
+      List<Route> routes = graph.get(currentNode.num);
+
+      if (currentNode.num == arrival) {
+        totalDuration = currentNode.duration;
+        break;
+      }
+      for (Route route : routes) {    //인접 노드
+        Long arrivalHubId = route.getArrivalHubId();
+        int newDistance = weight.get(currentNode.num) + route.getDistance();
+        if (weight.get(arrivalHubId) > newDistance) {
+          weight.put(arrivalHubId, newDistance);
+          queue.add(new Node(arrivalHubId, newDistance, currentNode.duration + route.getDuration()));
+          previousPath.put(arrivalHubId, route);
+        }
+
+      }
+    }
+    if (previousPath.isEmpty()) {
+      throw new IllegalArgumentException("경로를 찾을 수 없습니다.");
+    }
+
+    Long currentId = arrival;
+    while (previousPath.containsKey(currentId)) {
+
+      Route route = previousPath.get(currentId);
+      shortestPath.add(route);
+      currentId = route.getDepartHubId();
+    }
+    Collections.reverse(shortestPath);
+
+    return HubClientShortestPathResponse.from(shortestPath, weight.get(arrival), totalDuration);
+  }
+
+  private Map<Long, Integer> initWeight(List<Route> routeList) {
+    Map<Long, Integer> weight = new HashMap<>();
+    for (Route route : routeList) {
+      weight.put(route.getDepartHubId(), Integer.MAX_VALUE);
+      weight.put(route.getArrivalHubId(), Integer.MAX_VALUE);
+    }
+    return weight;
+  }
+
+  private Map<Long, List<Route>> initGraph(List<Route> routeList) {
+    Map<Long, List<Route>> graph = new HashMap<>();
+    for (Route route : routeList) {
+      graph.putIfAbsent(route.getDepartHubId(), new ArrayList<>());
+      graph.putIfAbsent(route.getArrivalHubId(), new ArrayList<>());
+      graph.get(route.getDepartHubId()).add(route);
+    }
+    return graph;
+  }
+
+  private static class Node {
+    Long num;
+    int distance;
+    int duration;
+
+    public Node(Long num, int distance, int duration) {
+      this.num = num;
+      this.distance = distance;
+      this.duration = duration;
+    }
   }
 
   private void isDeleted(Route route) {
