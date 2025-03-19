@@ -8,6 +8,7 @@ import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.HubType;
+import com.logistic.hub.domain.exception.HubAlreadyDeletedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,11 @@ class HubServiceTest {
   @Test
   @DisplayName("허브 생성")
   void createHub() {
-
+    //given
     HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소");
-
+    //when
     Hub hub = hubService.createHub(hubCreateCommand);
-
+    //then
     assertEquals(HubType.CENTRAL, hub.getHubType());
     assertEquals("도로명주소", hub.getAddress().getRoad());
     assertEquals("지번주소", hub.getAddress().getJibun());
@@ -97,6 +98,6 @@ class HubServiceTest {
     hubService.deleteHub(hub.getId());
 
     // then
-    assertThrows(IllegalArgumentException.class, () -> hubService.getHubDetails(hub.getId()));
+    assertThrows(HubAlreadyDeletedException.class, () -> hubService.getHubDetails(hub.getId()));
   }
 }
