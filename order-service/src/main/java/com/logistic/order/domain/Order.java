@@ -38,4 +38,8 @@ public class Order {
         .orderProducts(orderProducts)
         .build();
   }
+
+  public void updateStatus(OrderStatus orderStatus) {
+    this.status = orderStatus;
+  }
 }

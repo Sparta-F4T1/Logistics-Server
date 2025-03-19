@@ -2,9 +2,10 @@ package com.logistic.order.application.service;
 
 import com.logistic.order.application.port.OrderPersistencePort;
 import com.logistic.order.application.port.in.OrderUseCase;
-import com.logistic.order.application.port.in.command.OrderCreateCommand;
+import com.logistic.order.application.port.in.command.CreateOrderCommand;
 import com.logistic.order.domain.Order;
-import com.logistic.order.domain.OrderProduct;
+import com.logistic.order.domain.OrderStatus;
+import com.logistic.order.domain.vo.OrderProduct;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,18 @@ public class OrderService implements OrderUseCase {
             .collect(Collectors.toList())
     );
     return orderPersistencePort.save(order);
+  }
+
+  @Override
+  public Order updateOrder(Long orderId, OrderStatus orderStatus) {
+    Order order = orderPersistencePort.findById(orderId)
+        .orElseThrow();
+    order.updateStatus(orderStatus);
+    return orderPersistencePort.save(order);
+  }
+
+  @Override
+  public void deleteOrder(Long orderId, String userId) {
+    orderPersistencePort.delete(orderId, userId);
   }
 }
