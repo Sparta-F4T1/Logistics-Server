@@ -24,7 +24,8 @@ public class DeliveryServiceTest {
         .orderId(1L)
         .departHubId(2L)
         .arrivalHubId(3L)
-        .driverId("example1234")
+        .arrivalCompanyId(4L)
+        .departCompanyId(5L)
         .build();
 
     // When
@@ -34,8 +35,9 @@ public class DeliveryServiceTest {
     Assertions.assertThat(delivery).isNotNull();
     Assertions.assertThat(delivery.getId()).isEqualTo(1L);
     Assertions.assertThat(delivery.getOrderId()).isEqualTo(command.orderId());
-    Assertions.assertThat(delivery.getDepartHubId()).isEqualTo(command.departHubId());
+    Assertions.assertThat(delivery.getDepartHubId()).isEqualTo(command.departCompanyId());
     Assertions.assertThat(delivery.getArrivalHubId()).isEqualTo(command.arrivalHubId());
-    Assertions.assertThat(delivery.getDriverId()).isEqualTo(command.driverId());
+    Assertions.assertThat(delivery.getDepartCompanyId()).isEqualTo(command.departCompanyId());
+    Assertions.assertThat(delivery.getArrivalCompanyId()).isEqualTo(command.departCompanyId());
   }
 }
