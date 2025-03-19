@@ -13,8 +13,8 @@ import com.logistic.hub.application.port.in.command.DepartArrivalCommand;
 import com.logistic.hub.application.port.in.command.DepartArrivalIdCommand;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
 import com.logistic.hub.application.port.in.command.RouteInfoCommand;
-import com.logistic.hub.application.port.out.NaverClientPort;
-import com.logistic.hub.application.port.out.RoutePersistencePort;
+import com.logistic.hub.application.port.out.client.GpsInternalPort;
+import com.logistic.hub.application.port.out.persistence.RoutePersistencePort;
 import com.logistic.hub.domain.Route;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -37,11 +37,11 @@ import org.springframework.data.domain.Sort.Direction;
 public class RouteService implements RouteUseCase {
   private final RoutePersistencePort routePersistencePort;
   private final HubUseCase hubUseCase;
-  private final NaverClientPort naverClientPort;
+  private final GpsInternalPort gpsInternalPort;
 
   @Override
   public Route createOrUpdateHubRoute(RouteCreateCommand routeCommand) {
-    RouteInfoCommand routeInfoCommand = naverClientPort.getRouteInfo(routeCommand); //임시 ( 좌표정보 보내는걸로 구현 예상)
+    RouteInfoCommand routeInfoCommand = gpsInternalPort.getRouteInfo(routeCommand); //임시 ( 좌표정보 보내는걸로 구현 예상)
     Long departHubId = routeCommand.departHubId();
     Long arrivalHubId = routeCommand.arrivalHubId();
     if (departHubId.equals(arrivalHubId)) {

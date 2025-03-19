@@ -7,8 +7,8 @@ import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.command.DepartArrivalCommand;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
-import com.logistic.hub.application.port.out.HubPersistencePort;
-import com.logistic.hub.application.port.out.NaverClientPort;
+import com.logistic.hub.application.port.out.client.GpsInternalPort;
+import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.command.AddressCommand;
 import jakarta.transaction.Transactional;
@@ -24,11 +24,11 @@ import org.springframework.data.domain.Sort.Direction;
 @RequiredArgsConstructor
 public class HubService implements HubUseCase {
   private final HubPersistencePort hubPersistencePort;
-  private final NaverClientPort naverClientPort;
+  private final GpsInternalPort gpsInternalPort;
 
   @Override
   public Hub createHub(HubCreateCommand hubCommand) {
-    AddressCommand addressCommand = naverClientPort.getAddressCommand(hubCommand.roadAddress(),
+    AddressCommand addressCommand = gpsInternalPort.getAddressCommand(hubCommand.roadAddress(),
         hubCommand.jibunAddress()); //임시 0, 37로 고정)
     Hub hub = Hub.createHub(hubCommand, addressCommand);
 
@@ -51,7 +51,7 @@ public class HubService implements HubUseCase {
   public void updateHub(Long hubId, HubUpdateCommand command) {
     Hub hub = hubPersistencePort.findById(hubId).orElseThrow(() -> new IllegalArgumentException("허브가 존재하지 않습니다"));
     isDeleted(hub);
-    AddressCommand addressCommand = naverClientPort.getAddressCommand(command.roadAddress(),
+    AddressCommand addressCommand = gpsInternalPort.getAddressCommand(command.roadAddress(),
         command.jibunAddress()); //임시 (300, 37로 고정)
     hub.update(command, addressCommand);
 
