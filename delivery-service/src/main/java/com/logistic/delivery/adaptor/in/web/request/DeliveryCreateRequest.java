@@ -6,8 +6,7 @@ import lombok.Builder;
 @Builder
 public record DeliveryCreateRequest(
     @NotNull Long orderId,
-    @NotNull Long departHubId,
-    @NotNull Long arrivalHubId,
-    @NotNull String driverId
+    @NotNull Long departCompanyId,
+    @NotNull Long arrivalCompanyId
 ){
 }
