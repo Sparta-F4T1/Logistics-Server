@@ -1,10 +1,11 @@
 package com.logistic.product.application.service;
 
-import com.logistic.product.application.port.in.query.ProductFindQuery;
-import com.logistic.product.application.port.in.query.ProductSearchQuery;
-import com.logistic.product.application.port.out.CompanyClientPort;
+import com.logistic.product.application.port.in.query.FindProductQuery;
+import com.logistic.product.application.port.in.query.SearchProductQuery;
+import com.logistic.product.application.port.out.ProductInternalPort;
 import com.logistic.product.application.port.out.ProductPersistencePort;
 import com.logistic.product.domain.Product;
+import com.logistic.product.domain.command.ProductForCreate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class ProductQueryServiceTest {
   @Autowired
   private ProductQueryService productQueryService;
   @MockitoBean
-  private CompanyClientPort companyClientPort;
+  private ProductInternalPort productInternalPort;
   @Autowired
   private ProductPersistencePort productPersistencePort;
 
@@ -32,7 +33,7 @@ class ProductQueryServiceTest {
     // given
     Product saved = saveProduct();
     // when
-    ProductFindQuery findQuery = new ProductFindQuery(saved.getId());
+    FindProductQuery findQuery = new FindProductQuery(saved.getId(), null);
     Product product = productQueryService.findProduct(findQuery);
     // then
     Assertions.assertThat(product.getId()).isEqualTo(saved.getId());
@@ -45,7 +46,7 @@ class ProductQueryServiceTest {
     saveProducts();
     // when
     Pageable pageable = PageRequest.of(0, 10);
-    ProductSearchQuery query = new ProductSearchQuery(1L, "상품", pageable);
+    SearchProductQuery query = new SearchProductQuery(1L, "상품", pageable, null);
     Page<Product> search = productQueryService.search(query);
     // then
     Assertions.assertThat(search).isNotNull();
@@ -53,7 +54,8 @@ class ProductQueryServiceTest {
   }
 
   private Product saveProduct() {
-    Product product = Product.create("상품1", 100, 1L);
+    ProductForCreate forCreate = new ProductForCreate("상품", 100, 1L);
+    Product product = Product.create(forCreate);
     return productPersistencePort.save(product);
   }
 

@@ -1,4 +1,4 @@
-package com.logistic.product.adaptor.out.config;
+package com.logistic.product.adapter.out.persistence.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

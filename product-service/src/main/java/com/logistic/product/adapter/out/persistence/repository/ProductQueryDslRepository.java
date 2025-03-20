@@ -1,9 +1,9 @@
-package com.logistic.product.adaptor.out.persistence.repository;
+package com.logistic.product.adapter.out.persistence.repository;
 
-import static com.logistic.product.adaptor.out.persistence.QProductEntity.productEntity;
+import static com.logistic.product.adapter.out.persistence.model.QProductEntity.productEntity;
 
-import com.logistic.product.adaptor.out.persistence.ProductEntity;
-import com.logistic.product.application.port.in.query.ProductSearchQuery;
+import com.logistic.product.adapter.out.persistence.model.ProductEntity;
+import com.logistic.product.application.port.in.query.SearchProductQuery;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -15,14 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class ProductQueryDslRepository {
   private final JPAQueryFactory queryFactory;
 
-  public Page<ProductEntity> search(final ProductSearchQuery query) {
+  public Page<ProductEntity> search(final SearchProductQuery query) {
     final Long companyId = query.companyId();
     final String name = query.name();
     final Pageable pageable = query.pageable();
