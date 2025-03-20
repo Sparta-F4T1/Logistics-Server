@@ -5,7 +5,7 @@ import com.logistic.common.response.ApiResponse;
 import com.logistic.order.adapter.in.web.mapper.OrderWebMapper;
 import com.logistic.order.adapter.in.web.request.CreateOrderRequest;
 import com.logistic.order.adapter.in.web.response.CreateOrderResponse;
-import com.logistic.order.adapter.in.web.response.ReadOrderResponse;
+import com.logistic.order.adapter.in.web.response.FindOrderResponse;
 import com.logistic.order.adapter.in.web.response.UpdateOrderResponse;
 import com.logistic.order.application.port.in.OrderUseCase;
 import com.logistic.order.domain.Order;
@@ -55,9 +55,9 @@ public class OrderWebAdapter {
   }
 
   @GetMapping("/{orderId}")
-  public ResponseEntity<ApiResponse<ReadOrderResponse>> findOrder(@PathVariable Long orderId) {
+  public ResponseEntity<ApiResponse<FindOrderResponse>> findOrder(@PathVariable Long orderId) {
     Order order = orderUseCase.findOrder(orderId);
-    ApiResponse<ReadOrderResponse> response = ApiResponse.success(orderWebMapper.toReadOrderResponse(order));
+    ApiResponse<FindOrderResponse> response = ApiResponse.success(orderWebMapper.toReadOrderResponse(order));
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }
 }

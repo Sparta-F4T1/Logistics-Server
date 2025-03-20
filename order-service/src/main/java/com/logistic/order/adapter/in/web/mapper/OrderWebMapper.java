@@ -3,7 +3,7 @@ package com.logistic.order.adapter.in.web.mapper;
 import com.logistic.order.adapter.in.web.request.CreateOrderRequest;
 import com.logistic.order.adapter.in.web.request.SearchOrderRequest;
 import com.logistic.order.adapter.in.web.response.CreateOrderResponse;
-import com.logistic.order.adapter.in.web.response.ReadOrderResponse;
+import com.logistic.order.adapter.in.web.response.FindOrderResponse;
 import com.logistic.order.adapter.in.web.response.SearchOrderResponse;
 import com.logistic.order.adapter.in.web.response.UpdateOrderResponse;
 import com.logistic.order.application.port.in.command.CreateOrderCommand;
@@ -20,7 +20,7 @@ public interface OrderWebMapper {
 
   UpdateOrderResponse toUpdateResponse(Order order);
 
-  ReadOrderResponse toReadOrderResponse(Order order);
+  FindOrderResponse toReadOrderResponse(Order order);
 
   SearchOrderQuery toSearchQuery(SearchOrderRequest searchOrderRequest);
 

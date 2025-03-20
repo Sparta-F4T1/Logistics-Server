@@ -1,5 +1,6 @@
 package com.logistic.order.domain;
 
+import com.logistic.order.domain.vo.OrderProduct;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.util.List;
@@ -28,7 +29,7 @@ public class Order {
 
   private List<OrderProduct> orderProducts;
 
-  public static Order create(Long sellerId, Long buyerId, String memo, List<OrderProduct> orderProducts){
+  public static Order create(Long sellerId, Long buyerId, String memo, List<OrderProduct> orderProducts) {
     return Order.builder()
         .sellerId(sellerId)
         .buyerId(buyerId)
@@ -36,5 +37,9 @@ public class Order {
         .status(OrderStatus.PENDING)
         .orderProducts(orderProducts)
         .build();
+  }
+
+  public void updateStatus(OrderStatus orderStatus) {
+    this.status = orderStatus;
   }
 }
