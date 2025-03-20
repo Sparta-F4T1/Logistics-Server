@@ -1,4 +1,4 @@
-package com.logistic.hub.adapter.out.persistence.entity;
+package com.logistic.hub.adapter.out.persistence.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,8 +1,8 @@
 package com.logistic.hub.adapter.out.persistence.repository;
 
 import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
-import com.logistic.hub.adapter.out.persistence.entity.QHubEntity;
-import com.logistic.hub.adapter.out.persistence.entity.QRouteEntity;
+import com.logistic.hub.adapter.out.persistence.model.QHubEntity;
+import com.logistic.hub.adapter.out.persistence.model.QRouteEntity;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
