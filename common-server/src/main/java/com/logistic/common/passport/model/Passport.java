@@ -1,27 +1,19 @@
 package com.logistic.common.passport.model;
 
 import java.io.Serializable;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Passport implements Serializable {
+  private static final long serialVersionUID = 1L;
   private UserInfo userInfo;
   private SessionInfo sessionInfo;
 
-  public static Passport create(UserInfo userInfo, SessionInfo sessionInfo) {
+  public Passport updateSessionInfo(SessionInfo sessionInfo) {
     return new Passport(userInfo, sessionInfo);
-  }
-
-  public void updateSessionInfo(SessionInfo sessionInfo) {
-    this.sessionInfo = sessionInfo;
-  }
-
-  public UserInfo userInfo() {
-    return this.userInfo;
-  }
-
-  public SessionInfo sessionInfo() {
-    return this.sessionInfo;
   }
 }

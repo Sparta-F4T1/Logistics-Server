@@ -1,28 +1,17 @@
 package com.logistic.common.passport.model;
 
 import java.io.Serializable;
-import lombok.AccessLevel;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class SessionInfo implements Serializable {
+  private static final long serialVersionUID = 1L;
   private String sessionId;
-  private long issuedAt;
-  private long expiresAt;
-
-  public static SessionInfo create(String sessionId, long issuedAt, long expiresAt) {
-    return new SessionInfo(sessionId, issuedAt, expiresAt);
-  }
-
-  public String sessionId() {
-    return this.sessionId;
-  }
-
-  public Long issuedAt() {
-    return this.issuedAt;
-  }
-
-  public Long expiresAt() {
-    return this.expiresAt;
-  }
+  private Instant issuedAt;
+  private Instant expiresAt;
 }
