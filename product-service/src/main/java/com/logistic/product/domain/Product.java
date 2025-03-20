@@ -1,5 +1,8 @@
 package com.logistic.product.domain;
 
+import com.logistic.product.domain.command.ProductForCreate;
+import com.logistic.product.domain.command.ProductForUpdate;
+import com.logistic.product.domain.vo.ProductInfo;
 import com.logistic.product.domain.vo.Stock;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,18 +13,32 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Product {
   private Long id;
-  private String name;
+  private ProductInfo info;
   private Stock stock;
-  private Long hubId;
   private Boolean isDeleted;
 
-  public static Product create(final String name, final Integer stock, final Long hubId) {
+  public static Product create(final ProductForCreate forCreate) {
     return Product.builder()
-        .name(name)
-        .stock(new Stock(stock))
-        .hubId(hubId)
+        .info(new ProductInfo(forCreate.name(), forCreate.companyId()))
+        .stock(new Stock(forCreate.quantity()))
         .isDeleted(false)
         .build();
   }
 
+  public void updateInfo(final ProductForUpdate forUpdate) {
+    this.info = info.update(forUpdate.name());
+    this.stock = stock.update(forUpdate.quantity());
+  }
+
+  public void addStock(final Integer quantity) {
+    this.stock = stock.add(quantity);
+  }
+
+  public void decreaseStock(final Integer quantity) {
+    this.stock = stock.decrease(quantity);
+  }
+
+  public void delete() {
+    this.isDeleted = true;
+  }
 }
