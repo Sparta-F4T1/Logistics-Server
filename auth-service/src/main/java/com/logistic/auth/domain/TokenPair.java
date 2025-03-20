@@ -25,8 +25,8 @@ public class TokenPair {
       String tokenIdValue,
       String accessTokenValue,
       String refreshTokenValue,
-      String subject) {
-    Instant issuedAt = Instant.now();
+      String subject,
+      Instant issuedAt) {
 
     Instant accessTokenExpiration = TokenType.ACCESS.calculateExpiration(issuedAt);
     Instant refreshTokenExpiration = TokenType.REFRESH.calculateExpiration(issuedAt);
@@ -53,19 +53,11 @@ public class TokenPair {
                                   Instant refreshTokenExpiration) {
     TokenId tokenId = TokenId.of(tokenIdValue);
 
-    TokenCredential accessTokenCredential = TokenCredential.accessTokenOf(
-        accessToken,
-        subject,
-        accessTokenIssuedAt,
-        accessTokenExpiration
-    );
+    TokenCredential accessTokenCredential = createAccessTokenCredential(
+        accessToken, subject, accessTokenIssuedAt, accessTokenExpiration);
 
-    TokenCredential refreshTokenCredential = TokenCredential.refreshTokenOf(
-        refreshToken,
-        subject,
-        refreshTokenIssuedAt,
-        refreshTokenExpiration
-    );
+    TokenCredential refreshTokenCredential = createRefreshTokenCredential(
+        refreshToken, subject, refreshTokenIssuedAt, refreshTokenExpiration);
 
     validateTokenPair(accessTokenCredential, refreshTokenCredential);
 
@@ -74,6 +66,16 @@ public class TokenPair {
         .accessTokenCredential(accessTokenCredential)
         .refreshTokenCredential(refreshTokenCredential)
         .build();
+  }
+
+  private static TokenCredential createAccessTokenCredential(
+      String token, String subject, Instant issuedAt, Instant expiration) {
+    return TokenCredential.accessTokenOf(token, subject, issuedAt, expiration);
+  }
+
+  private static TokenCredential createRefreshTokenCredential(
+      String token, String subject, Instant issuedAt, Instant expiration) {
+    return TokenCredential.refreshTokenOf(token, subject, issuedAt, expiration);
   }
 
   private static void validateTokenPair(TokenCredential accessTokenCredential, TokenCredential refreshTokenCredential) {

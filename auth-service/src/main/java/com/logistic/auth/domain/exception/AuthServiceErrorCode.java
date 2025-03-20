@@ -63,7 +63,8 @@ public enum AuthServiceErrorCode implements ErrorCode {
   MISSING_USER_INFO(BAD_REQUEST, "AU002", "사용자 정보는 필수입니다."),
   MISSING_ROLE(BAD_REQUEST, "AU003", "사용자 역할은 필수입니다."),
   INVALID_ROLE(BAD_REQUEST, "AU004", "유효하지 않은 역할입니다."),
-  MISSING_ACCESS_SCOPE(BAD_REQUEST, "AU005", "접근 범위는 필수입니다.");
+  MISSING_ACCESS_SCOPE(BAD_REQUEST, "AU005", "접근 범위는 필수입니다."),
+  EMPTY_PASSWORD(BAD_REQUEST, "AU006", "사용자 비밀번호는 빈 값일 수 없습니다.");
 
   private final HttpStatus httpStatus;
   private final String code;
