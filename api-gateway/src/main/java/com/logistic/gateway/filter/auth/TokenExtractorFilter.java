@@ -1,9 +1,10 @@
 package com.logistic.gateway.filter.auth;
 
-import static com.logistic.gateway.constants.CommonFilterConstants.ERROR_MISSING_TOKEN;
-import static com.logistic.gateway.constants.CommonFilterConstants.TOKEN_ATTR;
+import static com.logistic.gateway.constants.AppConstants.Filter.ERROR_MISSING_TOKEN;
+import static com.logistic.gateway.constants.AppConstants.Filter.TOKEN_ATTR;
 
 import java.nio.charset.StandardCharsets;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -13,6 +14,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+@Log4j2(topic = "[Token Extract]")
 public class TokenExtractorFilter implements GatewayFilter {
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String BEARER_PREFIX = "Bearer ";
@@ -21,6 +23,7 @@ public class TokenExtractorFilter implements GatewayFilter {
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
     String token = extractTokenFromHeader(exchange.getRequest());
     if (token == null) {
+      log.error(ERROR_MISSING_TOKEN);
       return handleMissingToken(exchange, ERROR_MISSING_TOKEN);
     }
 

@@ -6,7 +6,7 @@ import static com.logistic.gateway.constants.AppConstants.Filter.TOKEN_ATTR;
 import com.logistic.gateway.client.AuthServiceClient;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -16,8 +16,8 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@Slf4j
 @RequiredArgsConstructor
+@Log4j2(topic = "[Authentication]")
 public class AuthenticationFilter implements GatewayFilter {
   private static final String AUTHENTICATION_ERROR = "인증에 실패했습니다.";
   private final AuthServiceClient authServiceClient;
