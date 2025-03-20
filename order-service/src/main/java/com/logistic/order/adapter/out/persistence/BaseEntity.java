@@ -1,4 +1,4 @@
-package com.logistic.order.adaptor.out.persistence;
+package com.logistic.order.adapter.out.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -25,12 +25,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public abstract class BaseEntity {
 
   @CreatedDate
-  @Column(nullable = false, updatable = false)
+  @Column(nullable = true, updatable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
   protected LocalDateTime createdAt;
 
   @CreatedBy
-  @Column(nullable = false, updatable = false)
+  @Column(nullable = true, updatable = false)
   protected String createdBy;
 
   @LastModifiedDate

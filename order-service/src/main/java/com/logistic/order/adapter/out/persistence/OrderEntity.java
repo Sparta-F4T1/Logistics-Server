@@ -1,4 +1,4 @@
-package com.logistic.order.adaptor.out.persistence;
+package com.logistic.order.adapter.out.persistence;
 
 import com.logistic.order.domain.OrderStatus;
 import jakarta.persistence.CollectionTable;
