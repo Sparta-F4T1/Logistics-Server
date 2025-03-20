@@ -35,23 +35,15 @@ public class AuthCommandService implements AuthCommandUseCase {
 
   @Override
   public TokenPair login(LoginCommand command) {
-//    User user = persistencePort.findByUserId(command.username());
-    User user = User.mock();
+    User user = persistencePort.findByUserId(command.username());
 
-//    if (!passwordEncoder.matches(command.password(), user.getPassword().getHashedValue())) {
-    if (!true) {
+    if (!passwordEncoder.matches(command.password(), user.getPassword().getHashedValue())) {
       throw new AuthServiceException(AuthServiceErrorCode.USER_NOT_FOUND);
     }
 
-    String tokenId = idGenerator.generateUniqueId();
-    TokenPair tokenPair = jwtPort.createTokenPair(tokenId, user.getUserId());
-    persistencePort.saveRefreshToken(
-        tokenPair.getTokenId(),
-        user.getUserId(),
-        tokenPair.getRefreshTokenCredential()
-    );
-
+    TokenPair tokenPair = createAndSaveTokenPair(user.getUserId());
     log.info("로그인 성공: {}", user.getUserId().value());
+
     return tokenPair;
   }
 
@@ -62,34 +54,51 @@ public class AuthCommandService implements AuthCommandUseCase {
 
     UserId userId = validationResult.userId();
     TokenId oldTokenId = validationResult.tokenId();
-    boolean isValidRefreshToken = persistencePort.isValidRefreshToken(oldTokenId, refreshToken);
-    if (!isValidRefreshToken) {
-      throw new AuthServiceException(AuthServiceErrorCode.REFRESH_TOKEN_MISMATCH);
-    }
 
-    Instant expirationTime = jwtPort.getExpirationTime(command.accessToken());
-    if (expirationTime.isAfter(Instant.now())) {
-      persistencePort.addToBlacklist(oldTokenId, expirationTime);
-      persistencePort.removeRefreshToken(oldTokenId, userId);
-    }
+    validateRefreshToken(oldTokenId, refreshToken);
+    invalidateOldTokenIfNeeded(command.accessToken(), oldTokenId, userId);
 
-    String sessionId = idGenerator.generateUniqueId();
-    TokenPair newTokenPair = jwtPort.createTokenPair(sessionId, userId);
-    persistencePort.saveRefreshToken(newTokenPair.getTokenId(), userId, newTokenPair.getRefreshTokenCredential());
-
+    TokenPair newTokenPair = createAndSaveTokenPair(userId);
     log.info("토큰 갱신 성공: {}", userId.value());
+
     return newTokenPair;
   }
 
   @Override
   public void logout(LogoutCommand command) {
-    TokenValidationResult validationResult = this.validateAndCheckBlacklist(command.accessToken());
+    TokenValidationResult validationResult = validateAndCheckBlacklist(command.accessToken());
+    invalidateToken(validationResult.tokenId(), validationResult.userId(), validationResult.expiration());
+    log.info("로그아웃 성공: TokenId={}", validationResult.tokenId().value());
+  }
 
-    TokenId tokenId = validationResult.tokenId();
-    persistencePort.addToBlacklist(tokenId, validationResult.expiration());
-    persistencePort.removeRefreshToken(tokenId, validationResult.userId());
+  private TokenPair createAndSaveTokenPair(UserId userId) {
+    String tokenId = idGenerator.generateUniqueId();
+    TokenPair tokenPair = jwtPort.createTokenPair(tokenId, userId);
+    persistencePort.saveRefreshToken(
+        tokenPair.getTokenId(),
+        userId,
+        tokenPair.getRefreshTokenCredential()
+    );
+    return tokenPair;
+  }
 
-    log.info("로그아웃 성공: TokenId={}", tokenId.value());
+  private void validateRefreshToken(TokenId tokenId, String refreshToken) {
+    boolean isValidRefreshToken = persistencePort.isValidRefreshToken(tokenId, refreshToken);
+    if (!isValidRefreshToken) {
+      throw new AuthServiceException(AuthServiceErrorCode.REFRESH_TOKEN_MISMATCH);
+    }
+  }
+
+  private void invalidateOldTokenIfNeeded(String accessToken, TokenId tokenId, UserId userId) {
+    Instant expirationTime = jwtPort.getExpirationTime(accessToken);
+    if (expirationTime.isAfter(Instant.now())) {
+      invalidateToken(tokenId, userId, expirationTime);
+    }
+  }
+
+  private void invalidateToken(TokenId tokenId, UserId userId, Instant expiration) {
+    persistencePort.addToBlacklist(tokenId, expiration);
+    persistencePort.removeRefreshToken(tokenId, userId);
   }
 
   private TokenValidationResult validateToken(String token) {
