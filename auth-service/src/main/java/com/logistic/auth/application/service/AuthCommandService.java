@@ -2,6 +2,7 @@ package com.logistic.auth.application.service;
 
 import com.logistic.auth.application.port.in.AuthCommandUseCase;
 import com.logistic.auth.application.port.in.command.LoginCommand;
+import com.logistic.auth.application.port.in.command.LogoutCommand;
 import com.logistic.auth.application.port.in.command.RefreshCommand;
 import com.logistic.auth.application.port.out.persistence.AuthPersistencePort;
 import com.logistic.auth.application.port.out.support.jwt.AuthJwtPort;
@@ -80,6 +81,17 @@ public class AuthCommandService implements AuthCommandUseCase {
     return newTokenPair;
   }
 
+  @Override
+  public void logout(LogoutCommand command) {
+    TokenValidationResult validationResult = this.validateAndCheckBlacklist(command.accessToken());
+
+    TokenId tokenId = validationResult.tokenId();
+    persistencePort.addToBlacklist(tokenId, validationResult.expiration());
+    persistencePort.removeRefreshToken(tokenId, validationResult.userId());
+
+    log.info("로그아웃 성공: TokenId={}", tokenId.value());
+  }
+
   private TokenValidationResult validateToken(String token) {
     try {
       return jwtPort.validateTokenAndExtractId(token);
@@ -90,5 +102,13 @@ public class AuthCommandService implements AuthCommandUseCase {
       log.warn("토큰 파싱 오류: {} - {}", e.getError().getCode(), e.getError().getMessage());
       throw e;
     }
+  }
+
+  private TokenValidationResult validateAndCheckBlacklist(String token) {
+    TokenValidationResult validationResult = validateToken(token);
+    if (persistencePort.isBlacklisted(validationResult.tokenId())) {
+      throw new AuthServiceException(AuthServiceErrorCode.BLACKLISTED_TOKEN);
+    }
+    return validationResult;
   }
 }
