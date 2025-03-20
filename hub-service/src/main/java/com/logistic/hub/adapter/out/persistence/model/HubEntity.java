@@ -1,4 +1,4 @@
-package com.logistic.hub.adapter.out.persistence.entity;
+package com.logistic.hub.adapter.out.persistence.model;
 
 import com.logistic.hub.adapter.out.persistence.AddressValue;
 import com.logistic.hub.domain.HubType;

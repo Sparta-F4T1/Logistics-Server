@@ -1,7 +1,7 @@
 package com.logistic.hub.adapter.out.persistence.repository;
 
 import com.logistic.hub.adapter.in.web.response.HubHistoryResponse;
-import com.logistic.hub.adapter.out.persistence.entity.QHubEntity;
+import com.logistic.hub.adapter.out.persistence.model.QHubEntity;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;

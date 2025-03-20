@@ -2,8 +2,8 @@ package com.logistic.hub.adapter.out.persistence;
 
 import com.logistic.common.annotation.Adapter;
 import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
-import com.logistic.hub.adapter.out.persistence.entity.RouteEntity;
 import com.logistic.hub.adapter.out.persistence.mapper.RoutePersistenceMapper;
+import com.logistic.hub.adapter.out.persistence.model.RouteEntity;
 import com.logistic.hub.adapter.out.persistence.repository.RouteJpaRepository;
 import com.logistic.hub.adapter.out.persistence.repository.RouteQueryDslRepository;
 import com.logistic.hub.application.port.out.persistence.RoutePersistencePort;

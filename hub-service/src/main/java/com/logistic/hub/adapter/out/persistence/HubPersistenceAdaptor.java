@@ -2,8 +2,8 @@ package com.logistic.hub.adapter.out.persistence;
 
 import com.logistic.common.annotation.Adapter;
 import com.logistic.hub.adapter.in.web.response.HubHistoryResponse;
-import com.logistic.hub.adapter.out.persistence.entity.HubEntity;
 import com.logistic.hub.adapter.out.persistence.mapper.HubPersistenceMapper;
+import com.logistic.hub.adapter.out.persistence.model.HubEntity;
 import com.logistic.hub.adapter.out.persistence.repository.HubJpaRepository;
 import com.logistic.hub.adapter.out.persistence.repository.HubQueryDslRepository;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
