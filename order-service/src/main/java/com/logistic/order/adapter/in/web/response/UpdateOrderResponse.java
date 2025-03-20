@@ -3,7 +3,7 @@ package com.logistic.order.adapter.in.web.response;
 import java.util.List;
 
 public record UpdateOrderResponse(
-    Long orderId,
+    Long id,
     Long sellerId,
     Long buyerId,
     String memo,
