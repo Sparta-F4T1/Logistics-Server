@@ -2,9 +2,12 @@ package com.logistic.auth.adapter.in.web;
 
 
 import com.logistic.auth.adapter.in.web.mapper.AuthWebMapper;
+import com.logistic.auth.adapter.in.web.request.RefreshTokenRequest;
 import com.logistic.auth.adapter.in.web.response.LoginResponse;
+import com.logistic.auth.adapter.in.web.response.RefreshTokenResponse;
 import com.logistic.auth.application.port.in.AuthCommandUseCase;
 import com.logistic.auth.application.port.in.command.LoginCommand;
+import com.logistic.auth.application.port.in.command.RefreshCommand;
 import com.logistic.auth.domain.TokenPair;
 import com.logistic.common.annotation.Adapter;
 import com.logistic.common.response.ApiResponse;
@@ -31,6 +34,16 @@ public class AuthWebAdapter {
     LoginCommand command = mapper.toLoginCommand(request);
     TokenPair tokenPair = commandUseCase.login(command);
     ApiResponse<LoginResponse> response = ApiResponse.success(mapper.toLoginResponse(tokenPair));
+
+    return ResponseEntity.ok().body(response);
+  }
+
+  @PostMapping("/refresh")
+  public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(
+      @Valid @RequestBody RefreshTokenRequest request) {
+    RefreshCommand command = mapper.toRefreshCommand(request);
+    TokenPair tokenPair = commandUseCase.refresh(command);
+    ApiResponse<RefreshTokenResponse> response = ApiResponse.success(mapper.toRefreshResponse(tokenPair));
 
     return ResponseEntity.ok().body(response);
   }
