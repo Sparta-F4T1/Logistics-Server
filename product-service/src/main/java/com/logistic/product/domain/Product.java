@@ -1,5 +1,7 @@
 package com.logistic.product.domain;
 
+import com.logistic.product.domain.command.ProductForCreate;
+import com.logistic.product.domain.command.ProductForUpdate;
 import com.logistic.product.domain.vo.ProductInfo;
 import com.logistic.product.domain.vo.Stock;
 import lombok.AllArgsConstructor;
@@ -15,20 +17,17 @@ public class Product {
   private Stock stock;
   private Boolean isDeleted;
 
-  public static Product create(final String name, final Integer stock, final Long companyId) {
+  public static Product create(final ProductForCreate forCreate) {
     return Product.builder()
-        .info(new ProductInfo(name, companyId))
-        .stock(new Stock(stock))
+        .info(new ProductInfo(forCreate.name(), forCreate.companyId()))
+        .stock(new Stock(forCreate.quantity()))
         .isDeleted(false)
         .build();
   }
 
-  public void updateInfo(final String name) {
-    this.info = info.update(name);
-  }
-
-  public void updateStock(final Integer newStock) {
-    this.stock = stock.update(newStock);
+  public void updateInfo(final ProductForUpdate forUpdate) {
+    this.info = info.update(forUpdate.name());
+    this.stock = stock.update(forUpdate.quantity());
   }
 
   public void addStock(final Integer quantity) {
@@ -39,10 +38,7 @@ public class Product {
     this.stock = stock.decrease(quantity);
   }
 
-  public void softDelete() {
-    if (this.isDeleted) {
-      // todo 이미 삭제된 경우 예외 처리
-    }
+  public void delete() {
     this.isDeleted = true;
   }
 }
