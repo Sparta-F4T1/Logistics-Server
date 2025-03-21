@@ -35,7 +35,7 @@ public class UserCommandServiceRegisterTest {
 
   private RegisterUserCommand createRegisterCommand(String userId, String email, String roleName) {
     return new RegisterUserCommand(
-        userId, "홍길동", "Password123!", email, 1L, roleName
+        userId, "홍길동", "Password123!", email, 1L, roleName, "amdin", "AMIN_ROLE"
     );
   }
 

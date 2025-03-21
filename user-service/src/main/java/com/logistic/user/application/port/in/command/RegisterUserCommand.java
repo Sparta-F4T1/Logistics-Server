@@ -6,6 +6,8 @@ public record RegisterUserCommand(
     String password,
     String slackAccount,
     Long roleId,
-    String roleName
+    String roleName,
+    String currentUserId,
+    String currentUserRole
 ) {
 }

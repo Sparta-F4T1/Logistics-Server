@@ -8,4 +8,6 @@ public interface UserPersistencePort {
   boolean existsByUserId(String userId);
 
   boolean existsBySlackAccount(String slackAccount);
+
+  User findByUserId(String userId);
 }

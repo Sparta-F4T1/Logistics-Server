@@ -1,6 +1,7 @@
 package com.logistic.user.domain.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,8 @@ public enum UserServiceErrorCode implements ErrorCode {
   NOT_NULL_USER_ID(BAD_REQUEST, "UA013", "사용자 ID는 비어있을 수 없습니다."),
   DUPLICATE_USER_ID(BAD_REQUEST, "UA014", "이미 존재하는 사용자 ID입니다."),
   DUPLICATE_SLACK_ACCOUNT(BAD_REQUEST, "UA015", "이미 사용 중인 슬랙 계정입니다."),
-  INVALID_ROLE_TYPE(BAD_REQUEST, "UA016", "유효하지 않은 역할 타입입니다.");
+  INVALID_ROLE_TYPE(BAD_REQUEST, "UA016", "유효하지 않은 역할 타입입니다."),
+  NOT_FOUND_USER(NOT_FOUND, "UA017", "사용자를 찾을 수 없습니다.");
 
   private final HttpStatus httpStatus;
   private final String code;

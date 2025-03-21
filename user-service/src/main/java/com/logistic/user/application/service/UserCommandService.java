@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class UserCommandService implements UserCommandUseCase {
+  // TODO: 추가 권한 체크
   private final UserPersistencePort persistencePort;
   private final PasswordEncoder passwordEncoder;
 
