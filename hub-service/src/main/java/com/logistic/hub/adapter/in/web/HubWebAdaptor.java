@@ -31,16 +31,19 @@ public class HubWebAdaptor {
   private final HubWebMapper hubWebMapper;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<HubCreateResponse>> createHub(@Valid @RequestBody HubCreateRequest request) {
+  public ResponseEntity<ApiResponse<HubCreateResponse>> createHub(//@WithPassport Passport passport,
+                                                                  @Valid @RequestBody HubCreateRequest request) {
+
     HubCreateCommand command = hubWebMapper.toHubCreateCommand(request);
     Hub hub = hubUseCase.createHub(command);
     HubCreateResponse hubResponse = hubWebMapper.toHubCreateResponse(hub);
     ApiResponse<HubCreateResponse> response = ApiResponse.success(hubResponse);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
-  
+
   @PutMapping("/{hubId}")
   public ResponseEntity<ApiResponse<String>> updateHub(@PathVariable Long hubId,
+                                                       //@WithPassport Passport passport,
                                                        @Valid @RequestBody HubUpdateRequest request) {
     HubUpdateCommand command = hubWebMapper.toHubUpdateCommand(request);
     hubUseCase.updateHub(hubId, command);
@@ -50,7 +53,8 @@ public class HubWebAdaptor {
   }
 
   @DeleteMapping("/{hubId}")
-  public ResponseEntity<ApiResponse<String>> deleteHub(@PathVariable Long hubId) {
+  public ResponseEntity<ApiResponse<String>> deleteHub(//@WithPassport Passport passport,
+                                                       @PathVariable Long hubId) {
 
     hubUseCase.deleteHub(hubId);
 

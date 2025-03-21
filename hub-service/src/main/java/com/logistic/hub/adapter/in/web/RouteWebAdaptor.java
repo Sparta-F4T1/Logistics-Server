@@ -28,8 +28,8 @@ public class RouteWebAdaptor {
   private final RouteWebMapper routeWebMapper;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<RouteCreateResponse>> createHubRoute(
-      @Valid @RequestBody RouteCreateRequest request) {
+  public ResponseEntity<ApiResponse<RouteCreateResponse>> createHubRoute(//@WithPassport Passport passport,
+                                                                         @Valid @RequestBody RouteCreateRequest request) {
     RouteCreateCommand command = routeWebMapper.toRouteCreateCommand(request);
     Route route = routeUseCase.createOrUpdateHubRoute(command);
     RouteCreateResponse routeResponse = routeWebMapper.toRouteCreateResponse(route);
@@ -39,7 +39,8 @@ public class RouteWebAdaptor {
 
 
   @DeleteMapping("/{hubRouteId}")
-  public ResponseEntity<ApiResponse<String>> deleteHubRoute(@PathVariable Long hubRouteId) {
+  public ResponseEntity<ApiResponse<String>> deleteHubRoute(//@WithPassport Passport passport,
+                                                            @PathVariable Long hubRouteId) {
 
     routeUseCase.deleteHubRoute(hubRouteId);
 
