@@ -10,4 +10,6 @@ public interface UserPersistencePort {
   boolean existsBySlackAccount(String slackAccount);
 
   User findByUserId(String userId);
+
+  User update(User targetUser);
 }

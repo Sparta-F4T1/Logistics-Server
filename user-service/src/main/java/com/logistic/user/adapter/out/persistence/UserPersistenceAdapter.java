@@ -17,26 +17,36 @@ public class UserPersistenceAdapter implements UserPersistencePort {
   private final UserPersistenceMapper mapper;
 
   @Override
-  public boolean existsByUserId(String userId) {
+  public boolean existsByUserId(final String userId) {
     return userJapRepository.existsByUserId(userId);
   }
 
   @Override
-  public boolean existsBySlackAccount(String slackAccount) {
+  public boolean existsBySlackAccount(final String slackAccount) {
     return userJapRepository.existsBySlackAccount(slackAccount);
   }
 
   @Override
-  public User save(User user) {
+  public User save(final User user) {
     UserEntity savedUserEntity = userJapRepository.save(mapper.toEntity(user));
     return mapper.toDomain(savedUserEntity);
   }
 
   @Override
-  public User findByUserId(String userId) {
+  public User findByUserId(final String userId) {
     UserEntity userEntity = userJapRepository.findById(userId).orElseThrow(
         () -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER)
     );
+    return mapper.toDomain(userEntity);
+  }
+
+  @Override
+  public User update(final User targetUser) {
+    UserEntity userEntity = userJapRepository.findById(targetUser.getUserId().value()).orElseThrow(
+        () -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER)
+    );
+    userEntity.updateUser(targetUser.getPassword().value(), targetUser.getSlackAccount().value());
+
     return mapper.toDomain(userEntity);
   }
 }

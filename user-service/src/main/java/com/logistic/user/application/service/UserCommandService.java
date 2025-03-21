@@ -3,11 +3,14 @@ package com.logistic.user.application.service;
 import com.logistic.common.passport.model.RoleType;
 import com.logistic.user.application.port.in.UserCommandUseCase;
 import com.logistic.user.application.port.in.command.RegisterUserCommand;
+import com.logistic.user.application.port.in.command.UpdateUserCommand;
 import com.logistic.user.application.port.out.persistence.UserPersistencePort;
 import com.logistic.user.domain.User;
+import com.logistic.user.domain.command.UserForUpdate;
 import com.logistic.user.domain.exception.UserServiceErrorCode;
 import com.logistic.user.domain.exception.UserServiceException;
 import java.util.Arrays;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +27,7 @@ public class UserCommandService implements UserCommandUseCase {
   private final PasswordEncoder passwordEncoder;
 
   @Override
-  public User registerUser(RegisterUserCommand command) {
+  public User registerUser(final RegisterUserCommand command) {
     String password = command.password();
     validatePasswordMatch(password, command.confirmedPassword());
 
@@ -41,6 +44,26 @@ public class UserCommandService implements UserCommandUseCase {
     user.updateHashedPassword(hashedPassword);
 
     return persistencePort.save(user);
+  }
+
+  @Override
+  public User updateUser(final UpdateUserCommand command) {
+    String password = command.password();
+    validatePasswordMatchIfPresent(password, command.confirmedPassword());
+
+    User targetUser = persistencePort.findByUserId(command.targetUserId());
+    String slackAccount = command.slackAccount();
+    validateDuplicateSlackAccountIfPresent(slackAccount, targetUser.getSlackAccount().value());
+
+    UserForUpdate forUpdate = UserForUpdate.of(command.password(), slackAccount);
+    targetUser.update(forUpdate);
+
+    if (password != null) {
+      password = passwordEncoder.encode(password);
+    }
+    targetUser.updateHashedPassword(password);
+
+    return persistencePort.update(targetUser);
   }
 
   private void validatePasswordMatch(String password, String confirmedPassword) {
@@ -69,6 +92,18 @@ public class UserCommandService implements UserCommandUseCase {
   private void checkDuplicateSlackAccount(String slackAccount) {
     if (slackAccount != null && !slackAccount.isBlank() &&
         persistencePort.existsBySlackAccount(slackAccount)) {
+      throw UserServiceException.user(UserServiceErrorCode.DUPLICATE_SLACK_ACCOUNT);
+    }
+  }
+
+  private void validatePasswordMatchIfPresent(String password, String confirmedPassword) {
+    if (!Objects.equals(password, confirmedPassword)) {
+      throw UserServiceException.user(UserServiceErrorCode.PASSWORD_NOT_MATCH);
+    }
+  }
+
+  private void validateDuplicateSlackAccountIfPresent(String slackAccount, String existingSlackAccount) {
+    if (Objects.equals(slackAccount, existingSlackAccount)) {
       throw UserServiceException.user(UserServiceErrorCode.DUPLICATE_SLACK_ACCOUNT);
     }
   }

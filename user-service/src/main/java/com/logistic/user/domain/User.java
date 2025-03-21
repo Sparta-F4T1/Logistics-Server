@@ -1,5 +1,6 @@
 package com.logistic.user.domain;
 
+import com.logistic.user.domain.command.UserForUpdate;
 import com.logistic.user.domain.vo.Email;
 import com.logistic.user.domain.vo.Name;
 import com.logistic.user.domain.vo.Password;
@@ -39,12 +40,17 @@ public class User {
         .build();
   }
 
+  public void update(UserForUpdate userForUpdate) {
+    changePassword(userForUpdate.password());
+    changeSlackAccount(userForUpdate.slackAccount());
+  }
+
   public void updateHashedPassword(String hashedPassword) {
     this.password = Password.ofHashedPassword(hashedPassword);
   }
 
-  public void changePassword(String currentPassword, String newPassword) {
-    this.password = Password.ofPlainPassword(newPassword);
+  public void changePassword(String newPassword) {
+    this.password = newPassword != null ? Password.ofPlainPassword(newPassword) : null;
   }
 
   public void changeSlackAccount(String newSlackAccount) {
