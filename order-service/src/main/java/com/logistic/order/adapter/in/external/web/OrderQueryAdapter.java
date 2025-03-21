@@ -1,10 +1,10 @@
-package com.logistic.order.adapter.in.web;
+package com.logistic.order.adapter.in.external.web;
 
 import com.logistic.common.annotation.Adapter;
 import com.logistic.common.response.ApiResponse;
-import com.logistic.order.adapter.in.web.mapper.OrderWebMapper;
-import com.logistic.order.adapter.in.web.request.SearchOrderRequest;
-import com.logistic.order.adapter.in.web.response.SearchOrderResponse;
+import com.logistic.order.adapter.in.external.web.mapper.OrderWebMapper;
+import com.logistic.order.adapter.in.external.web.request.SearchOrderRequest;
+import com.logistic.order.adapter.in.external.web.response.SearchOrderResponse;
 import com.logistic.order.application.port.in.OrderQueryUseCase;
 import com.logistic.order.domain.Order;
 import lombok.RequiredArgsConstructor;

@@ -1,12 +1,12 @@
-package com.logistic.order.adapter.in.web;
+package com.logistic.order.adapter.in.external.web;
 
 import com.logistic.common.annotation.Adapter;
 import com.logistic.common.response.ApiResponse;
-import com.logistic.order.adapter.in.web.mapper.OrderWebMapper;
-import com.logistic.order.adapter.in.web.request.CreateOrderRequest;
-import com.logistic.order.adapter.in.web.response.CreateOrderResponse;
-import com.logistic.order.adapter.in.web.response.FindOrderResponse;
-import com.logistic.order.adapter.in.web.response.UpdateOrderResponse;
+import com.logistic.order.adapter.in.external.web.mapper.OrderWebMapper;
+import com.logistic.order.adapter.in.external.web.request.CreateOrderRequest;
+import com.logistic.order.adapter.in.external.web.response.CreateOrderResponse;
+import com.logistic.order.adapter.in.external.web.response.UpdateOrderResponse;
+import com.logistic.order.adapter.in.external.web.response.FindOrderResponse;
 import com.logistic.order.application.port.in.OrderUseCase;
 import com.logistic.order.domain.Order;
 import com.logistic.order.domain.OrderStatus;

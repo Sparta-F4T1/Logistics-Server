@@ -1,8 +1,8 @@
-package com.logistic.order.adapter.in.web.response;
+package com.logistic.order.adapter.in.external.web.response;
 
 import java.util.List;
 
-public record SearchOrderResponse(
+public record FindOrderResponse(
     Long id,
     Long sellerId,
     Long buyerId,

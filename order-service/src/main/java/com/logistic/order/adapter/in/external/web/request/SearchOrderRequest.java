@@ -1,4 +1,4 @@
-package com.logistic.order.adapter.in.web.request;
+package com.logistic.order.adapter.in.external.web.request;
 
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
