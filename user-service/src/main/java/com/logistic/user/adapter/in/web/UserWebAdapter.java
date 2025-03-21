@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,5 +77,15 @@ public class UserWebAdapter {
         userWebMapper.toUpdateStatusCommand(userId, request, passport));
     return ResponseEntity.ok()
         .body(ApiResponse.success(userWebMapper.toUpdateStatusResponse(status)));
+  }
+
+  @DeleteMapping("/{userId}")
+  public ResponseEntity<Void> deleteUser(
+      @WithPassport final Passport passport,
+      @PathVariable("userId") final String userId
+  ) {
+    userCommandUseCase.deleteUser(
+        userWebMapper.toDeleteCommand(userId, passport));
+    return ResponseEntity.noContent().build();
   }
 }

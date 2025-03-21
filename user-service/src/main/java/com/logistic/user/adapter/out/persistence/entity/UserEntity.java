@@ -55,7 +55,7 @@ public class UserEntity extends BaseEntity {
     String hashedPassword = user.getPassword().value();
     String slackAccount = user.getSlackAccount().value();
     UserStatus status = user.getStatus();
-    
+
     if (!hasText(hashedPassword)) {
       this.password = hashedPassword;
     }
@@ -65,5 +65,12 @@ public class UserEntity extends BaseEntity {
     if (status != null) {
       this.status = status;
     }
+  }
+
+  public void deleteUser(UserStatus status, String currentUserId) {
+    if (status != null) {
+      this.status = status;
+    }
+    this.delete(currentUserId);
   }
 }

@@ -49,4 +49,13 @@ public class UserPersistenceAdapter implements UserPersistencePort {
 
     return mapper.toDomain(userEntity);
   }
+
+  @Override
+  public void delete(User targetUser, String currentUserId) {
+    UserEntity userEntity = userJapRepository.findById(targetUser.getUserId().value()).orElseThrow(
+        () -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER)
+    );
+    userEntity.deleteUser(targetUser.getStatus(), currentUserId);
+    userEntity.updateUser(targetUser);
+  }
 }

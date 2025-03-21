@@ -7,6 +7,7 @@ import com.logistic.user.adapter.in.web.request.UpdateUserStatusRequest;
 import com.logistic.user.adapter.in.web.response.FindUserResponse;
 import com.logistic.user.adapter.in.web.response.UpdateUserResponse;
 import com.logistic.user.adapter.in.web.response.UpdateUserStatusResponse;
+import com.logistic.user.application.port.in.command.DeleteUserCommand;
 import com.logistic.user.application.port.in.command.RegisterUserCommand;
 import com.logistic.user.application.port.in.command.UpdateUserCommand;
 import com.logistic.user.application.port.in.command.UpdateUserStatusCommand;
@@ -66,6 +67,11 @@ public interface UserWebMapper {
 
   @Mapping(target = "status", expression = "java(status.name())")
   UpdateUserStatusResponse toUpdateStatusResponse(UserStatus status);
+
+  @Mapping(target = "targetUserId", expression = "java(userId)")
+  @Mapping(target = "currentUserId", expression = "java(extractUserId(passport))")
+  @Mapping(target = "currentUserRole", expression = "java(extractUserRole(passport))")
+  DeleteUserCommand toDeleteCommand(String userId, Passport passport);
 
   default String extractUserId(Passport passport) {
     return passport != null && passport.getUserInfo() != null ?

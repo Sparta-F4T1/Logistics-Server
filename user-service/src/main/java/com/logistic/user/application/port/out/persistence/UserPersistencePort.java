@@ -12,4 +12,6 @@ public interface UserPersistencePort {
   User findByUserId(String userId);
 
   User update(User targetUser);
+
+  void delete(User targetUser, String currentUser);
 }

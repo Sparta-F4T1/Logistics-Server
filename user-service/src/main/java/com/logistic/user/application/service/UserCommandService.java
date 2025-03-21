@@ -2,6 +2,7 @@ package com.logistic.user.application.service;
 
 import com.logistic.common.passport.model.RoleType;
 import com.logistic.user.application.port.in.UserCommandUseCase;
+import com.logistic.user.application.port.in.command.DeleteUserCommand;
 import com.logistic.user.application.port.in.command.RegisterUserCommand;
 import com.logistic.user.application.port.in.command.UpdateUserCommand;
 import com.logistic.user.application.port.in.command.UpdateUserStatusCommand;
@@ -78,6 +79,19 @@ public class UserCommandService implements UserCommandUseCase {
     return persistencePort.update(user).getStatus();
   }
 
+  @Override
+  public void deleteUser(DeleteUserCommand command) {
+    User user = persistencePort.findByUserId(command.targetUserId());
+    validateUserDeletable(user);
+    user.deactivate();
+
+    String deletingUser = command.currentUserId();
+    deletingUser = deletingUser != null ? deletingUser : "SYSTEM";
+    persistencePort.delete(user, deletingUser);
+
+    log.info("계정 삭제: {}", command.targetUserId());
+  }
+
   private void validatePasswordMatch(String password, String confirmedPassword) {
     if (!password.equals(confirmedPassword)) {
       throw UserServiceException.user(UserServiceErrorCode.PASSWORD_NOT_MATCH);
@@ -118,5 +132,19 @@ public class UserCommandService implements UserCommandUseCase {
     if (Objects.equals(slackAccount, existingSlackAccount)) {
       throw UserServiceException.user(UserServiceErrorCode.DUPLICATE_SLACK_ACCOUNT);
     }
+  }
+
+  private void validateUserDeletable(User user) {
+    if (isProtectedRole(user.getRole().name())) {
+      throw UserServiceException.user(UserServiceErrorCode.PROTECTED_USER_ROLE);
+    }
+    if (!user.isActive()) {
+      throw UserServiceException.user(UserServiceErrorCode.USER_ALREADY_INACTIVE);
+    }
+  }
+
+
+  private boolean isProtectedRole(String role) {
+    return role != null && (role.equals(RoleType.MASTER_ADMIN.name()));
   }
 }
