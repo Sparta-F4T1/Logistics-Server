@@ -1,11 +1,11 @@
 package com.logistic.hub.application.port.in;
 
-import com.logistic.hub.adapter.in.internal.response.HubClientShortestPathResponse;
 import com.logistic.hub.adapter.in.web.response.RouteDetailsResponse;
 import com.logistic.hub.adapter.in.web.response.RouteHistoryListResponse;
 import com.logistic.hub.application.port.in.command.DepartArrivalIdCommand;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
 import com.logistic.hub.domain.Route;
+import java.util.List;
 
 public interface RouteUseCase {
   Route createOrUpdateHubRoute(RouteCreateCommand command);
@@ -16,5 +16,5 @@ public interface RouteUseCase {
 
   RouteDetailsResponse getRouteDetails(Long hubRouteId);
 
-  HubClientShortestPathResponse getShortestPath(DepartArrivalIdCommand command);
+  List<Route> getShortestPath(DepartArrivalIdCommand command);
 }

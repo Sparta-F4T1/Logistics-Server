@@ -3,7 +3,6 @@ package com.logistic.hub.application.service;
 import static java.util.Comparator.comparingInt;
 
 import com.logistic.common.annotation.UseCase;
-import com.logistic.hub.adapter.in.internal.response.HubClientShortestPathResponse;
 import com.logistic.hub.adapter.in.web.response.RouteDetailsResponse;
 import com.logistic.hub.adapter.in.web.response.RouteHistoryListResponse;
 import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
@@ -115,13 +114,13 @@ public class RouteService implements RouteUseCase {
 
   @Override
   @Cacheable(cacheNames = "shortestPath", key = "{ #command.departHubId(),#command.arrivalHubId() }")
-  public HubClientShortestPathResponse getShortestPath(DepartArrivalIdCommand command) {
+  public List<Route> getShortestPath(DepartArrivalIdCommand command) {
     List<Route> shortestPath = new ArrayList<>(); //반환할 최단 경로
     Map<Long, Route> previousPath = new HashMap<>(); //최단 경로 저장되어 있음 (각 허브id가 목적지인 route map);
 
     Long departHubId = command.departHubId(); //출발 허브id
     Long arrival = command.arrivalHubId();  //목적 허브id
-    int totalDuration = 0;
+
     List<Route> routeList = getAllRoutes();   //db에 저장되어있는 모든 route
 
     PriorityQueue<Node> queue = new PriorityQueue<>(comparingInt(o -> o.distance));
@@ -137,7 +136,6 @@ public class RouteService implements RouteUseCase {
       List<Route> routes = graph.get(currentNode.num);
 
       if (currentNode.num == arrival) {
-        totalDuration = currentNode.duration;
         break;
       }
       for (Route route : routes) {    //인접 노드
@@ -164,10 +162,10 @@ public class RouteService implements RouteUseCase {
     }
     Collections.reverse(shortestPath);
 
-    return HubClientShortestPathResponse.from(shortestPath, weight.get(arrival), totalDuration);
+    return shortestPath;
   }
 
-  //@Cacheable(cacheNames = "AllRouteList")
+  @Cacheable(cacheNames = "AllRouteList")
   public List<Route> getAllRoutes() {
     return routePersistencePort.findAll();
   }
