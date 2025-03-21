@@ -13,7 +13,6 @@ import com.logistic.user.domain.exception.UserServiceErrorCode;
 import com.logistic.user.domain.exception.UserServiceException;
 import com.logistic.user.domain.vo.UserStatus;
 import java.util.Arrays;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,47 +24,54 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class UserCommandService implements UserCommandUseCase {
-  // TODO: 추가 권한 체크
+  // TODO: 세밀한 검증(인가) 검토하기
   private final UserPersistencePort persistencePort;
   private final PasswordEncoder passwordEncoder;
 
   @Override
   public User registerUser(final RegisterUserCommand command) {
-    String password = command.password();
-    validatePasswordMatch(password, command.confirmedPassword());
+    validatePasswordMatch(command.password(), command.confirmedPassword());
 
     String roleType = command.roleName();
     validateRoleType(roleType);
 
-    User user = User.create(command.userId(), command.name(), password, command.slackAccount(),
-        command.roleId(), roleType);
-
     checkDuplicateUserId(command.userId());
+
     checkDuplicateSlackAccount(command.slackAccount());
+
+    User user = User.create(
+        command.userId(),
+        command.name(),
+        command.password(),
+        command.slackAccount(),
+        command.roleId(),
+        roleType
+    );
 
     String hashedPassword = passwordEncoder.encode(user.getPassword().value());
     user.updateHashedPassword(hashedPassword);
 
+    log.info("사용자 생성: userId={}", command.userId());
     return persistencePort.save(user);
   }
 
   @Override
   public User updateUser(final UpdateUserCommand command) {
-    String password = command.password();
-    validatePasswordMatchIfPresent(password, command.confirmedPassword());
+    validatePasswordMatchIfPresent(command.password(), command.confirmedPassword());
 
     User targetUser = persistencePort.findByUserId(command.targetUserId());
-    String slackAccount = command.slackAccount();
-    validateDuplicateSlackAccountIfPresent(slackAccount, targetUser.getSlackAccount().value());
 
-    UserForUpdate forUpdate = UserForUpdate.of(command.password(), slackAccount);
+    validateDuplicateSlackAccountIfUpdated(command.slackAccount(), targetUser.getSlackAccount().value());
+
+    UserForUpdate forUpdate = UserForUpdate.of(command.password(), command.slackAccount());
     targetUser.update(forUpdate);
 
-    if (password != null) {
-      password = passwordEncoder.encode(password);
+    if (command.password() != null && !command.password().isBlank()) {
+      String hashedPassword = passwordEncoder.encode(command.password());
+      targetUser.updateHashedPassword(hashedPassword);
     }
-    targetUser.updateHashedPassword(password);
 
+    log.info("사용자 정보 업데이트: userId={}", command.targetUserId());
     return persistencePort.update(targetUser);
   }
 
@@ -76,24 +82,29 @@ public class UserCommandService implements UserCommandUseCase {
     UserStatus targetStatus = UserStatus.fromString(command.status());
     user.changeStatus(targetStatus);
 
+    log.info("사용자 상태 변경: userId={}, newStatus={}", command.targetUserId(), targetStatus);
     return persistencePort.update(user).getStatus();
   }
 
   @Override
   public void deleteUser(DeleteUserCommand command) {
     User user = persistencePort.findByUserId(command.targetUserId());
+
     validateUserDeletable(user);
+
     user.deactivate();
 
-    String deletingUser = command.currentUserId();
-    deletingUser = deletingUser != null ? deletingUser : "SYSTEM";
-    persistencePort.delete(user, deletingUser);
+    String deletedBy = (command.currentUserId() != null && !command.currentUserId().isBlank())
+        ? command.currentUserId()
+        : "SYSTEM";
 
-    log.info("계정 삭제: {}", command.targetUserId());
+    persistencePort.delete(user, deletedBy);
+
+    log.info("계정 삭제 완료: userId={}, deletedBy={}", command.targetUserId(), deletedBy);
   }
 
   private void validatePasswordMatch(String password, String confirmedPassword) {
-    if (!password.equals(confirmedPassword)) {
+    if (password == null || confirmedPassword == null || !password.equals(confirmedPassword)) {
       throw UserServiceException.user(UserServiceErrorCode.PASSWORD_NOT_MATCH);
     }
   }
@@ -123,28 +134,48 @@ public class UserCommandService implements UserCommandUseCase {
   }
 
   private void validatePasswordMatchIfPresent(String password, String confirmedPassword) {
-    if (!Objects.equals(password, confirmedPassword)) {
+    if ((password == null || password.isBlank()) && (confirmedPassword == null || confirmedPassword.isBlank())) {
+      return;
+    }
+
+    if (password == null || confirmedPassword == null || !password.equals(confirmedPassword)) {
       throw UserServiceException.user(UserServiceErrorCode.PASSWORD_NOT_MATCH);
     }
   }
 
-  private void validateDuplicateSlackAccountIfPresent(String slackAccount, String existingSlackAccount) {
-    if (Objects.equals(slackAccount, existingSlackAccount)) {
+  private void validateDuplicateSlackAccountIfUpdated(String newSlackAccount, String existingSlackAccount) {
+    if (newSlackAccount == null || newSlackAccount.isBlank() ||
+        newSlackAccount.equals(existingSlackAccount)) {
+      return;
+    }
+
+    if (persistencePort.existsBySlackAccount(newSlackAccount)) {
       throw UserServiceException.user(UserServiceErrorCode.DUPLICATE_SLACK_ACCOUNT);
     }
   }
 
   private void validateUserDeletable(User user) {
     if (isProtectedRole(user.getRole().name())) {
-      throw UserServiceException.user(UserServiceErrorCode.PROTECTED_USER_ROLE);
+      throw UserServiceException.user(
+          UserServiceErrorCode.PROTECTED_USER_ROLE,
+          "보호된 역할을 가진 사용자는 삭제할 수 없습니다."
+      );
     }
-    if (!user.isActive()) {
-      throw UserServiceException.user(UserServiceErrorCode.USER_ALREADY_INACTIVE);
+
+    if (!user.isUsable()) {
+      throw UserServiceException.user(
+          UserServiceErrorCode.USER_ALREADY_INACTIVE,
+          "이미 비활성화된 사용자입니다."
+      );
     }
   }
 
-
   private boolean isProtectedRole(String role) {
-    return role != null && (role.equals(RoleType.MASTER_ADMIN.name()));
+    try {
+      RoleType roleType = RoleType.valueOf(role);
+      return roleType == RoleType.MASTER_ADMIN;
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
   }
 }
