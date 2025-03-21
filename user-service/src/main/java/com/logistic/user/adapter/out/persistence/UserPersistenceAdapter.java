@@ -45,7 +45,7 @@ public class UserPersistenceAdapter implements UserPersistencePort {
     UserEntity userEntity = userJapRepository.findById(targetUser.getUserId().value()).orElseThrow(
         () -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER)
     );
-    userEntity.updateUser(targetUser.getPassword().value(), targetUser.getSlackAccount().value());
+    userEntity.updateUser(targetUser);
 
     return mapper.toDomain(userEntity);
   }

@@ -7,16 +7,20 @@ import com.logistic.common.response.ApiResponse;
 import com.logistic.user.adapter.in.web.mapper.UserWebMapper;
 import com.logistic.user.adapter.in.web.request.RegisterUserRequest;
 import com.logistic.user.adapter.in.web.request.UpdateUserRequest;
+import com.logistic.user.adapter.in.web.request.UpdateUserStatusRequest;
 import com.logistic.user.adapter.in.web.response.FindUserResponse;
 import com.logistic.user.adapter.in.web.response.UpdateUserResponse;
+import com.logistic.user.adapter.in.web.response.UpdateUserStatusResponse;
 import com.logistic.user.application.port.in.UserCommandUseCase;
 import com.logistic.user.application.port.in.UserQueryUseCase;
 import com.logistic.user.domain.User;
+import com.logistic.user.domain.vo.UserStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,10 +59,22 @@ public class UserWebAdapter {
   public ResponseEntity<ApiResponse<UpdateUserResponse>> updateUser(
       @WithPassport final Passport passport,
       @PathVariable("userId") final String userId,
-      @RequestBody final UpdateUserRequest request
+      @Valid @RequestBody final UpdateUserRequest request
   ) {
     final User user = userCommandUseCase.updateUser(userWebMapper.toUpdateCommand(userId, request, passport));
     return ResponseEntity.ok()
         .body(ApiResponse.success(userWebMapper.toUpdateResponse(user)));
+  }
+
+  @PatchMapping("/{userId}/status")
+  public ResponseEntity<ApiResponse<UpdateUserStatusResponse>> updateUser(
+      @WithPassport final Passport passport,
+      @PathVariable("userId") final String userId,
+      @Valid @RequestBody final UpdateUserStatusRequest request
+  ) {
+    final UserStatus status = userCommandUseCase.updateUserStatus(
+        userWebMapper.toUpdateStatusCommand(userId, request, passport));
+    return ResponseEntity.ok()
+        .body(ApiResponse.success(userWebMapper.toUpdateStatusResponse(status)));
   }
 }

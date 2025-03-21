@@ -4,11 +4,13 @@ import com.logistic.common.passport.model.RoleType;
 import com.logistic.user.application.port.in.UserCommandUseCase;
 import com.logistic.user.application.port.in.command.RegisterUserCommand;
 import com.logistic.user.application.port.in.command.UpdateUserCommand;
+import com.logistic.user.application.port.in.command.UpdateUserStatusCommand;
 import com.logistic.user.application.port.out.persistence.UserPersistencePort;
 import com.logistic.user.domain.User;
 import com.logistic.user.domain.command.UserForUpdate;
 import com.logistic.user.domain.exception.UserServiceErrorCode;
 import com.logistic.user.domain.exception.UserServiceException;
+import com.logistic.user.domain.vo.UserStatus;
 import java.util.Arrays;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +66,16 @@ public class UserCommandService implements UserCommandUseCase {
     targetUser.updateHashedPassword(password);
 
     return persistencePort.update(targetUser);
+  }
+
+  @Override
+  public UserStatus updateUserStatus(UpdateUserStatusCommand command) {
+    User user = persistencePort.findByUserId(command.targetUserId());
+
+    UserStatus targetStatus = UserStatus.fromString(command.status());
+    user.changeStatus(targetStatus);
+
+    return persistencePort.update(user).getStatus();
   }
 
   private void validatePasswordMatch(String password, String confirmedPassword) {

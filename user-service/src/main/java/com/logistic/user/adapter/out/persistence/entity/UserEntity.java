@@ -2,6 +2,7 @@ package com.logistic.user.adapter.out.persistence.entity;
 
 import static org.springframework.util.StringUtils.hasText;
 
+import com.logistic.user.domain.User;
 import com.logistic.user.domain.vo.UserStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -50,12 +51,19 @@ public class UserEntity extends BaseEntity {
   @Embedded
   private UserRoleValue role;
 
-  public void updateUser(String hashedPassword, String slackAccount) {
+  public void updateUser(User user) {
+    String hashedPassword = user.getPassword().value();
+    String slackAccount = user.getSlackAccount().value();
+    UserStatus status = user.getStatus();
+    
     if (!hasText(hashedPassword)) {
       this.password = hashedPassword;
     }
     if (!hasText(slackAccount)) {
       this.slackAccount = slackAccount;
+    }
+    if (status != null) {
+      this.status = status;
     }
   }
 }

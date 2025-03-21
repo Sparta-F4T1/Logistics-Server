@@ -17,12 +17,13 @@ public class UserGlobalExceptionHandler extends AbstractGlobalExceptionHandler {
 
   @ExceptionHandler(UserServiceException.class)
   public ResponseEntity<ApiResponse<Void>> handleAuthServiceException(UserServiceException e) {
-    log.error("예외 발생: {}", e.getMessage());
-    return createErrorResponse(e.getError());
+    String message = e.getMessage();
+    log.error("예외 발생: {}", message);
+    return createErrorResponse(e.getError(), message);
   }
 
-  private ResponseEntity<ApiResponse<Void>> createErrorResponse(ErrorCode code) {
-    ApiResponse<Void> response = ApiResponse.fail(code.getCode(), code.getMessage());
+  private ResponseEntity<ApiResponse<Void>> createErrorResponse(ErrorCode code, String message) {
+    ApiResponse<Void> response = ApiResponse.fail(code.getCode(), message);
     return ResponseEntity.status(code.getHttpStatus()).body(response);
   }
 }

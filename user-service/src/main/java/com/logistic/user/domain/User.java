@@ -58,23 +58,29 @@ public class User {
   }
 
   public void changeStatus(UserStatus newStatus) {
-    this.status = newStatus;
+    this.status = UserStatus.transition(this.status, newStatus);
+  }
+
+  public void activate() {
+    changeStatus(UserStatus.ACTIVE);
+  }
+
+  public void deactivate() {
+    changeStatus(UserStatus.INACTIVE);
+  }
+
+  public void lock() {
+    changeStatus(UserStatus.LOCKED);
+  }
+
+  public void activateIfPending() {
+    if (this.status.isPending()) {
+      activate();
+    }
   }
 
   public void changeRole(Long roleId, String roleName) {
     this.role = new UserRole(roleId, roleName);
-  }
-
-  public void activate() {
-    this.status = UserStatus.ACTIVE;
-  }
-
-  public void deactivate() {
-    this.status = UserStatus.INACTIVE;
-  }
-
-  public void lock() {
-    this.status = UserStatus.LOCKED;
   }
 
   public boolean isUsable() {
