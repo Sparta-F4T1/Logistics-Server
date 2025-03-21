@@ -25,10 +25,15 @@ public class UserCommandService implements UserCommandUseCase {
 
   @Override
   public User registerUser(RegisterUserCommand command) {
-    User user = User.create(command.userId(), command.name(), command.password(), command.slackAccount(),
-        command.roleId(), command.roleName());
+    String password = command.password();
+    validatePasswordMatch(password, command.confirmedPassword());
 
-    validateRoleType(command.roleName());
+    String roleType = command.roleName();
+    validateRoleType(roleType);
+
+    User user = User.create(command.userId(), command.name(), password, command.slackAccount(),
+        command.roleId(), roleType);
+
     checkDuplicateUserId(command.userId());
     checkDuplicateSlackAccount(command.slackAccount());
 
@@ -36,6 +41,12 @@ public class UserCommandService implements UserCommandUseCase {
     user.updateHashedPassword(hashedPassword);
 
     return persistencePort.save(user);
+  }
+
+  private void validatePasswordMatch(String password, String confirmedPassword) {
+    if (!password.equals(confirmedPassword)) {
+      throw UserServiceException.user(UserServiceErrorCode.PASSWORD_NOT_MATCH);
+    }
   }
 
   private void validateRoleType(String roleName) {

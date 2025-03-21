@@ -35,7 +35,14 @@ public class UserCommandServiceRegisterTest {
 
   private RegisterUserCommand createRegisterCommand(String userId, String email, String roleName) {
     return new RegisterUserCommand(
-        userId, "홍길동", "Password123!", email, 1L, roleName, "amdin", "AMIN_ROLE"
+        userId, "홍길동", "Password123!", "Password123!", email, 1L, roleName, "admin", "ADMIN_ROLE"
+    );
+  }
+
+  private RegisterUserCommand createRegisterCommandWithMismatchedPassword(String userId, String email,
+                                                                          String roleName) {
+    return new RegisterUserCommand(
+        userId, "홍길동", "Password123!", "DifferentPassword!", email, 1L, roleName, "admin", "ADMIN_ROLE"
     );
   }
 
@@ -72,6 +79,26 @@ public class UserCommandServiceRegisterTest {
     verify(userPersistencePort).existsBySlackAccount(command.slackAccount());
     verify(passwordEncoder).encode(command.password());
     verify(userPersistencePort).save(any(User.class));
+  }
+
+  @Test
+  @DisplayName("비밀번호와 확인 비밀번호 불일치 - 등록 실패")
+  void registerUser_withMismatchedPasswords_shouldThrowException() {
+    // Given
+    RegisterUserCommand command = createRegisterCommandWithMismatchedPassword(
+        "testuser", "test@example.com", "MASTER_ADMIN");
+
+    // When & Then
+    assertThatThrownBy(() -> userCommandService.registerUser(command))
+        .isInstanceOf(UserServiceException.class)
+        .satisfies(
+            ex -> assertThat(((UserServiceException) ex).getError()).isEqualTo(
+                UserServiceErrorCode.PASSWORD_NOT_MATCH));
+
+    verify(userPersistencePort, never()).existsByUserId(anyString());
+    verify(userPersistencePort, never()).existsBySlackAccount(anyString());
+    verify(passwordEncoder, never()).encode(anyString());
+    verify(userPersistencePort, never()).save(any(User.class));
   }
 
   @Test

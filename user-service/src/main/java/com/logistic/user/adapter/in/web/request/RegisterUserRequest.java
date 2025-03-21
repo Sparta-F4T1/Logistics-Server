@@ -14,6 +14,9 @@ public record RegisterUserRequest(
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")
     String password,
 
+    @NotBlank(message = "확인용 비밀번호는 필수 입력값입니다.")
+    String confirmedPassword,
+
     @Email(message = "유효한 이메일 형식이 아닙니다.")
     @NotBlank(message = "슬랙 계정은 필수 입력값입니다.")
     String slackAccount,

@@ -17,10 +17,10 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserWebMapper {
-  // RegisterUserRequest와 Passport를 별도 파라미터로 받음
   @Mapping(target = "userId", expression = "java(request.userId())")
   @Mapping(target = "name", expression = "java(request.name())")
   @Mapping(target = "password", expression = "java(request.password())")
+  @Mapping(target = "confirmedPassword", expression = "java(request.confirmedPassword())")
   @Mapping(target = "slackAccount", expression = "java(request.slackAccount())")
   @Mapping(target = "roleId", expression = "java(request.roleId())")
   @Mapping(target = "roleName", expression = "java(request.roleName())")

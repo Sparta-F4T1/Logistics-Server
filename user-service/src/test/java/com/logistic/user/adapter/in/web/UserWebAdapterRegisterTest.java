@@ -43,7 +43,6 @@ class UserWebAdapterRegisterTest {
   @InjectMocks
   private UserWebAdapter userWebAdapter;
 
-  // Passport 객체 생성 메서드 추가
   private Passport createTestPassport() {
     UserInfo userInfo = new UserInfo("admin", "ADMIN", null);
     SessionInfo sessionInfo = new SessionInfo("test-session", Instant.now(), Instant.now().plusSeconds(3600));
@@ -52,7 +51,7 @@ class UserWebAdapterRegisterTest {
 
   private RegisterUserRequest registerUserRequest(String username, String email, String roleName) {
     return new RegisterUserRequest(
-        username, "홍길동", "Password123!", email, 1L, roleName
+        username, "홍길동", "Password123!", "Password123!", email, 1L, roleName
     );
   }
 
@@ -64,15 +63,20 @@ class UserWebAdapterRegisterTest {
 
   private RegisterUserCommand registerUserCommand(RegisterUserRequest request, Passport passport) {
     return new RegisterUserCommand(
-        request.userId(), request.name(), request.password(), request.slackAccount(),
-        request.roleId(), request.roleName(),
-        passport.getUserInfo().getUserId(), passport.getUserInfo().getRole()
+        request.userId(),
+        request.name(),
+        request.password(),
+        request.confirmedPassword(),
+        request.slackAccount(),
+        request.roleId(),
+        request.roleName(),
+        passport.getUserInfo().getUserId(),
+        passport.getUserInfo().getRole()
     );
   }
 
   @BeforeEach
   void setUp() {
-    // Passport를 포함하도록 when 구문 수정
     when(userWebMapper.toCreateCommand(any(RegisterUserRequest.class), any(Passport.class)))
         .thenAnswer(invocation -> registerUserCommand(
             invocation.getArgument(0),
@@ -128,6 +132,22 @@ class UserWebAdapterRegisterTest {
         .thenThrow(new UserServiceException(UserServiceErrorCode.DUPLICATE_SLACK_ACCOUNT));
 
     verifyUserRegistrationFailure(request, passport, UserServiceErrorCode.DUPLICATE_SLACK_ACCOUNT);
+  }
+
+  @Test
+  @DisplayName("비밀번호와 확인 비밀번호 불일치 - 등록 실패")
+  void registerUser_withMismatchedPasswords_shouldThrowException() {
+    // 비밀번호 불일치 요청 객체 직접 생성
+    RegisterUserRequest request = new RegisterUserRequest(
+        "testuser", "홍길동", "Password123!", "DifferentPassword!", "test@example.com", 1L, "MASTER_ADMIN"
+    );
+
+    Passport passport = createTestPassport();
+
+    when(userCommandUseCase.registerUser(any()))
+        .thenThrow(new UserServiceException(UserServiceErrorCode.PASSWORD_NOT_MATCH));
+
+    verifyUserRegistrationFailure(request, passport, UserServiceErrorCode.PASSWORD_NOT_MATCH);
   }
 
   private void verifyUserRegistrationFailure(RegisterUserRequest request, Passport passport,
