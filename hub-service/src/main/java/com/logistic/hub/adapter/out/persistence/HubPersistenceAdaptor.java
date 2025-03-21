@@ -1,12 +1,12 @@
 package com.logistic.hub.adapter.out.persistence;
 
 import com.logistic.common.annotation.Adapter;
-import com.logistic.hub.adapter.in.web.response.HubHistoryResponse;
 import com.logistic.hub.adapter.out.persistence.mapper.HubPersistenceMapper;
 import com.logistic.hub.adapter.out.persistence.model.HubEntity;
 import com.logistic.hub.adapter.out.persistence.repository.HubJpaRepository;
 import com.logistic.hub.adapter.out.persistence.repository.HubQueryDslRepository;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
+import com.logistic.hub.application.service.dto.HubHistoryDto;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.exception.HubNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class HubPersistenceAdaptor implements HubPersistencePort {
   }
 
   @Override
-  public Page<HubHistoryResponse> findAllBySearch(String search, Pageable pageable) {
+  public Page<HubHistoryDto> findAllBySearch(String search, Pageable pageable) {
 
     return hubQueryDslRepository.findAllBySearch(search, pageable);
   }

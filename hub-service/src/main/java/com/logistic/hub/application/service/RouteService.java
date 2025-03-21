@@ -3,12 +3,8 @@ package com.logistic.hub.application.service;
 import static java.util.Comparator.comparingInt;
 
 import com.logistic.common.annotation.UseCase;
-import com.logistic.hub.adapter.in.web.response.RouteDetailsResponse;
-import com.logistic.hub.adapter.in.web.response.RouteHistoryListResponse;
-import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
 import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.RouteUseCase;
-import com.logistic.hub.application.port.in.command.DepartArrivalCommand;
 import com.logistic.hub.application.port.in.command.DepartArrivalIdCommand;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
 import com.logistic.hub.application.port.in.command.RouteInfoCommand;
@@ -31,11 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 
 @UseCase
 @Transactional
@@ -71,28 +62,6 @@ public class RouteService implements RouteUseCase {
     return routePersistencePort.save(route);
   }
 
-  @Override
-  @Cacheable(cacheNames = "routeList", key = "search")
-  public RouteHistoryListResponse getHubRouteList(int page, int size, String orderBy, String search) {
-    Sort.Direction direction = Direction.ASC;  // 오름차순
-    Sort sort1 = Sort.by(direction, orderBy); //정렬기준
-    Pageable pageable = PageRequest.of(page, size, sort1);
-
-    Page<RouteHistoryResponse> list = routePersistencePort.findAllBySearch(search, pageable);
-    RouteHistoryListResponse routeList = RouteHistoryListResponse.from(list);
-    return routeList;
-  }
-
-  @Override
-  public RouteDetailsResponse getRouteDetails(Long hubRouteId) {
-    Route route = getOrElseThrow(hubRouteId);
-
-    isDeleted(route);
-    DepartArrivalCommand command = hubUseCase.getHubNameInfo(route.getDepartHubId(), route.getArrivalHubId());
-    RouteDetailsResponse routeDetails = RouteDetailsResponse.from(route, command.departHubName(),
-        command.arrivalHubName());
-    return routeDetails;
-  }
 
   private Route getOrElseThrow(Long hubRouteId) {
     return routePersistencePort.findById(hubRouteId);

@@ -6,6 +6,8 @@ import com.logistic.hub.adapter.in.web.response.HubCreateResponse;
 import com.logistic.hub.adapter.in.web.response.HubDetailsResponse;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
+import com.logistic.hub.application.port.in.query.HubFindQuery;
+import com.logistic.hub.application.port.in.query.HubSearchQuery;
 import com.logistic.hub.domain.Hub;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,5 +25,7 @@ public interface HubWebMapper {
   @Mapping(source = "id", target = "hubId")
   HubDetailsResponse toHubDetailsResponse(Hub hub);
 
+  HubFindQuery toFindQuery(Long hubId);
 
+  HubSearchQuery toSearchQuery(int page, int size, String search);
 }
