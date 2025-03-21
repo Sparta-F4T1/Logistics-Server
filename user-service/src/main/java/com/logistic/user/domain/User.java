@@ -18,7 +18,6 @@ public class User {
   private final UserId userId;
   private Name name;
   private Password password;
-  private Email email;
   private Email slackAccount;
   private UserRole role;
   private UserStatus status;
@@ -27,7 +26,6 @@ public class User {
       String userId,
       String name,
       String password,
-      String email,
       String slackAccount,
       Long roleId,
       String roleName,
@@ -36,7 +34,6 @@ public class User {
         .userId(new UserId(userId))
         .name(new Name(name))
         .password(new Password(password))
-        .email(new Email(email))
         .slackAccount(slackAccount != null ? new Email(slackAccount) : null)
         .role(new UserRole(roleId, roleName))
         .status(UserStatus.fromString(status))
@@ -45,10 +42,6 @@ public class User {
 
   public void changePassword(String currentPassword, String newPassword) {
     this.password = new Password(newPassword);
-  }
-
-  public void changeEmail(String newEmail) {
-    this.email = new Email(newEmail);
   }
 
   public void changeSlackAccount(String newSlackAccount) {
