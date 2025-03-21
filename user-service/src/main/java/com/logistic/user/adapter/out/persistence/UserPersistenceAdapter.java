@@ -18,12 +18,12 @@ public class UserPersistenceAdapter implements UserPersistencePort {
 
   @Override
   public boolean existsByUserId(final String userId) {
-    return userJapRepository.existsByUserId(userId);
+    return userJapRepository.existsByUserIdAndDeletedAtIsNull(userId);
   }
 
   @Override
   public boolean existsBySlackAccount(final String slackAccount) {
-    return userJapRepository.existsBySlackAccount(slackAccount);
+    return userJapRepository.existsBySlackAccountAndDeletedAtIsNull(slackAccount);
   }
 
   @Override
@@ -34,17 +34,15 @@ public class UserPersistenceAdapter implements UserPersistencePort {
 
   @Override
   public User findByUserId(final String userId) {
-    UserEntity userEntity = userJapRepository.findById(userId).orElseThrow(
-        () -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER)
-    );
+    UserEntity userEntity = userJapRepository.findByUserIdAndDeletedAtIsNull(userId)
+        .orElseThrow(() -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER));
     return mapper.toDomain(userEntity);
   }
 
   @Override
   public User update(final User targetUser) {
-    UserEntity userEntity = userJapRepository.findById(targetUser.getUserId().value()).orElseThrow(
-        () -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER)
-    );
+    UserEntity userEntity = userJapRepository.findByUserIdAndDeletedAtIsNull(targetUser.getUserId().value())
+        .orElseThrow(() -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER));
     userEntity.updateUser(targetUser);
 
     return mapper.toDomain(userEntity);
@@ -52,9 +50,8 @@ public class UserPersistenceAdapter implements UserPersistencePort {
 
   @Override
   public void delete(User targetUser, String currentUserId) {
-    UserEntity userEntity = userJapRepository.findById(targetUser.getUserId().value()).orElseThrow(
-        () -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER)
-    );
+    UserEntity userEntity = userJapRepository.findByUserIdAndDeletedAtIsNull(targetUser.getUserId().value())
+        .orElseThrow(() -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER));
     userEntity.deleteUser(targetUser.getStatus(), currentUserId);
     userEntity.updateUser(targetUser);
   }

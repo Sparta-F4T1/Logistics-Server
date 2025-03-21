@@ -90,8 +90,4 @@ public class User {
   public void changeName(String newName) {
     this.name = new Name(newName);
   }
-
-  public boolean isActive() {
-    return this.status == UserStatus.ACTIVE;
-  }
 }

@@ -29,8 +29,8 @@ public enum UserServiceErrorCode implements ErrorCode {
   INVALID_ROLE_TYPE(BAD_REQUEST, "UA016", "유효하지 않은 역할 타입입니다."),
   NOT_FOUND_USER(NOT_FOUND, "UA017", "사용자를 찾을 수 없습니다."),
   INVALID_STATUS_TRANSITION(BAD_REQUEST, "UA018", "잘못된 상태 전환 시도"),
-  PROTECTED_USER_ROLE(FORBIDDEN, "US-1104", "보호된 역할을 가진 사용자는 삭제할 수 없습니다."),
-  USER_ALREADY_INACTIVE(BAD_REQUEST, "US-1105", "이미 비활성화되었거나 잠긴 사용자입니다."),
+  PROTECTED_USER_ROLE(FORBIDDEN, "UA019", "보호된 역할을 가진 사용자는 삭제할 수 없습니다."),
+  USER_ALREADY_INACTIVE(BAD_REQUEST, "UA20", "이미 비활성화되었거나 잠긴 사용자입니다."),
   ;
 
   private final HttpStatus httpStatus;
