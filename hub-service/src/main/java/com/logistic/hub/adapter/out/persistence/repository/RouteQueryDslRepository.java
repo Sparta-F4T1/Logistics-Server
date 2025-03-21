@@ -1,9 +1,10 @@
 package com.logistic.hub.adapter.out.persistence.repository;
 
-import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
 import com.logistic.hub.adapter.out.persistence.model.QHubEntity;
 import com.logistic.hub.adapter.out.persistence.model.QRouteEntity;
+import com.logistic.hub.application.service.dto.RouteHistoryDto;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -21,15 +22,15 @@ public class RouteQueryDslRepository {
   QHubEntity departHub = new QHubEntity("departHub");
   QHubEntity arrivalHub = new QHubEntity("arrivalHub");
 
-  public Page<RouteHistoryResponse> findAllBySearch(String search, Pageable pageable) {
-    List<RouteHistoryResponse> query = jpaQueryFactory.select(Projections.constructor(RouteHistoryResponse.class,
+  public Page<RouteHistoryDto> findAllBySearch(String searchType, String search, Pageable pageable) {
+    List<RouteHistoryDto> query = jpaQueryFactory.select(Projections.constructor(RouteHistoryDto.class,
             routeEntity.id,
             departHub.hubName,
             arrivalHub.hubName))
         .from(routeEntity)
         .where(
-            routeEntity.isDeleted.eq(false)
-            // containsSearch(search)
+            routeEntity.isDeleted.eq(false),
+            containsSearch(searchType, search)
         )
         .join(departHub).on(routeEntity.departHubId.eq(departHub.id))
         .join(arrivalHub).on(routeEntity.arrivalHubId.eq(arrivalHub.id))
@@ -41,10 +42,20 @@ public class RouteQueryDslRepository {
     JPAQuery<Long> totalCount = jpaQueryFactory.select(routeEntity.count())
         .from(routeEntity)
         .where(
-            routeEntity.isDeleted.eq(false)
-            //containsSearch(search)
+            routeEntity.isDeleted.eq(false),
+            containsSearch(searchType, search)
         );
 
     return PageableExecutionUtils.getPage(query, pageable, () -> totalCount.fetchOne());
+  }
+
+  private BooleanExpression containsSearch(String searchType, String search) {
+    if (searchType.equals("departHubName")) {
+      return (search != null && !search.isEmpty()) ? departHub.hubName.contains(search) : null;
+    }
+    if (searchType.equals("arrivalHubName")) {
+      return (search != null && !search.isEmpty()) ? arrivalHub.hubName.contains(search) : null;
+    }
+    return null;
   }
 }

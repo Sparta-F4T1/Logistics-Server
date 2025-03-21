@@ -1,6 +1,6 @@
 package com.logistic.hub.application.port.out.persistence;
 
-import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
+import com.logistic.hub.application.service.dto.RouteHistoryDto;
 import com.logistic.hub.domain.Route;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +14,7 @@ public interface RoutePersistencePort {
 
   void delete(Route route);
 
-  Page<RouteHistoryResponse> findAllBySearch(String search, Pageable pageable);
+  Page<RouteHistoryDto> findAllBySearch(String searchType, String search, Pageable pageable);
 
   Optional<Route> findByDepartAndArrival(Long departHubId, Long arrivalHubId);
 
