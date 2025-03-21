@@ -29,12 +29,12 @@ public class Order {
 
   private List<OrderProduct> orderProducts;
 
-  public static Order create(Long sellerId, Long buyerId, String memo, List<OrderProduct> orderProducts) {
+  public static Order create(Long sellerId, Long buyerId, String memo, OrderStatus orderStatus, List<OrderProduct> orderProducts) {
     return Order.builder()
         .sellerId(sellerId)
         .buyerId(buyerId)
         .memo(memo)
-        .status(OrderStatus.PENDING)
+        .status(orderStatus)
         .orderProducts(orderProducts)
         .build();
   }
