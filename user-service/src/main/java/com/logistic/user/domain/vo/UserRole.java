@@ -8,6 +8,10 @@ public record UserRole(Long roleId, String name) {
     validate(roleId, name);
   }
 
+  public static UserRole of(Long roleId, String name) {
+    return new UserRole(roleId, name);
+  }
+
   private void validate(Long roleId, String name) {
     if (roleId == null) {
       throw UserServiceException.user(UserServiceErrorCode.NOT_NULL_ROLE_ID);

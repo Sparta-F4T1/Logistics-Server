@@ -28,20 +28,23 @@ public class User {
       String password,
       String slackAccount,
       Long roleId,
-      String roleName,
-      String status) {
+      String roleName) {
     return User.builder()
-        .userId(new UserId(userId))
-        .name(new Name(name))
-        .password(new Password(password))
-        .slackAccount(slackAccount != null ? new Email(slackAccount) : null)
-        .role(new UserRole(roleId, roleName))
-        .status(UserStatus.fromString(status))
+        .userId(UserId.of(userId))
+        .name(Name.of(name))
+        .password(Password.ofPlainPassword(password))
+        .slackAccount(Email.of(slackAccount))
+        .role(UserRole.of(roleId, roleName))
+        .status(UserStatus.ACTIVE)
         .build();
   }
 
+  public void updateHashedPassword(String hashedPassword) {
+    this.password = Password.ofHashedPassword(hashedPassword);
+  }
+
   public void changePassword(String currentPassword, String newPassword) {
-    this.password = new Password(newPassword);
+    this.password = Password.ofPlainPassword(newPassword);
   }
 
   public void changeSlackAccount(String newSlackAccount) {

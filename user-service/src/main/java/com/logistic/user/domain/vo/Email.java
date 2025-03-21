@@ -10,6 +10,10 @@ public record Email(String value) {
     validate(value);
   }
 
+  public static Email of(String value) {
+    return new Email(value);
+  }
+
   private void validate(String value) {
     if (value == null || value.isBlank()) {
       throw UserServiceException.user(UserServiceErrorCode.NOT_NULL_USER_EMAIL);

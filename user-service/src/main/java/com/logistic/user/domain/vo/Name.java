@@ -12,6 +12,10 @@ public record Name(String value) {
     validate(value);
   }
 
+  public static Name of(String value) {
+    return new Name(value);
+  }
+
   private void validate(String value) {
     if (value == null || value.isBlank()) {
       throw UserServiceException.user(UserServiceErrorCode.NOT_NULL_USER_NAME);

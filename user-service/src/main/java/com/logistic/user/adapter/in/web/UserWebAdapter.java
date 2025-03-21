@@ -27,9 +27,9 @@ public class UserWebAdapter {
   private final UserWebMapper userWebMapper;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<FindUserResponse>> createUser(
+  public ResponseEntity<ApiResponse<FindUserResponse>> registerUser(
       @Valid @RequestBody final RegisterUserRequest request) {
-    final User user = userCommandUseCase.createUser(userWebMapper.toCreateCommand(request));
+    final User user = userCommandUseCase.registerUser(userWebMapper.toCreateCommand(request));
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(ApiResponse.success(userWebMapper.toUserResponse(user)));
   }

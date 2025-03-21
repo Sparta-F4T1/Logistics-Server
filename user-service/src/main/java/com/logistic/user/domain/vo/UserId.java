@@ -8,6 +8,10 @@ public record UserId(String value) {
     validate(value);
   }
 
+  public static UserId of(String value) {
+    return new UserId(value);
+  }
+
   private void validate(String value) {
     if (value == null || value.isBlank()) {
       throw UserServiceException.user(UserServiceErrorCode.NOT_NULL_USER_ID);

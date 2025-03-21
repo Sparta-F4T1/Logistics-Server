@@ -16,13 +16,28 @@ public record Password(String value) {
     validate(value);
   }
 
-  private void validate(String value) {
-    if (value == null || value.isBlank()) {
+  public static Password ofPlainPassword(String plainPassword) {
+    validatePlainPassword(plainPassword);
+    return new Password(plainPassword);
+  }
+
+  public static Password ofHashedPassword(String hashedPassword) {
+    return new Password(hashedPassword);
+  }
+
+  private static void validatePlainPassword(String plainPassword) {
+    if (plainPassword == null || plainPassword.isBlank()) {
       throw UserServiceException.user(UserServiceErrorCode.NOT_NULL_USER_PASSWORD);
     }
 
-    if (!value.matches(PASSWORD_REGEX)) {
+    if (!plainPassword.matches(PASSWORD_REGEX)) {
       throw UserServiceException.user(UserServiceErrorCode.INVALID_USER_PASSWORD, INVALID_PASSWORD_FORMAT_MESSAGE);
+    }
+  }
+
+  private void validate(String value) {
+    if (value == null || value.isBlank()) {
+      throw UserServiceException.user(UserServiceErrorCode.NOT_NULL_USER_PASSWORD);
     }
   }
 }
