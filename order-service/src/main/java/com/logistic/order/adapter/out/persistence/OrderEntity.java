@@ -1,10 +1,12 @@
-package com.logistic.order.adaptor.out.persistence;
+package com.logistic.order.adapter.out.persistence;
 
 import com.logistic.order.domain.OrderStatus;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,13 +40,14 @@ public class OrderEntity extends BaseEntity {
   @Column(name = "memo", nullable = false)
   private String memo;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false)
   private OrderStatus status;
 
   @ElementCollection
   @CollectionTable(
       name = "p_order_product",
-      joinColumns = @JoinColumn(name= "order_id")
+      joinColumns = @JoinColumn(name = "order_id")
   )
   private List<OrderProductValue> orderProducts;
 
