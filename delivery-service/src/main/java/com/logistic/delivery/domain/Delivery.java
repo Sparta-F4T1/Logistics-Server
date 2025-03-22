@@ -19,7 +19,8 @@ public class Delivery {
   private Long departHubId;
   private Long arrivalHubId;
   private String driverId;
-  private List<HubDeliveryHistory> hubHistories;
+  private List<HubDeliveryHistory> hubDeliveryHistories;
+  private Boolean isDeleted;
 
   public static Delivery create(
       Long orderId,
@@ -28,7 +29,7 @@ public class Delivery {
       Long arrivalCompanyId,
       Long departHubId,
       Long arrivalHubId,
-      List<HubDeliveryHistory> hubHistories
+      List<HubDeliveryHistory> hubDeliveryHistoriesHistories
   ){
     return Delivery.builder()
         .orderId(orderId)
@@ -37,7 +38,7 @@ public class Delivery {
         .arrivalCompanyId(arrivalCompanyId)
         .departHubId(departHubId)
         .arrivalHubId(arrivalHubId)
-        .hubHistories(hubHistories)
+        .hubDeliveryHistories(hubDeliveryHistoriesHistories)
         .build();
   }
 
@@ -49,4 +50,5 @@ public class Delivery {
     this.driverId = driverId;
   }
 
+  public void delete(){ this.isDeleted = true; }
 }

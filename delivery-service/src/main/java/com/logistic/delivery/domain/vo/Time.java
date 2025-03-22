@@ -14,9 +14,9 @@ public class Time {
     this.expected = expected;
   }
 
-  public Time(Integer actual, Integer expected) {
-    this.actual = actual;
+  public Time(Integer expected, Integer actual) {
     this.expected = expected;
+    this.actual = actual;
   }
 
   public void updateActualTime(Integer actual){

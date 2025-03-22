@@ -4,6 +4,7 @@ import com.logistic.delivery.adapter.out.persistence.DeliveryEntity;
 import com.logistic.delivery.adapter.out.persistence.value.DistanceValue;
 import com.logistic.delivery.adapter.out.persistence.value.TimeValue;
 import com.logistic.delivery.domain.Delivery;
+import com.logistic.delivery.domain.view.DeliveryView;
 import com.logistic.delivery.domain.vo.Distance;
 import com.logistic.delivery.domain.vo.Time;
 import java.util.Optional;
@@ -33,6 +34,12 @@ public interface DeliveryPersistenceMapper {
 
   default Optional<Delivery> toDomain(Optional<DeliveryEntity> entity) {
     return entity.map(this::toDomain);
+  }
+
+  DeliveryView toView(DeliveryEntity entity);
+
+  default Optional<DeliveryView> toView(Optional<DeliveryEntity> entity) {
+    return entity.map(this::toView);
   }
 
 

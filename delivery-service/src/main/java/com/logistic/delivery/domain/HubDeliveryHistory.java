@@ -12,7 +12,6 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HubDeliveryHistory {
-  private Long id;
   private Sequence sequence;
   private Long departHubId;
   private Long arrivalHubId;
@@ -29,7 +28,7 @@ public class HubDeliveryHistory {
       Distance distance,
       DeliveryStatus status,
       String driverId
-  ){
+  ) {
     return HubDeliveryHistory.builder()
         .sequence(sequence)
         .departHubId(departHubId)
@@ -39,5 +38,9 @@ public class HubDeliveryHistory {
         .status(status)
         .driverId(driverId)
         .build();
+  }
+
+  public void updateStatus(String status) {
+    this.status = DeliveryStatus.valueOf(status);
   }
 }
