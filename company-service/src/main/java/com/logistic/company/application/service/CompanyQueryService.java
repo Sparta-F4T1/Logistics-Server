@@ -1,10 +1,12 @@
 package com.logistic.company.application.service;
 
 import com.logistic.company.application.port.in.CompanyQueryUseCase;
-import com.logistic.company.application.port.in.query.CompanyFindQuery;
-import com.logistic.company.application.port.in.query.CompanySearchQuery;
-import com.logistic.company.application.port.out.CompanyPersistencePort;
-import com.logistic.company.domain.Company;
+import com.logistic.company.application.port.in.query.FindCompanyQuery;
+import com.logistic.company.application.port.in.query.ListCompanyQuery;
+import com.logistic.company.application.port.in.query.SearchCompanyQuery;
+import com.logistic.company.application.port.out.CompanyQueryPersistencePort;
+import com.logistic.company.domain.model.CompanyView;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -14,15 +16,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CompanyQueryService implements CompanyQueryUseCase {
-  private final CompanyPersistencePort companyPersistencePort;
+  private final CompanyQueryPersistencePort queryPersistencePort;
 
-  public Company findCompany(final CompanyFindQuery query) {
-    //todo 예외처리 구현
-    return companyPersistencePort.findById(query.companyId()).orElseThrow(
-        () -> new RuntimeException("예외처리 구현하기"));
+  @Override
+  public CompanyView findCompany(final FindCompanyQuery query) {
+    return queryPersistencePort.findById(query.companyId());
   }
 
-  public Page<Company> search(final CompanySearchQuery query) {
-    return companyPersistencePort.saerch(query);
+  @Override
+  public List<CompanyView> findCompanyList(final ListCompanyQuery query) {
+    return queryPersistencePort.findAll(query.companyIds());
+  }
+
+  @Override
+  public Page<CompanyView> search(final SearchCompanyQuery query) {
+    return queryPersistencePort.search(query);
   }
 }

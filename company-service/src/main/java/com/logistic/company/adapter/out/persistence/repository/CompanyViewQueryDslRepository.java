@@ -1,10 +1,11 @@
-package com.logistic.company.adaptor.out.persistence.repository;
+package com.logistic.company.adapter.out.persistence.repository;
 
-import static com.logistic.company.adaptor.out.persistence.QCompanyEntity.companyEntity;
 
-import com.logistic.company.adaptor.out.persistence.CompanyEntity;
-import com.logistic.company.application.port.in.query.CompanySearchQuery;
-import com.logistic.company.domain.CompanyType;
+import static com.logistic.company.adapter.out.persistence.model.QCompanyViewEntity.companyViewEntity;
+
+import com.logistic.company.adapter.out.persistence.model.CompanyViewEntity;
+import com.logistic.company.application.port.in.query.SearchCompanyQuery;
+import com.logistic.company.domain.model.CompanyType;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -20,27 +21,26 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class CompanyQueryDslRepository {
+public class CompanyViewQueryDslRepository {
   private final JPAQueryFactory queryFactory;
 
-  public Page<CompanyEntity> search(final CompanySearchQuery query) {
+  public Page<CompanyViewEntity> search(final SearchCompanyQuery query) {
     final Long hubId = query.hubId();
     final CompanyType type = query.type();
     final String name = query.name();
     final Pageable pageable = query.pageable();
-
     final BooleanExpression searchExpression = getSearchCondition(hubId, type, name);
 
-    final List<CompanyEntity> contents = fetchContents(pageable, searchExpression);
+    final List<CompanyViewEntity> contents = fetchContents(pageable, searchExpression);
 
     long total = fetchTotalCount(searchExpression);
 
     return new PageImpl<>(contents, pageable, total);
   }
 
-  private List<CompanyEntity> fetchContents(final Pageable pageable, final BooleanExpression searchExpression) {
+  private List<CompanyViewEntity> fetchContents(final Pageable pageable, final BooleanExpression searchExpression) {
     return queryFactory
-        .selectFrom(companyEntity)
+        .selectFrom(companyViewEntity)
         .where(searchExpression)
         .orderBy(getOrderSpecifiers(pageable))
         .offset(pageable.getOffset())
@@ -49,22 +49,22 @@ public class CompanyQueryDslRepository {
   }
 
   private BooleanExpression getSearchCondition(final Long hubId, final CompanyType type, final String name) {
-    return companyEntity.isDeleted.isFalse()
+    return companyViewEntity.isDeleted.isFalse()
         .and(isHubIdEqual(hubId))
         .and(isTypeEqual(type))
         .and(containsName(name));
   }
 
   private BooleanExpression isHubIdEqual(final Long hubId) {
-    return (hubId == null) ? null : companyEntity.hubId.eq(hubId);
+    return (hubId == null) ? null : companyViewEntity.hub.hubId.eq(hubId);
   }
 
   private BooleanExpression containsName(final String name) {
-    return (name == null) ? null : companyEntity.name.containsIgnoreCase(name);
+    return (name == null) ? null : companyViewEntity.name.containsIgnoreCase(name);
   }
 
   private BooleanExpression isTypeEqual(final CompanyType type) {
-    return (type == null) ? null : companyEntity.type.eq(type);
+    return (type == null) ? null : companyViewEntity.type.eq(type);
   }
 
   private OrderSpecifier<?>[] getOrderSpecifiers(final Pageable pageable) {
@@ -75,10 +75,10 @@ public class CompanyQueryDslRepository {
       final String sortBy = order.getProperty();
       final Order direction = order.isAscending() ? Order.ASC : Order.DESC;
       if ("createdAt".equals(sortBy)) {
-        orderSpecifiers.add(new OrderSpecifier<>(direction, companyEntity.createdAt));
+        orderSpecifiers.add(new OrderSpecifier<>(direction, companyViewEntity.createdAt));
       }
       if ("updatedAt".equals(sortBy)) {
-        orderSpecifiers.add(new OrderSpecifier<>(direction, companyEntity.updatedAt));
+        orderSpecifiers.add(new OrderSpecifier<>(direction, companyViewEntity.updatedAt));
       }
     });
 
@@ -87,8 +87,8 @@ public class CompanyQueryDslRepository {
 
   private Long fetchTotalCount(final BooleanExpression expression) {
     final Long total = queryFactory
-        .select(companyEntity.count())
-        .from(companyEntity)
+        .select(companyViewEntity.count())
+        .from(companyViewEntity)
         .where(expression)
         .fetchOne();
     return total == null ? 0L : total;
