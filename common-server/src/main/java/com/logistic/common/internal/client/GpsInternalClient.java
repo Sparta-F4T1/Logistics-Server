@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface GpsInternalClient {
   @GetMapping("/internal/v1/gps/{gpsId}")
@@ -13,4 +14,7 @@ public interface GpsInternalClient {
 
   @GetMapping("/internal/v1/gps")
   List<GpsClientResponse> findGpsList(@RequestBody GpsClientRequest request);
+
+  @GetMapping("/internal/v1/gps/direction")
+  GpsClientResponse findDistanceAndDuration(@RequestParam String depart, @RequestParam String arrival);
 }

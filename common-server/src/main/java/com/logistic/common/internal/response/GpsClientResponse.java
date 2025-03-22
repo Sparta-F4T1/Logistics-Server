@@ -5,5 +5,8 @@ public record GpsClientResponse(
     String road,
     String jibun,
     Double latitude,
-    Double longitude) {
+    Double longitude,
+    Integer duration,
+    Integer distance
+) {
 }
