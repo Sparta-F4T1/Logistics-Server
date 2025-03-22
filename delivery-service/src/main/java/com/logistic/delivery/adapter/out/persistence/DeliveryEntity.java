@@ -55,25 +55,14 @@ public class DeliveryEntity {
   @Column(name = "driver_id")
   private String driverId;
 
+  @Column(name = "is_deleted")
+  private Boolean isDeleted;
+
   @ElementCollection(fetch = FetchType.LAZY)
   @CollectionTable(
-      name = "hub_delivery_histories",
+      name = "p_hub_delivery_histories",
       joinColumns = @JoinColumn(name = "delivery_id")
   )
-  private List<HubDeliveryHistoryValue> hubHistories;
+  private List<HubDeliveryHistoryValue> hubDeliveryHistories;
 
-  @Override
-  public String toString() {
-    return "DeliveryEntity{" +
-        "id=" + id +
-        ", orderId=" + orderId +
-        ", status=" + status +
-        ", departCompanyId=" + departCompanyId +
-        ", arrivalCompanyId=" + arrivalCompanyId +
-        ", departHubId=" + departHubId +
-        ", arrivalHubId=" + arrivalHubId +
-        ", driverId='" + driverId + '\'' +
-        ", hubHistories=" + hubHistories +
-        '}';
-  }
 }
