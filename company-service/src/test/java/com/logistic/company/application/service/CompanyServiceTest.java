@@ -1,18 +1,29 @@
 package com.logistic.company.application.service;
 
-import com.logistic.company.application.port.in.command.CompanyCreateCommand;
-import com.logistic.company.application.port.in.command.CompanyDeleteCommand;
-import com.logistic.company.application.port.in.command.CompanyUpdateCommand;
-import com.logistic.company.application.port.out.CompanyPersistencePort;
-import com.logistic.company.application.port.out.GpsClientPort;
-import com.logistic.company.domain.Company;
-import com.logistic.company.domain.CompanyType;
-import com.logistic.company.domain.vo.Address;
-import java.util.Optional;
+import static com.logistic.company.common.TestFixtures.createHub;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.logistic.common.passport.model.Passport;
+import com.logistic.common.passport.model.UserInfo;
+import com.logistic.company.application.port.in.command.CreateCompanyCommand;
+import com.logistic.company.application.port.in.command.DeleteCompanyCommand;
+import com.logistic.company.application.port.in.command.UpdateCompanyCommand;
+import com.logistic.company.application.port.out.CompanyCommandPersistencePort;
+import com.logistic.company.application.port.out.CompanyInternalPort;
+import com.logistic.company.domain.command.CompanyForCreate;
+import com.logistic.company.domain.model.Company;
+import com.logistic.company.domain.model.CompanyType;
+import com.logistic.company.domain.model.vo.Gps;
+import com.logistic.company.domain.model.vo.User;
+import java.util.ArrayList;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,37 +34,41 @@ import org.springframework.transaction.annotation.Transactional;
 class CompanyServiceTest {
 
   @Autowired
-  private CompanyService companyService;
+  private CompanyCommandService companyService;
   @Autowired
-  private CompanyPersistencePort companyPersistencePort;
+  private CompanyCommandPersistencePort persistencePort;
   @MockitoBean
-  private GpsClientPort gpsClientPort;
+  private CompanyInternalPort internalPort;
 
   @DisplayName("업체 생성이 성공한다.")
   @Test
   void create_success() {
     // given
-    CompanyCreateCommand command = new CompanyCreateCommand("이름", CompanyType.RECEIVER, "주소", "test", 1L);
-    Address mockAddress = new Address("road", "jibun", 30.0, 40.0);
-    Mockito.when(gpsClientPort.getAddress("주소")).thenReturn(mockAddress);
-
+    CreateCompanyCommand command = new CreateCompanyCommand(
+        "이름", CompanyType.RECEIVER,
+        "주소", 1L, List.of("user1", "user2", "user3"), createPassport());
+    when(internalPort.findGps(anyString())).thenReturn(createGps());
+    when(internalPort.findHub(anyLong())).thenReturn(createHub(command.hubId()));
+    when(internalPort.findUserList(any())).thenReturn(createUserList());
     // when
     Company company = companyService.createCompany(command);
-
     //then
     Assertions.assertThat(company).isNotNull();
-    Assertions.assertThat(company.getName()).isEqualTo("이름");
+    verify(internalPort).findGps(anyString());
+    verify(internalPort).findHub(anyLong());
+    verify(internalPort).findUserList(any());
   }
 
-  @DisplayName("업체 정보수정이 성공한다.")
+  @DisplayName("업체 수정이 성공한다.")
   @Test
   void update_success() {
     // given
-    Company saved = saveCompany();
-    CompanyUpdateCommand command = new CompanyUpdateCommand(saved.getId(), "업데이트", CompanyType.RECEIVER, "주소", "매니저",
-        1L);
-    Address mockAddress = new Address("road", "jibun", 30.0, 40.0);
-    Mockito.when(gpsClientPort.getAddress("주소")).thenReturn(mockAddress);
+    UpdateCompanyCommand command = new UpdateCompanyCommand(
+        saveCompany().getId(), "업데이트", CompanyType.RECEIVER,
+        "주소", 1L, List.of("user1", "user2", "user3"), createPassport());
+    when(internalPort.findGps(anyString())).thenReturn(createGps());
+    when(internalPort.findHub(anyLong())).thenReturn(createHub(command.hubId()));
+    when(internalPort.findUserList(any())).thenReturn(createUserList());
     // when
     Company updated = companyService.updateCompany(command);
     // then
@@ -61,24 +76,48 @@ class CompanyServiceTest {
     Assertions.assertThat(updated.getName()).isEqualTo(command.name());
   }
 
-  @DisplayName("업체 소프트삭제가 성공한다.")
+  @DisplayName("업체 삭제가 성공한다.")
   @Test
   void softDelete_success() {
     // given
-    Company saved = saveCompany();
-    CompanyDeleteCommand command = new CompanyDeleteCommand(saved.getId());
+    DeleteCompanyCommand command = new DeleteCompanyCommand(saveCompany().getId(), createPassport());
     // when
     companyService.deleteCompany(command);
-    Optional<Company> company = companyPersistencePort.findById(saved.getId());
-    Company deleted = company.orElse(null);
     // then
+    Company deleted = persistencePort.findById(command.companyId());
     Assertions.assertThat(deleted).isNotNull();
     Assertions.assertThat(deleted.getIsDeleted()).isTrue();
   }
 
   private Company saveCompany() {
-    Address address = new Address("road", "jibun", 30.0, 40.0);
-    Company company = Company.create("회사이름", CompanyType.PROVIDER, address, "매니저", 1L);
-    return companyPersistencePort.save(company);
+    CompanyForCreate forCreate = new CompanyForCreate(
+        "이름", CompanyType.PROVIDER, createHub(1L), createGps(), createUserList());
+    Company company = Company.create(forCreate);
+    return persistencePort.save(company);
+  }
+
+
+  private Gps createGps() {
+    return new Gps("road", "jibun", 30.0, 40.0);
+  }
+
+  private User createUser(String userId) {
+    return new User(userId, "이름");
+  }
+
+  private List<User> createUserList() {
+    List<User> userList = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      userList.add(createUser("user" + i));
+    }
+    return userList;
+  }
+
+  private Passport createPassport() {
+    return new Passport(createUserInfo(), null);
+  }
+
+  private UserInfo createUserInfo() {
+    return new UserInfo("master", "MASTER_ADMIN", null);
   }
 }
