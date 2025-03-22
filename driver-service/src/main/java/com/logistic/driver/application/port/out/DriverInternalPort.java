@@ -1,12 +1,13 @@
 package com.logistic.driver.application.port.out;
 
-import com.logistic.common.passport.model.Passport;
-import com.logistic.driver.application.service.dto.HubInfo;
+import com.logistic.driver.domain.model.vo.Hub;
+import com.logistic.driver.domain.model.vo.User;
 import java.util.List;
 
 public interface DriverInternalPort {
-  HubInfo findHub(Long hubId, Passport passport);
+  Hub findHub(Long hubId);
 
-  List<HubInfo> findHubList(List<Long> hubId, Passport passport);
+  List<Hub> findHubList(List<Long> hubId);
 
+  User findUser(String userId);
 }

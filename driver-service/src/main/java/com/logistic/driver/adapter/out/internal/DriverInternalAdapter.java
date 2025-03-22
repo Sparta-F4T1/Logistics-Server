@@ -1,12 +1,14 @@
 package com.logistic.driver.adapter.out.internal;
 
 import com.logistic.common.internal.request.HubClientRequest;
-import com.logistic.common.passport.model.Passport;
 import com.logistic.driver.adapter.out.internal.client.HubFeignClient;
+import com.logistic.driver.adapter.out.internal.client.UserFeignClient;
 import com.logistic.driver.adapter.out.internal.mapper.DriverClientMapper;
 import com.logistic.driver.application.port.out.DriverInternalPort;
-import com.logistic.driver.application.service.dto.HubInfo;
-import com.logistic.driver.domain.exception.DomainException.HubNotFoundException;
+import com.logistic.driver.domain.exception.CustomNotFoundException.HubNotFoundException;
+import com.logistic.driver.domain.exception.CustomNotFoundException.UserNotFoundException;
+import com.logistic.driver.domain.model.vo.Hub;
+import com.logistic.driver.domain.model.vo.User;
 import feign.FeignException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +20,33 @@ import org.springframework.stereotype.Component;
 public class DriverInternalAdapter implements DriverInternalPort {
   private final DriverClientMapper mapper;
   private final HubFeignClient hubFeignClient;
+  private final UserFeignClient userFeignClient;
 
   @Override
-  public HubInfo findHub(final Long hubId, final Passport passport) {
-    final HubClientRequest request = new HubClientRequest(null, passport);
+  public Hub findHub(final Long hubId) {
     try {
-      return mapper.toHubInfo(hubFeignClient.findHub(hubId, request));
+      return mapper.toHub(hubFeignClient.findHub(hubId, null));
     } catch (FeignException e) {
       throw new HubNotFoundException();
     }
   }
 
   @Override
-  public List<HubInfo> findHubList(final List<Long> hubIds, final Passport passport) {
-    final HubClientRequest request = new HubClientRequest(hubIds, passport);
+  public List<Hub> findHubList(final List<Long> hubIds) {
+    final HubClientRequest request = new HubClientRequest(hubIds, null);
     try {
-      return hubFeignClient.findHubList(request).stream().map(mapper::toHubInfo).toList();
+      return hubFeignClient.findHubList(request).stream().map(mapper::toHub).toList();
     } catch (FeignException e) {
       throw new HubNotFoundException();
+    }
+  }
+
+  @Override
+  public User findUser(final String userId) {
+    try {
+      return mapper.toUser(userFeignClient.findUser(userId, null));
+    } catch (FeignException e) {
+      throw new UserNotFoundException();
     }
   }
 }
