@@ -38,8 +38,14 @@ public class GpsInternalAdaptor {
   }
 
   @GetMapping
+  GpsClientResponse findGpsList(@ModelAttribute GpsClientRequest request) {
+
+    return null;
+  }
+
+  @GetMapping("/direction")
     // 허브 간 거리, 시간 계산
-  GpsClientResponse findDistance(@RequestParam String depart, @RequestParam String arrival) {
+  GpsClientResponse findDistanceAndDuration(@RequestParam String depart, @RequestParam String arrival) {
 
     GpsDistanceCommand command = new GpsDistanceCommand(depart, arrival);
 
