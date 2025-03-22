@@ -6,16 +6,16 @@ import com.logistic.driver.adapter.out.persistence.model.entity.DriverEntity;
 import com.logistic.driver.adapter.out.persistence.repository.DriverJpaRepository;
 import com.logistic.driver.adapter.out.persistence.repository.DriverQueryDslRepository;
 import com.logistic.driver.application.port.in.query.SearchDriverQuery;
-import com.logistic.driver.application.port.out.DriverPersistencePort;
-import com.logistic.driver.domain.Driver;
-import com.logistic.driver.domain.exception.DomainException.DomainNotFoundException;
+import com.logistic.driver.application.port.out.DriverCommandPersistencePort;
+import com.logistic.driver.domain.exception.CustomNotFoundException.DriverNotFoundException;
+import com.logistic.driver.domain.model.Driver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 
 @Adapter
 @RequiredArgsConstructor
-public class DriverPersistenceAdapter implements DriverPersistencePort {
+public class DriverCommandPersistenceAdapter implements DriverCommandPersistencePort {
   private final DriverJpaRepository jpaRepository;
   private final DriverQueryDslRepository queryDslRepository;
   private final DriverPersistenceMapper mapper;
@@ -28,7 +28,7 @@ public class DriverPersistenceAdapter implements DriverPersistencePort {
 
   @Override
   public Driver findById(final String driverId) {
-    final DriverEntity driverEntity = jpaRepository.findById(driverId).orElseThrow(DomainNotFoundException::new);
+    final DriverEntity driverEntity = jpaRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
     return mapper.toDomain(driverEntity);
   }
 

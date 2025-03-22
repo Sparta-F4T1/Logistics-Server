@@ -4,13 +4,15 @@ import com.logistic.common.passport.model.Passport;
 import com.logistic.driver.adapter.in.external.web.request.CreateDriverRequest;
 import com.logistic.driver.adapter.in.external.web.request.SearchDriverRequest;
 import com.logistic.driver.adapter.in.external.web.request.UpdateDriverRequest;
-import com.logistic.driver.adapter.in.external.web.response.FindDriverResponse;
+import com.logistic.driver.adapter.in.external.web.response.CommandDriverResponse;
+import com.logistic.driver.adapter.in.external.web.response.QueryDriverResponse;
 import com.logistic.driver.application.port.in.command.CreateDriverCommand;
 import com.logistic.driver.application.port.in.command.DeleteDriverCommand;
 import com.logistic.driver.application.port.in.command.UpdateDriverCommand;
 import com.logistic.driver.application.port.in.query.FindDriverQuery;
 import com.logistic.driver.application.port.in.query.SearchDriverQuery;
-import com.logistic.driver.domain.Driver;
+import com.logistic.driver.domain.model.Driver;
+import com.logistic.driver.domain.model.DriverView;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +26,11 @@ public interface DriverWebMapper {
   DeleteDriverCommand toDeleteCommand(String driverId, Passport passport);
 
   @Mapping(source = "id", target = "driverId")
-  FindDriverResponse toResponse(Driver driver);
+  CommandDriverResponse toResponse(Driver driver);
 
   FindDriverQuery toFindQuery(String driverId, Passport passport);
 
   SearchDriverQuery toSearchQuery(SearchDriverRequest request, Pageable pageable, Passport passport);
+
+  QueryDriverResponse toResponse(DriverView driverView);
 }

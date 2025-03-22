@@ -1,6 +1,7 @@
 package com.logistic.driver.adapter.out.persistence.model.entity;
 
-import com.logistic.driver.domain.DriverType;
+import com.logistic.driver.domain.model.vo.DriverStatus;
+import com.logistic.driver.domain.model.vo.DriverType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,11 +30,12 @@ public class DriverEntity extends TimeStamped {
   @Column(name = "type", nullable = false)
   private DriverType type;
 
-  @Column(name = "depart_hub_id", nullable = false)
-  private Long departHubId;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private DriverStatus status;
 
-  @Column(name = "arrival_hub_id", nullable = false)
-  private Long arrivalHubId;
+  @Column(name = "hub_id", nullable = false)
+  private Long hubId;
 
   @Column(name = "is_deleted")
   private Boolean isDeleted;
