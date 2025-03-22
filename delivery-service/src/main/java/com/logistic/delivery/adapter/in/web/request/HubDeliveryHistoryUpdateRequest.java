@@ -4,11 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record DeliveryCreateRequest(
-    @NotNull Long orderId,
-    @NotNull Long departCompanyId,
-    @NotNull Long arrivalCompanyId,
+public record HubDeliveryHistoryUpdateRequest(
     @NotNull Long departHubId,
-    @NotNull Long arrivalHubId
+    @NotNull Long arrivalHubId,
+    @NotNull String status
 ){
 }
