@@ -45,6 +45,7 @@ public class RouteService implements RouteUseCase {
 
   @Override
   public Route createOrUpdateHubRoute(RouteCreateCommand routeCommand) {
+
     RouteInfoCommand routeInfoCommand = gpsInternalPort.getRouteInfo(routeCommand); //임시 ( 좌표정보 보내는걸로 구현 예상)
     Long departHubId = routeCommand.departHubId();
     Long arrivalHubId = routeCommand.arrivalHubId();

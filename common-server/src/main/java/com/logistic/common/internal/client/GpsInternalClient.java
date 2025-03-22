@@ -13,4 +13,7 @@ public interface GpsInternalClient {
 
   @GetMapping("/internal/v1/gps")
   List<GpsClientResponse> findGpsList(@RequestBody GpsClientRequest request);
+
+  @GetMapping("/internal/v1/gps")
+  GpsClientResponse findDistanceAndDuration(@PathVariable("gpsId") Long gpsId);
 }

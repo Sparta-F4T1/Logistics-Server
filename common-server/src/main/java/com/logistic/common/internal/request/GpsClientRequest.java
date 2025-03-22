@@ -6,5 +6,7 @@ import java.util.List;
 public record GpsClientRequest(
     List<Long> gpsIds,
     String road,
+    Long departHubId,
+    Long arrivalHubId,
     Passport passport) {
 }
