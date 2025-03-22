@@ -1,5 +1,6 @@
-package com.logistic.delivery.domain;
+package com.logistic.delivery.domain.view;
 
+import com.logistic.delivery.domain.DeliveryStatus;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Delivery {
+public class DeliveryView {
   private Long id;
   private Long orderId;
   private DeliveryStatus status;
@@ -19,19 +20,18 @@ public class Delivery {
   private Long departHubId;
   private Long arrivalHubId;
   private String driverId;
-  private List<HubDeliveryHistory> hubDeliveryHistories;
-  private Boolean isDeleted;
+  private List<HubDeliveryHistoryView> hubDeliveryHistories;
 
-  public static Delivery create(
+  public static DeliveryView create(
       Long orderId,
       DeliveryStatus status,
       Long departCompanyId,
       Long arrivalCompanyId,
       Long departHubId,
       Long arrivalHubId,
-      List<HubDeliveryHistory> hubDeliveryHistoriesHistories
+      List<HubDeliveryHistoryView> hubDeliveryHistoriesHistories
   ){
-    return Delivery.builder()
+    return DeliveryView.builder()
         .orderId(orderId)
         .status(status)
         .departCompanyId(departCompanyId)
@@ -42,13 +42,4 @@ public class Delivery {
         .build();
   }
 
-  public void updateStatus(String status) {
-    this.status = DeliveryStatus.valueOf(status);
-  }
-
-  public void updateDriverId(String driverId) {
-    this.driverId = driverId;
-  }
-
-  public void delete(){ this.isDeleted = true; }
 }

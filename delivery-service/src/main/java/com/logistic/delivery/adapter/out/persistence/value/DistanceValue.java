@@ -11,16 +11,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DistanceValue {
   @Column(name = "expected_dist", nullable = false)
-  private Float expectedDist;
+  private Double expectedDist;
 
   @Column(name = "actual_dist")
-  private Float actualDist;
+  private Double actualDist;
 
-  public DistanceValue(Float expectedDist) {
+  public DistanceValue(Double expectedDist) {
     this.expectedDist = expectedDist;
   }
 
-  public DistanceValue(Float expectedDist, Float actualDist) {
+  public DistanceValue(Double expectedDist, Double actualDist) {
     this.expectedDist = expectedDist;
     this.actualDist = actualDist;
   }

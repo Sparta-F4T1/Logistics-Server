@@ -1,5 +1,6 @@
-package com.logistic.delivery.domain;
+package com.logistic.delivery.domain.view;
 
+import com.logistic.delivery.domain.DeliveryStatus;
 import com.logistic.delivery.domain.vo.Distance;
 import com.logistic.delivery.domain.vo.Sequence;
 import com.logistic.delivery.domain.vo.Time;
@@ -11,7 +12,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class HubDeliveryHistory {
+public class HubDeliveryHistoryView {
   private Sequence sequence;
   private Long departHubId;
   private Long arrivalHubId;
@@ -20,7 +21,7 @@ public class HubDeliveryHistory {
   private DeliveryStatus status;
   private String driverId;
 
-  public static HubDeliveryHistory create(
+  public static HubDeliveryHistoryView create(
       Sequence sequence,
       Long departHubId,
       Long arrivalHubId,
@@ -29,7 +30,7 @@ public class HubDeliveryHistory {
       DeliveryStatus status,
       String driverId
   ) {
-    return HubDeliveryHistory.builder()
+    return HubDeliveryHistoryView.builder()
         .sequence(sequence)
         .departHubId(departHubId)
         .arrivalHubId(arrivalHubId)
@@ -40,7 +41,4 @@ public class HubDeliveryHistory {
         .build();
   }
 
-  public void updateStatus(String status) {
-    this.status = DeliveryStatus.valueOf(status);
-  }
 }

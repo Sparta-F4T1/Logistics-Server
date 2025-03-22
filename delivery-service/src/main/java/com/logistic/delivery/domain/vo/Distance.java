@@ -7,19 +7,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Distance {
-  private Float expected;
-  private Float actual;
+  private Double expected;
+  private Double actual;
 
-  public Distance(Float expected) {
+  public Distance(Double expected) {
     this.expected = expected;
   }
 
-  public Distance(Float actual, Float expected) {
+  public Distance(Double expected, Double actual) {
+    this.expected = expected;
     this.actual = actual;
-    this.expected = expected;
   }
 
-  public void updateActualDistance(Float actual){
+  public void updateActualDistance(Double actual){
     this.actual = actual;
   }
 }

@@ -1,6 +1,7 @@
 package com.logistic.delivery.adapter.in.web.response;
 
 import com.logistic.delivery.domain.DeliveryStatus;
+import java.util.List;
 import lombok.Builder;
 
 @Builder
@@ -10,6 +11,7 @@ public record DeliveryResponse(
   DeliveryStatus status,
   Long departHubId,
   Long arrivalHubId,
-  String driverId
+  String driverId,
+  List<HubDeliveryHistoryResponse> hubDeliveryHistories
 ) {
 }
