@@ -10,4 +10,6 @@ public interface RouteJpaRepository extends JpaRepository<RouteEntity, Long> {
   List<RouteEntity> findAllByIsDeletedFalse();
 
   Optional<RouteEntity> findBydepartHubIdAndArrivalHubIdAndIsDeletedFalse(Long departHubId, Long arrivalHubId);
+
+  List<RouteEntity> findAllByIsDeletedFalseAndDepartHubIdOrArrivalHubId(Long departHubId, Long arrivalHubId);
 }

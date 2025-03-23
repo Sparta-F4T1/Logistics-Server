@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 public interface RoutePersistencePort {
   Route save(Route route);
 
-  Route findById(Long hubRouteId);
+  Route findById(Long routeId);
 
   void delete(Route route);
 
@@ -19,4 +19,6 @@ public interface RoutePersistencePort {
   Optional<Route> findByDepartAndArrival(Long departHubId, Long arrivalHubId);
 
   List<Route> findAll();
+
+  void deleteByHubId(Long hubId);
 }
