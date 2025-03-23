@@ -50,13 +50,13 @@ public class TokenCredential {
 
   private void validateTokenValue(String tokenValue) {
     if (tokenValue == null || tokenValue.isBlank()) {
-      throw new AuthServiceException(AuthServiceErrorCode.EMPTY_TOKEN_VALUE);
+      throw AuthServiceException.token(AuthServiceErrorCode.EMPTY_TOKEN_VALUE);
     }
   }
 
   private void validateTokenType(TokenType tokenType) {
     if (tokenType == null) {
-      throw new AuthServiceException(AuthServiceErrorCode.INVALID_TOKEN_TYPE);
+      throw AuthServiceException.token(AuthServiceErrorCode.INVALID_TOKEN_TYPE);
     }
   }
 
