@@ -1,4 +1,4 @@
-package com.logistic.order.adapter.out.internal;
+package com.logistic.order.adapter.out.message.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

@@ -3,12 +3,12 @@ package com.logistic.order.application.service;
 import com.logistic.order.application.port.OrderPersistencePort;
 import com.logistic.order.application.port.in.OrderUseCase;
 import com.logistic.order.application.port.in.command.CreateOrderCommand;
+import com.logistic.order.application.port.out.MessagePort;
 import com.logistic.order.application.port.out.OrderInternalPort;
 import com.logistic.order.domain.Order;
 import com.logistic.order.domain.OrderStatus;
 import com.logistic.order.domain.vo.OrderProduct;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +21,7 @@ public class OrderService implements OrderUseCase {
 
   private final OrderPersistencePort orderPersistencePort;
   private final OrderInternalPort orderInternalPort;
+  private final MessagePort messagePort;
 
   @Override
   public Order createOrder(CreateOrderCommand command) {
@@ -39,7 +40,7 @@ public class OrderService implements OrderUseCase {
     order = orderPersistencePort.save(order);
 
     if (order.getStatus() == OrderStatus.IN_DELIVERY){
-      orderInternalPort.sendCreateDelivery(order);
+      messagePort.sendCreateDelivery(order);
     }
 
     return order;
