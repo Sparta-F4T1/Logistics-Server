@@ -3,7 +3,6 @@ package com.logistic.user.adapter.out.persistence.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
@@ -19,14 +18,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-  @NotNull
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
   @CurrentTimestamp
   @Comment("생성 일시")
   private LocalDateTime createdAt;
 
-  @NotNull
   @CreatedBy
   @Column(name = "created_by", nullable = false, length = 100, updatable = false)
   @Comment("생성자")
