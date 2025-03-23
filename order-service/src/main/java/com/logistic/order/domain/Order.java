@@ -22,6 +22,10 @@ public class Order {
 
   private Long buyerId;
 
+  private Long sellerHubId;
+
+  private Long buyerHubId;
+
   private String memo;
 
   @Enumerated(EnumType.STRING)

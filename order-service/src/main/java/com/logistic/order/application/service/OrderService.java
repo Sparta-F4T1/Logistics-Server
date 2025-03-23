@@ -35,7 +35,14 @@ public class OrderService implements OrderUseCase {
         checkInventory(orderProducts)? OrderStatus.IN_DELIVERY : OrderStatus.PENDING,
         orderProducts
     );
-    return orderPersistencePort.save(order);
+
+    order = orderPersistencePort.save(order);
+
+    if (order.getStatus() == OrderStatus.IN_DELIVERY){
+      orderInternalPort.sendCreateDelivery(order);
+    }
+
+    return order;
   }
 
   @Override
@@ -66,5 +73,4 @@ public class OrderService implements OrderUseCase {
 
     return true;
   }
-
 }
