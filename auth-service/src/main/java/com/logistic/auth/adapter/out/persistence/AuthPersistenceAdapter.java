@@ -1,8 +1,15 @@
 package com.logistic.auth.adapter.out.persistence;
 
+import com.logistic.auth.adapter.out.persistence.mapper.AuthPersistenceMapper;
+import com.logistic.auth.adapter.out.persistence.model.UserEntity;
+import com.logistic.auth.adapter.out.persistence.repository.PassportRedisRepository;
 import com.logistic.auth.adapter.out.persistence.repository.TokenRedisRepository;
+import com.logistic.auth.adapter.out.persistence.repository.UserJpaRepository;
 import com.logistic.auth.application.port.out.persistence.AuthPersistencePort;
+import com.logistic.auth.domain.Passport;
 import com.logistic.auth.domain.User;
+import com.logistic.auth.domain.exception.AuthServiceErrorCode;
+import com.logistic.auth.domain.exception.AuthServiceException;
 import com.logistic.auth.domain.vo.TokenCredential;
 import com.logistic.auth.domain.vo.TokenId;
 import com.logistic.auth.domain.vo.UserId;
@@ -16,11 +23,9 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class AuthPersistenceAdapter implements AuthPersistencePort {
   private final TokenRedisRepository tokenRedisRepository;
-
-  @Override
-  public User findByUserId(String userId) {
-    return User.mock();
-  }
+  private final PassportRedisRepository passportRedisRepository;
+  private final UserJpaRepository userJpaRepository;
+  private final AuthPersistenceMapper mapper;
 
   @Override
   public void saveRefreshToken(TokenId tokenId, UserId userId, TokenCredential refreshTokenCredential) {
@@ -62,5 +67,37 @@ public class AuthPersistenceAdapter implements AuthPersistencePort {
   @Override
   public boolean isBlacklisted(TokenId tokenId) {
     return tokenRedisRepository.isBlacklisted(tokenId.value());
+  }
+
+  @Override
+  public User findByIdForLogin(String userId) {
+    UserEntity userEntity = userJpaRepository.findByIdForLogin(userId)
+        .orElseThrow(() -> AuthServiceException.auth(AuthServiceErrorCode.USER_NOT_FOUND));
+    return mapper.toLoginDomain(userEntity);
+  }
+
+  @Override
+  public User findByUserIdWithPermission(UserId userId) {
+    return userJpaRepository.findByIdWithRoleAndPermissions(userId.value())
+        .map(userEntity -> {
+          User user = mapper.toDomain(userEntity);
+          return user;
+        })
+        .orElseThrow(() -> AuthServiceException.auth(AuthServiceErrorCode.USER_NOT_FOUND));
+  }
+
+  @Override
+  public Passport findPassportFromCache(UserId userId) {
+    try {
+      Passport passport = passportRedisRepository.findPassportByUserId(userId);
+      return passport;
+    } catch (AuthServiceException e) {
+      throw e;
+    }
+  }
+
+  @Override
+  public void savePassport(Passport passport) {
+    passportRedisRepository.savePassport(passport);
   }
 }

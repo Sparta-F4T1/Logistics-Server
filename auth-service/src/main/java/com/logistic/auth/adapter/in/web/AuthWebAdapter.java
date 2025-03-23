@@ -2,12 +2,13 @@ package com.logistic.auth.adapter.in.web;
 
 
 import com.logistic.auth.adapter.in.web.mapper.AuthWebMapper;
+import com.logistic.auth.adapter.in.web.request.LoginRequest;
 import com.logistic.auth.adapter.in.web.request.LogoutRequest;
 import com.logistic.auth.adapter.in.web.request.RefreshTokenRequest;
 import com.logistic.auth.adapter.in.web.response.LoginResponse;
 import com.logistic.auth.adapter.in.web.response.LogoutResponse;
 import com.logistic.auth.adapter.in.web.response.RefreshTokenResponse;
-import com.logistic.auth.application.port.in.AuthCommandUseCase;
+import com.logistic.auth.application.port.in.AuthenticationCommandUseCase;
 import com.logistic.auth.application.port.in.command.LoginCommand;
 import com.logistic.auth.application.port.in.command.LogoutCommand;
 import com.logistic.auth.application.port.in.command.RefreshCommand;
@@ -28,12 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthWebAdapter {
 
-  private final AuthCommandUseCase commandUseCase;
+  private final AuthenticationCommandUseCase commandUseCase;
   private final AuthWebMapper mapper;
 
   @PostMapping("/login")
   public ResponseEntity<ApiResponse<LoginResponse>> login(
-      @Valid @RequestBody com.logistic.auth.adapter.in.web.request.LoginRequest request) {
+      @Valid @RequestBody final LoginRequest request) {
     LoginCommand command = mapper.toLoginCommand(request);
     TokenPair tokenPair = commandUseCase.login(command);
     ApiResponse<LoginResponse> response = ApiResponse.success(mapper.toLoginResponse(tokenPair));
@@ -43,7 +44,7 @@ public class AuthWebAdapter {
 
   @PostMapping("/refresh")
   public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(
-      @Valid @RequestBody RefreshTokenRequest request) {
+      @Valid @RequestBody final RefreshTokenRequest request) {
     RefreshCommand command = mapper.toRefreshCommand(request);
     TokenPair tokenPair = commandUseCase.refresh(command);
     ApiResponse<RefreshTokenResponse> response = ApiResponse.success(mapper.toRefreshResponse(tokenPair));
@@ -52,7 +53,7 @@ public class AuthWebAdapter {
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<ApiResponse<LogoutResponse>> logout(@Valid @RequestBody LogoutRequest request) {
+  public ResponseEntity<ApiResponse<LogoutResponse>> logout(@Valid @RequestBody final LogoutRequest request) {
     LogoutCommand command = mapper.toLogoutCommand(request);
     commandUseCase.logout(command);
     ApiResponse response = ApiResponse.success(new LogoutResponse(true));
