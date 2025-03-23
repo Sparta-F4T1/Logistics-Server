@@ -1,7 +1,7 @@
 package com.logistic.common.internal.response;
 
+import java.time.LocalDateTime;
+
 public record AiClientResponse(
-    Long aiId,
-    String request,
-    String response) {
+    LocalDateTime deadLine) {
 }

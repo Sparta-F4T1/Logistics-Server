@@ -1,8 +1,12 @@
 package com.logistic.common.internal.response;
 
+import java.util.List;
+
 public record DriverClientResponse(
-    String driverId,
-    String type,
-    Long departHubId,
-    Long arrivalHubId) {
+    List<hubDriver> hubDriverList) {
+  public record hubDriver(
+      String driverId,
+      Long departHubId,
+      Long arrivalHubId) {
+  }
 }
