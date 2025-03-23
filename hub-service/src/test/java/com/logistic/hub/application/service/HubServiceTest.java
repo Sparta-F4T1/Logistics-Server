@@ -51,7 +51,7 @@ class HubServiceTest {
     hubService.createHub(hubCreateCommand2);
     HubSearchQuery query = new HubSearchQuery(0, 10, null, null);
     // when
-    Page<HubHistoryDto> hubList = hubQueryService.getHubList(query);
+    Page<HubHistoryDto> hubList = hubQueryService.search(query);
 
     // then
     assertEquals(2, hubList.getSize());

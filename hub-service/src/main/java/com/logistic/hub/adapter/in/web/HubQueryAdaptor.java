@@ -30,9 +30,8 @@ public class HubQueryAdaptor {
   public ResponseEntity<ApiResponse<HubHistoryListResponse>> getHubList(
       @RequestParam(value = "page", defaultValue = "0") int page,
       @RequestParam(value = "size", defaultValue = "10") int size,
-      @RequestParam(value = "search", required = false) String search) {
-
-    Page<HubHistoryDto> hubList = hubQueryUseCase.getHubList(
+      @RequestParam(value = "search", defaultValue = "") String search) {
+    Page<HubHistoryDto> hubList = hubQueryUseCase.search(
         hubWebMapper.toSearchQuery(page, size, search));
     HubHistoryListResponse hubHistoryResponse = HubHistoryListResponse.from(hubList);
 

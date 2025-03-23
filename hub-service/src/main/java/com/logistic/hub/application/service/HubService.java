@@ -13,6 +13,7 @@ import com.logistic.hub.domain.exception.HubAlreadyDeletedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 
 @UseCase
 @Transactional
@@ -25,7 +26,7 @@ public class HubService implements HubUseCase {
   @CacheEvict(cacheNames = "hubList", allEntries = true)
   public Hub createHub(HubCreateCommand hubCommand) {
     AddressCommand addressCommand = gpsInternalPort.getAddressCommand(hubCommand.roadAddress(),
-        hubCommand.jibunAddress()); //임시 0, 37로 고정)
+        hubCommand.jibunAddress());
     Hub hub = Hub.createHub(hubCommand, addressCommand);
 
     return hubPersistencePort.save(hub);
@@ -33,19 +34,25 @@ public class HubService implements HubUseCase {
 
 
   @Override
-  @CacheEvict(cacheNames = "hubList", allEntries = true)
+  @Caching(evict = {
+      @CacheEvict(cacheNames = "hubList", allEntries = true),
+      @CacheEvict(cacheNames = "routeList", allEntries = true)
+  })
   public void updateHub(Long hubId, HubUpdateCommand command) {
     Hub hub = getOrElseThrow(hubId);
     isDeleted(hub);
     AddressCommand addressCommand = gpsInternalPort.getAddressCommand(command.roadAddress(),
-        command.jibunAddress()); //임시 (300, 37로 고정)
+        command.jibunAddress());
     hub.update(command, addressCommand);
-
+    
     hubPersistencePort.save(hub);
   }
 
   @Override
-  @CacheEvict(cacheNames = "hubList", allEntries = true)
+  @Caching(evict = {
+      @CacheEvict(cacheNames = "hubList", allEntries = true),
+      @CacheEvict(cacheNames = "routeList", allEntries = true)
+  })
   public void deleteHub(Long hubId) {
     Hub hub = getOrElseThrow(hubId);
     isDeleted(hub);
@@ -54,11 +61,6 @@ public class HubService implements HubUseCase {
 
   private Hub getOrElseThrow(Long hubId) {
     return hubPersistencePort.findById(hubId);
-  }
-
-  @Override
-  public boolean existsHub(Long hubId) {
-    return hubPersistencePort.existsHub(hubId);
   }
 
   @Override

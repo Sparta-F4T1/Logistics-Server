@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Adapter
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/hubRoutes")
+@RequestMapping("/api/v1/routes")
 public class RouteQueryAdaptor {
   private final RouteQueryUseCase routeQueryUseCase;
   private final RouteWebMapper routeWebMapper;
@@ -41,9 +41,9 @@ public class RouteQueryAdaptor {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
-  @GetMapping("/{hubRouteId}")
-  public ResponseEntity<ApiResponse<RouteDetailsResponse>> getRouteDetails(@PathVariable Long hubRouteId) {
-    RouteDetailsDto routeDetails = routeQueryUseCase.getRouteDetails(routeWebMapper.toFindQuery(hubRouteId));
+  @GetMapping("/{routeId}")
+  public ResponseEntity<ApiResponse<RouteDetailsResponse>> getRouteDetails(@PathVariable Long routeId) {
+    RouteDetailsDto routeDetails = routeQueryUseCase.getRouteDetails(routeWebMapper.toFindQuery(routeId));
 
     ApiResponse<RouteDetailsResponse> response = ApiResponse.success(
         routeWebMapper.toRouteDetailsResponse(routeDetails));

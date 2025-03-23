@@ -15,12 +15,12 @@ import org.mapstruct.Mapping;
 public interface RouteWebMapper {
   RouteCreateCommand toRouteCreateCommand(RouteCreateRequest request);
 
-  @Mapping(source = "id", target = "hubRouteId")
+  @Mapping(source = "id", target = "routeId")
   RouteCreateResponse toRouteCreateResponse(Route route);
 
   RouteDetailsResponse toRouteDetailsResponse(RouteDetailsDto routeDetailsDto);
 
-  RouteFindQuery toFindQuery(Long hubId);
+  RouteFindQuery toFindQuery(Long routeId);
 
   RouteSearchQuery toSearchQuery(int page, int size, String searchType, String search);
 }

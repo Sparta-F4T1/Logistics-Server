@@ -13,7 +13,5 @@ public interface HubUseCase {
 
   void deleteHub(Long hubId);
 
-  boolean existsHub(Long hubId);
-
   DepartArrivalDto getHubNameInfo(Long departHubId, Long arrivalHubId);
 }

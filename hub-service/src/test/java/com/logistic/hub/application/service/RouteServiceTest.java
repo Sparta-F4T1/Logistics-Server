@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
+import com.logistic.hub.application.port.in.HubQueryUseCase;
 import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
@@ -35,6 +36,8 @@ class RouteServiceTest {
   private RouteService routeService;
   @MockitoBean
   private HubUseCase hubUseCase;
+  @MockitoBean
+  private HubQueryUseCase queryUseCase;
   @Autowired
   private HubPersistencePort hubPersistencePort;
   @Autowired
@@ -46,7 +49,7 @@ class RouteServiceTest {
     //given
     RouteCreateCommand command = new RouteCreateCommand(1L, 2L);
     Hub mockHub = Hub.builder().build();
-    Mockito.when(hubUseCase.existsHub(any())).thenReturn(true);
+    Mockito.when(queryUseCase.existsHub(any())).thenReturn(true);
 
     //when
     Route route = routeService.createOrUpdateHubRoute(command);
@@ -69,7 +72,7 @@ class RouteServiceTest {
     Hub save2 = hubPersistencePort.save(mockHub2);
 
     RouteCreateCommand command = new RouteCreateCommand(save1.getId(), save2.getId());
-    Mockito.when(hubUseCase.existsHub(any())).thenReturn(true);
+    Mockito.when(queryUseCase.existsHub(any())).thenReturn(true);
     Route route = routeService.createOrUpdateHubRoute(command);
     System.out.println(mockHub1.getId() + " " + mockHub2.getId());
     RouteSearchQuery query = new RouteSearchQuery(0, 10, "departHubName", null);
@@ -87,7 +90,7 @@ class RouteServiceTest {
   void getHubRouteDetails() {
     //given
     RouteCreateCommand command = new RouteCreateCommand(1L, 2L);
-    Mockito.when(hubUseCase.existsHub(any())).thenReturn(true);
+    Mockito.when(queryUseCase.existsHub(any())).thenReturn(true);
     Route route = routeService.createOrUpdateHubRoute(command);
 
     DepartArrivalDto departArrivalCommand = new DepartArrivalDto("경기남부", "경기북부");
@@ -97,7 +100,7 @@ class RouteServiceTest {
     RouteDetailsDto routeDetails = routeQueryService.getRouteDetails(query);
 
     //then
-    assertEquals(route.getId(), routeDetails.hubRouteId());
+    assertEquals(route.getId(), routeDetails.routeId());
     assertEquals(1L, route.getDepartHubId());
     assertEquals(2L, route.getArrivalHubId());
     assertEquals("경기남부", routeDetails.departHubName());
@@ -110,7 +113,7 @@ class RouteServiceTest {
     //given
     RouteCreateCommand command = new RouteCreateCommand(1L, 2L);
     Hub mockHub = Hub.builder().build();
-    Mockito.when(hubUseCase.existsHub(any())).thenReturn(true);
+    Mockito.when(queryUseCase.existsHub(any())).thenReturn(true);
     Route route = routeService.createOrUpdateHubRoute(command);
     RouteFindQuery query = new RouteFindQuery(route.getId());
     //when

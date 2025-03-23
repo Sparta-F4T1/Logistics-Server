@@ -3,7 +3,7 @@ package com.logistic.hub.application.service.dto;
 import com.logistic.hub.domain.Route;
 
 public record RouteDetailsDto(
-    Long hubRouteId,
+    Long routeId,
     Long departHubId,
     String departHubName,
     Long arrivalHubId,

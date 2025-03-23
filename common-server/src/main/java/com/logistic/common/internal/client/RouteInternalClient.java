@@ -1,5 +1,6 @@
 package com.logistic.common.internal.client;
 
+import com.logistic.common.internal.request.RouteClientRequest;
 import com.logistic.common.internal.response.RouteClientResponse;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;

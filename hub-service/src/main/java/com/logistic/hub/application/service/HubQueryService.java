@@ -3,6 +3,7 @@ package com.logistic.hub.application.service;
 import com.logistic.common.annotation.UseCase;
 import com.logistic.hub.application.port.in.HubQueryUseCase;
 import com.logistic.hub.application.port.in.query.HubFindQuery;
+import com.logistic.hub.application.port.in.query.HubListQuery;
 import com.logistic.hub.application.port.in.query.HubSearchQuery;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
 import com.logistic.hub.application.service.dto.HubHistoryDto;
@@ -10,6 +11,7 @@ import com.logistic.hub.config.RestPage;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.exception.HubAlreadyDeletedException;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -26,7 +28,7 @@ public class HubQueryService implements HubQueryUseCase {
 
   @Override
   @Cacheable(cacheNames = "hubList", key = "{ #hubSearchQuery.page(),#hubSearchQuery.size(),#hubSearchQuery.search()}")
-  public RestPage<HubHistoryDto> getHubList(HubSearchQuery hubSearchQuery) {
+  public RestPage<HubHistoryDto> search(HubSearchQuery hubSearchQuery) {
     Sort.Direction direction = Direction.ASC;  //'가'부터 허브명으로 정렬되도록 조회
     Sort sort1 = Sort.by(direction, "hubName");
     Pageable pageable = PageRequest.of(hubSearchQuery.page(), hubSearchQuery.size(), sort1);
@@ -36,11 +38,22 @@ public class HubQueryService implements HubQueryUseCase {
   }
 
   @Override
+  public List<Hub> findHubList(HubListQuery query) {
+    return List.of();
+  }
+
+  @Override
   public Hub getHubDetails(HubFindQuery hubFindQuery) {
     Hub hub = hubPersistencePort.findById(hubFindQuery.hubId());
     isDeleted(hub);
     return hub;
   }
+
+  @Override
+  public boolean existsHub(Long hubId) {
+    return hubPersistencePort.existsHub(hubId);
+  }
+
 
   private void isDeleted(Hub hub) {
     if (hub.getIsDeleted()) {

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Adapter
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/hubRoutes")
+@RequestMapping("/api/v1/routes")
 public class RouteWebAdaptor {
   private final RouteUseCase routeUseCase;
   private final RouteWebMapper routeWebMapper;
@@ -38,11 +38,11 @@ public class RouteWebAdaptor {
   }
 
 
-  @DeleteMapping("/{hubRouteId}")
+  @DeleteMapping("/{routeId}")
   public ResponseEntity<ApiResponse<String>> deleteHubRoute(//@WithPassport Passport passport,
-                                                            @PathVariable Long hubRouteId) {
+                                                            @PathVariable Long routeId) {
 
-    routeUseCase.deleteHubRoute(hubRouteId);
+    routeUseCase.deleteHubRoute(routeId);
 
     ApiResponse<String> response = ApiResponse.success("삭제되었습니다");
     return ResponseEntity.status(HttpStatus.OK).body(response);

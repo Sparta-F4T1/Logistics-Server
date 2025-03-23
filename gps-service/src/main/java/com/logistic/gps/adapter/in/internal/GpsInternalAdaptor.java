@@ -3,6 +3,8 @@ package com.logistic.gps.adapter.in.internal;
 import com.logistic.common.annotation.Adapter;
 import com.logistic.common.internal.request.GpsClientRequest;
 import com.logistic.common.internal.response.GpsClientResponse;
+import com.logistic.common.passport.annotation.WithPassport;
+import com.logistic.common.passport.model.Passport;
 import com.logistic.gps.application.port.in.GpsUseCase;
 import com.logistic.gps.application.port.in.command.GpsDistanceCommand;
 import com.logistic.gps.application.port.in.command.GpsInfoCommand;
@@ -27,6 +29,7 @@ public class GpsInternalAdaptor {
   @GetMapping("/{gpsId}")
     //위도, 경도 반환
   GpsClientResponse findGps(@PathVariable("gpsId") Long gpsId,
+                            @WithPassport Passport passport,
                             @ModelAttribute GpsClientRequest request
   ) {
 
@@ -38,19 +41,21 @@ public class GpsInternalAdaptor {
   }
 
   @GetMapping
-  GpsClientResponse findGpsList(@ModelAttribute GpsClientRequest request) {
+  GpsClientResponse findGpsList(@ModelAttribute GpsClientRequest request,
+                                @WithPassport Passport passport) {
 
     return null;
   }
 
   @GetMapping("/direction")
     // 허브 간 거리, 시간 계산
-  GpsClientResponse findDistanceAndDuration(@RequestParam String depart, @RequestParam String arrival) {
+  GpsClientResponse findDistanceAndDuration(@RequestParam String depart, @RequestParam String arrival,
+                                            @WithPassport Passport passport) {
 
     GpsDistanceCommand command = new GpsDistanceCommand(depart, arrival);
 
     Direction direction = gpsUseCase.findDistance(command);
 
-    return new GpsClientResponse(null, null, null, null, null, direction.getDistance(), direction.getDuration());
+    return new GpsClientResponse(null, null, null, null, null, direction.getDuration(), direction.getDistance());
   }
 }
