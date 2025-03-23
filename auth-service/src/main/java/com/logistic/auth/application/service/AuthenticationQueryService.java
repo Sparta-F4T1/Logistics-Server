@@ -1,6 +1,6 @@
 package com.logistic.auth.application.service;
 
-import com.logistic.auth.application.port.in.AuthQueryUseCase;
+import com.logistic.auth.application.port.in.AuthenticationQueryUseCase;
 import com.logistic.auth.application.port.in.query.VerifyTokenQuery;
 import com.logistic.auth.application.port.out.persistence.AuthPersistencePort;
 import com.logistic.auth.application.port.out.support.jwt.AuthJwtPort;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class AuthenticationQueryService implements AuthQueryUseCase {
+public class AuthenticationQueryService implements AuthenticationQueryUseCase {
 
   private final AuthPersistencePort persistencePort;
   private final AuthJwtPort jwtPort;
@@ -28,7 +28,7 @@ public class AuthenticationQueryService implements AuthQueryUseCase {
   public UserId validateToken(VerifyTokenQuery query) {
     TokenValidationResult validationResult = this.validateTokenAndExtractId(query.token());
     if (persistencePort.isBlacklisted(validationResult.tokenId())) {
-      throw new AuthServiceException(AuthServiceErrorCode.BLACKLISTED_TOKEN);
+      throw AuthServiceException.auth(AuthServiceErrorCode.BLACKLISTED_TOKEN);
     }
     return validationResult.userId();
   }
