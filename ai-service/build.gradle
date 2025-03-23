@@ -26,7 +26,7 @@ ext {
     set('springCloudVersion', "2024.0.0")
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){ }
+tasks.register("prepareKotlinBuildScriptModel") {}
 
 dependencies {
     implementation project(':common-server')
@@ -46,6 +46,8 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 }
 dependencyManagement {
     imports {
