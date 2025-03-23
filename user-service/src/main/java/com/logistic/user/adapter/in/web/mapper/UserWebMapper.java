@@ -2,6 +2,7 @@ package com.logistic.user.adapter.in.web.mapper;
 
 import com.logistic.common.passport.model.Passport;
 import com.logistic.user.adapter.in.web.request.RegisterUserRequest;
+import com.logistic.user.adapter.in.web.request.SearchUserRequest;
 import com.logistic.user.adapter.in.web.request.UpdateUserRequest;
 import com.logistic.user.adapter.in.web.request.UpdateUserStatusRequest;
 import com.logistic.user.adapter.in.web.response.FindUserResponse;
@@ -21,6 +22,7 @@ import com.logistic.user.domain.vo.UserStatus;
 import jakarta.validation.Valid;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Pageable;
 
 @Mapper(componentModel = "spring")
 public interface UserWebMapper {
@@ -73,6 +75,8 @@ public interface UserWebMapper {
   @Mapping(target = "currentUserRole", expression = "java(extractUserRole(passport))")
   DeleteUserCommand toDeleteCommand(String userId, Passport passport);
 
+  Object toSearchQuery(SearchUserRequest request, Pageable pageable);
+
   default String extractUserId(Passport passport) {
     return passport != null && passport.getUserInfo() != null ?
         passport.getUserInfo().getUserId() : null;
@@ -102,5 +106,4 @@ public interface UserWebMapper {
   default String map(UserStatus status) {
     return status != null ? status.name() : null;
   }
-
 }

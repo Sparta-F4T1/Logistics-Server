@@ -47,6 +47,17 @@ public class UserWebAdapter {
         .body(ApiResponse.success(userWebMapper.toUserResponse(user)));
   }
 
+//  @GetMapping
+//  public ResponseEntity<ApiResponse<Page<FindUserResponse>>> search(
+//      @WithPassport final Passport passport,
+//      @Valid @ModelAttribute final SearchUserRequest request,
+//      @PageableDefault final Pageable pageable) {
+//    final Page<FindUserResponse> response = userQueryUseCase.search(
+//            userWebMapper.toSearchQuery(request, pageable))
+//        .map(userWebMapper::toUserResponse);
+//    return ResponseEntity.ok().body(ApiResponse.success(response));
+//  }
+
   @GetMapping("/{userId}")
   public ResponseEntity<ApiResponse<FindUserResponse>> findUser(
       @WithPassport final Passport passport,

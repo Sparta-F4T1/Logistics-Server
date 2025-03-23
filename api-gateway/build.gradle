@@ -27,6 +27,9 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-validation'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-jdbc'
     }
+
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 }
 
 dependencyManagement {
