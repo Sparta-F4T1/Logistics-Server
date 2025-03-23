@@ -31,6 +31,12 @@ public enum AuthServiceErrorCode implements ErrorCode {
   REFRESH_TOKEN_MISMATCH(UNAUTHORIZED, "AA007", "저장된 리프레시 토큰과 일치하지 않습니다. 다시 로그인해주세요."),
   BLACKLISTED_TOKEN(UNAUTHORIZED, "AA008", "차단된 JWT 토큰입니다."),
   NOT_FOUND_AUTH_USER(NOT_FOUND, "AA009", "아이디 또는 비밀번호가 잘못되어 사용자를 찾을 수 없습니다."),
+  MISSING_PERMISSION_ID(BAD_REQUEST, "AA010", "권한 아이디는 빈 값일 수 없습니다."),
+  MISSING_ACTION_TYPE(BAD_REQUEST, "AA011", "ActionType은 null이거나 비어있을 수 없습니다"),
+  INVALID_RESOURCE_TYPE(BAD_REQUEST, "AA012", "유효하지 않은 리소스 타입"),
+  INVALID_ACTION_TYPE(BAD_REQUEST, "AA013", "유효하지 않은 액션 타입"),
+  INVALID_RESOURCE_PATH(BAD_REQUEST, "AA014", "유효하지 않은 리소스 경로"),
+  UNSUPPORTED_HTTP_METHOD(BAD_REQUEST, "AA015", "지원되지 않는 HTTP 메소드"),
 
   // JWT 파싱 오류 (J)
   INVALID_SIGNATURE(BAD_REQUEST, "AJ001", "유효하지 않는 JWT 서명입니다."),
@@ -61,11 +67,17 @@ public enum AuthServiceErrorCode implements ErrorCode {
   // 사용자 관련 오류 (U)
   EMPTY_USER_ID(BAD_REQUEST, "AU001", "사용자 ID는 빈 값일 수 없습니다."),
   MISSING_USER_INFO(BAD_REQUEST, "AU002", "사용자 정보는 필수입니다."),
-  MISSING_ROLE(BAD_REQUEST, "AU003", "사용자 역할은 필수입니다."),
-  INVALID_ROLE(BAD_REQUEST, "AU004", "유효하지 않은 역할입니다."),
-  MISSING_ACCESS_SCOPE(BAD_REQUEST, "AU005", "접근 범위는 필수입니다."),
-  EMPTY_PASSWORD(BAD_REQUEST, "AU006", "사용자 비밀번호는 빈 값일 수 없습니다.");
+  MISSING_ROLE_ID(BAD_REQUEST, "AU003", "사용자 역할 아이디는 필수입니다."),
+  MISSING_ROLE_NAME(BAD_REQUEST, "AU004", "사용자 역할 이름은 필수입니다."),
+  MISSING_ROLE(BAD_REQUEST, "AU005", "사용자 역할은 필수입니다."),
+  INVALID_ROLE(BAD_REQUEST, "AU006", "유효하지 않은 역할입니다."),
+  MISSING_ACCESS_SCOPE(BAD_REQUEST, "AU007", "접근 범위는 필수입니다."),
+  EMPTY_PASSWORD(BAD_REQUEST, "AU008", "사용자 비밀번호는 빈 값일 수 없습니다."),
 
+  // 기타 오류
+  PASSPORT_CACHE_FAILURE(BAD_REQUEST, "AE001", "Passport 캐싱 실패"),
+  PASSPORT_JSON_PROCESSING_FAILURE(BAD_REQUEST, "AE02", "Passport 파싱 실패"),
+  ;
   private final HttpStatus httpStatus;
   private final String code;
   private final String message;
