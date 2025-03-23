@@ -80,17 +80,17 @@ public class TokenPair {
 
   private static void validateTokenPair(TokenCredential accessTokenCredential, TokenCredential refreshTokenCredential) {
     if (!accessTokenCredential.isAccessToken()) {
-      throw new AuthServiceException(AuthServiceErrorCode.INVALID_TOKEN_TYPE);
+      throw AuthServiceException.token(AuthServiceErrorCode.INVALID_TOKEN_TYPE);
     }
     if (!refreshTokenCredential.isRefreshToken()) {
-      throw new AuthServiceException(AuthServiceErrorCode.INVALID_TOKEN_TYPE);
+      throw AuthServiceException.token(AuthServiceErrorCode.INVALID_TOKEN_TYPE);
     }
 
     String accessSubject = accessTokenCredential.getClaims().getSubject().value();
     String refreshSubject = refreshTokenCredential.getClaims().getSubject().value();
 
     if (!accessSubject.equals(refreshSubject)) {
-      throw new AuthServiceException(AuthServiceErrorCode.INVALID_TOKEN_PAIR);
+      throw AuthServiceException.token(AuthServiceErrorCode.INVALID_TOKEN_PAIR);
     }
   }
 }

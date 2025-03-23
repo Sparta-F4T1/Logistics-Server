@@ -1,6 +1,6 @@
 package com.logistic.auth.application.service;
 
-import com.logistic.auth.application.port.in.AuthCommandUseCase;
+import com.logistic.auth.application.port.in.AuthenticationCommandUseCase;
 import com.logistic.auth.application.port.in.command.LoginCommand;
 import com.logistic.auth.application.port.in.command.LogoutCommand;
 import com.logistic.auth.application.port.in.command.RefreshCommand;
@@ -27,18 +27,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AuthCommandService implements AuthCommandUseCase {
+public class AuthenticationCommandService implements AuthenticationCommandUseCase {
   private final AuthPersistencePort persistencePort;
   private final AuthJwtPort jwtPort;
   private final IdGeneratorPort idGenerator;
   private final PasswordEncoder passwordEncoder;
 
   @Override
-  public TokenPair login(LoginCommand command) {
-    User user = persistencePort.findByUserId(command.username());
+  public TokenPair login(final LoginCommand command) {
+    User user = persistencePort.findByIdForLogin(command.username());
 
     if (!passwordEncoder.matches(command.password(), user.getPassword().getHashedValue())) {
-      throw new AuthServiceException(AuthServiceErrorCode.USER_NOT_FOUND);
+      throw AuthServiceException.user(AuthServiceErrorCode.USER_NOT_FOUND);
     }
 
     TokenPair tokenPair = createAndSaveTokenPair(user.getUserId());
@@ -48,7 +48,7 @@ public class AuthCommandService implements AuthCommandUseCase {
   }
 
   @Override
-  public TokenPair refresh(RefreshCommand command) {
+  public TokenPair refresh(final RefreshCommand command) {
     String refreshToken = command.refreshToken();
     TokenValidationResult validationResult = validateToken(refreshToken);
 
@@ -65,7 +65,7 @@ public class AuthCommandService implements AuthCommandUseCase {
   }
 
   @Override
-  public void logout(LogoutCommand command) {
+  public void logout(final LogoutCommand command) {
     TokenValidationResult validationResult = validateAndCheckBlacklist(command.accessToken());
     invalidateToken(validationResult.tokenId(), validationResult.userId(), validationResult.expiration());
     log.info("로그아웃 성공: TokenId={}", validationResult.tokenId().value());
@@ -85,7 +85,7 @@ public class AuthCommandService implements AuthCommandUseCase {
   private void validateRefreshToken(TokenId tokenId, String refreshToken) {
     boolean isValidRefreshToken = persistencePort.isValidRefreshToken(tokenId, refreshToken);
     if (!isValidRefreshToken) {
-      throw new AuthServiceException(AuthServiceErrorCode.REFRESH_TOKEN_MISMATCH);
+      throw AuthServiceException.auth(AuthServiceErrorCode.REFRESH_TOKEN_MISMATCH);
     }
   }
 
@@ -116,7 +116,7 @@ public class AuthCommandService implements AuthCommandUseCase {
   private TokenValidationResult validateAndCheckBlacklist(String token) {
     TokenValidationResult validationResult = validateToken(token);
     if (persistencePort.isBlacklisted(validationResult.tokenId())) {
-      throw new AuthServiceException(AuthServiceErrorCode.BLACKLISTED_TOKEN);
+      throw AuthServiceException.auth(AuthServiceErrorCode.BLACKLISTED_TOKEN);
     }
     return validationResult;
   }

@@ -15,7 +15,7 @@ public record UserId(String value) {
 
   private static void validateUserId(String value) {
     if (value == null || value.isBlank()) {
-      throw new AuthServiceException(AuthServiceErrorCode.EMPTY_SUBJECT);
+      throw AuthServiceException.token(AuthServiceErrorCode.EMPTY_SUBJECT, "사용자의 아이디가 비어있습니다.");
     }
   }
 }

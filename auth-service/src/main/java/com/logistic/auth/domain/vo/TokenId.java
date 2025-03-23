@@ -15,7 +15,7 @@ public record TokenId(String value) {
 
   private static void validateTokenId(String value) {
     if (value == null || value.isBlank()) {
-      throw new AuthServiceException(AuthServiceErrorCode.EMPTY_TOKEN_ID);
+      throw AuthServiceException.token(AuthServiceErrorCode.EMPTY_TOKEN_ID);
     }
   }
 }

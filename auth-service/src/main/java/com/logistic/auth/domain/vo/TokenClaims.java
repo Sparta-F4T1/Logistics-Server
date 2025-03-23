@@ -27,13 +27,13 @@ public class TokenClaims {
 
   private static void validateInstants(Instant issuedAt, Instant expiration) {
     if (issuedAt == null) {
-      throw new AuthServiceException(AuthServiceErrorCode.NULL_ISSUED_AT);
+      throw AuthServiceException.token(AuthServiceErrorCode.NULL_ISSUED_AT);
     }
     if (expiration == null) {
-      throw new AuthServiceException(AuthServiceErrorCode.NULL_EXPIRATION);
+      throw AuthServiceException.token(AuthServiceErrorCode.NULL_EXPIRATION);
     }
     if (expiration.isBefore(issuedAt)) {
-      throw new AuthServiceException(AuthServiceErrorCode.INVALID_EXPIRATION);
+      throw AuthServiceException.token(AuthServiceErrorCode.INVALID_EXPIRATION);
     }
   }
 }

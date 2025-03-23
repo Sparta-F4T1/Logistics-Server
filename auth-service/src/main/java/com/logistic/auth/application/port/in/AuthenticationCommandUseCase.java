@@ -5,7 +5,7 @@ import com.logistic.auth.application.port.in.command.LogoutCommand;
 import com.logistic.auth.application.port.in.command.RefreshCommand;
 import com.logistic.auth.domain.TokenPair;
 
-public interface AuthCommandUseCase {
+public interface AuthenticationCommandUseCase {
   TokenPair login(LoginCommand command);
 
   TokenPair refresh(RefreshCommand command);

@@ -1,16 +1,24 @@
 package com.logistic.auth.domain.vo;
 
-
+import com.logistic.auth.domain.exception.AuthServiceErrorCode;
+import com.logistic.auth.domain.exception.AuthServiceException;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Password {
-  private final String hashedValue;
+  private String hashedValue;
 
-  public static Password mock() {
-//      hashedValue
-    return new Password("$2a$10$J7u6Tt5qxE5EyF1a6Bv8M.s8nZmX05oOQJmK6UmA5sBJD7ilTeHqi");
+  private Password(String hashedValue) {
+    this.hashedValue = hashedValue;
+  }
+
+  public static Password of(String encodedPassword) {
+    if (encodedPassword == null || encodedPassword.trim().isEmpty()) {
+      throw AuthServiceException.user(AuthServiceErrorCode.EMPTY_PASSWORD);
+    }
+    return new Password(encodedPassword);
   }
 }

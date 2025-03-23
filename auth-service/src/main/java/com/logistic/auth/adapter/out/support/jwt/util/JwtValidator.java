@@ -40,7 +40,7 @@ public class JwtValidator extends AbstractJwtSupport {
       throw new JwtExpiredException(AuthServiceErrorCode.EXPIRED_TOKEN, e);
     } catch (Exception e) {
       AuthServiceErrorCode error = ERROR_MAP.getOrDefault(e.getClass(), AuthServiceErrorCode.JWT_GENERAL_ERROR);
-      throw new JwtParsingException(String.valueOf(error), e);
+      throw new JwtParsingException(error);
     }
   }
 
