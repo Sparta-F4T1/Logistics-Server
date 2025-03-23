@@ -6,9 +6,11 @@ import com.logistic.common.passport.model.Passport;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.user.adapter.in.web.mapper.UserWebMapper;
 import com.logistic.user.adapter.in.web.request.RegisterUserRequest;
+import com.logistic.user.adapter.in.web.request.SearchUserRequest;
 import com.logistic.user.adapter.in.web.request.UpdateUserRequest;
 import com.logistic.user.adapter.in.web.request.UpdateUserStatusRequest;
 import com.logistic.user.adapter.in.web.response.FindUserResponse;
+import com.logistic.user.adapter.in.web.response.PageResponse;
 import com.logistic.user.adapter.in.web.response.UpdateUserResponse;
 import com.logistic.user.adapter.in.web.response.UpdateUserStatusResponse;
 import com.logistic.user.application.port.in.UserCommandUseCase;
@@ -17,10 +19,13 @@ import com.logistic.user.domain.User;
 import com.logistic.user.domain.vo.UserStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,16 +52,16 @@ public class UserWebAdapter {
         .body(ApiResponse.success(userWebMapper.toUserResponse(user)));
   }
 
-//  @GetMapping
-//  public ResponseEntity<ApiResponse<Page<FindUserResponse>>> search(
-//      @WithPassport final Passport passport,
-//      @Valid @ModelAttribute final SearchUserRequest request,
-//      @PageableDefault final Pageable pageable) {
-//    final Page<FindUserResponse> response = userQueryUseCase.search(
-//            userWebMapper.toSearchQuery(request, pageable))
-//        .map(userWebMapper::toUserResponse);
-//    return ResponseEntity.ok().body(ApiResponse.success(response));
-//  }
+  @GetMapping
+  public ResponseEntity<ApiResponse<PageResponse<FindUserResponse>>> search(
+      @WithPassport final Passport passport,
+      @Valid @ModelAttribute final SearchUserRequest request,
+      @PageableDefault final Pageable pageable) {
+    PageResponse<FindUserResponse> response = userWebMapper.toPageResponse(
+        userQueryUseCase.search(userWebMapper.toSearchQuery(pageable, passport, request))
+    );
+    return ResponseEntity.ok().body(ApiResponse.success(response));
+  }
 
   @GetMapping("/{userId}")
   public ResponseEntity<ApiResponse<FindUserResponse>> findUser(

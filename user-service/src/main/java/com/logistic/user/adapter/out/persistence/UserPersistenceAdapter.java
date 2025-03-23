@@ -4,16 +4,20 @@ import com.logistic.common.annotation.Adapter;
 import com.logistic.user.adapter.out.persistence.entity.UserEntity;
 import com.logistic.user.adapter.out.persistence.mapper.UserPersistenceMapper;
 import com.logistic.user.adapter.out.persistence.repository.UserJapRepository;
+import com.logistic.user.adapter.out.persistence.repository.UserQueryDslRepository;
+import com.logistic.user.application.port.in.query.SearchUserQuery;
 import com.logistic.user.application.port.out.persistence.UserPersistencePort;
 import com.logistic.user.domain.User;
 import com.logistic.user.domain.exception.UserServiceErrorCode;
 import com.logistic.user.domain.exception.UserServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 
 @Adapter
 @RequiredArgsConstructor
 public class UserPersistenceAdapter implements UserPersistencePort {
   private final UserJapRepository userJapRepository;
+  private final UserQueryDslRepository userQueryDslRepository;
   private final UserPersistenceMapper mapper;
 
   @Override
@@ -54,5 +58,10 @@ public class UserPersistenceAdapter implements UserPersistencePort {
         .orElseThrow(() -> UserServiceException.user(UserServiceErrorCode.NOT_FOUND_USER));
     userEntity.deleteUser(targetUser.getStatus(), currentUserId);
     userEntity.updateUser(targetUser);
+  }
+
+  @Override
+  public Page<User> search(SearchUserQuery query) {
+    return userQueryDslRepository.search(query).map(mapper::toDomain);
   }
 }

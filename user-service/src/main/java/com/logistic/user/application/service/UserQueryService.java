@@ -1,12 +1,13 @@
 package com.logistic.user.application.service;
 
-import com.logistic.user.adapter.in.web.mapper.UserWebMapper;
 import com.logistic.user.application.port.in.UserQueryUseCase;
 import com.logistic.user.application.port.in.query.FindUserQuery;
+import com.logistic.user.application.port.in.query.SearchUserQuery;
 import com.logistic.user.application.port.out.persistence.UserPersistencePort;
 import com.logistic.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class UserQueryService implements UserQueryUseCase {
   }
 
   @Override
-  public UserWebMapper search(Object searchQuery) {
-    return null;
+  public Page<User> search(SearchUserQuery query) {
+    return persistencePort.search(query);
   }
 }
