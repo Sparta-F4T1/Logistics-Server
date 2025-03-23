@@ -1,5 +1,7 @@
 package com.logistic.common.internal.response;
 
+import java.util.List;
+
 public record HubClientResponse(
     Long hubId,
     String hubType,
@@ -7,5 +9,6 @@ public record HubClientResponse(
     String road,
     String jibun,
     Double latitude,
-    Double longitude) {
+    Double longitude,
+    List<String> userIds) {
 }

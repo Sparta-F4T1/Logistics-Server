@@ -1,9 +1,7 @@
 package com.logistic.common.internal.request;
 
-import com.logistic.common.passport.model.Passport;
-import java.util.List;
+import java.util.Map;
 
 public record ProductClientRequest(
-    List<Long> productIds,
-    Passport passport) {
+    Map<Long, Integer> stockMap) {
 }
