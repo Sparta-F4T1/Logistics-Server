@@ -1,4 +1,8 @@
 package com.logistic.order.application.service.dto;
 
-public record UserDto() {
+public record UserDto(
+    String userId,
+    String userName,
+    String slackEmail
+) {
 }

@@ -4,6 +4,7 @@ import com.logistic.order.application.service.dto.CompanyDto;
 import com.logistic.order.application.service.dto.HubDto;
 import com.logistic.order.application.service.dto.UserDto;
 import com.logistic.order.domain.vo.OrderProduct;
+import com.logistic.order.domain.vo.Product;
 import java.util.List;
 
 public interface OrderInternalPort {
@@ -15,4 +16,5 @@ public interface OrderInternalPort {
 
   UserDto findUser(String userId);
 
+  Product findProduct(Long productId);
 }

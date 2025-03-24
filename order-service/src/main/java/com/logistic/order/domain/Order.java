@@ -1,6 +1,8 @@
 package com.logistic.order.domain;
 
+import com.logistic.order.domain.vo.Company;
 import com.logistic.order.domain.vo.OrderProduct;
+import com.logistic.order.domain.vo.User;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.util.List;
@@ -18,13 +20,9 @@ import lombok.Setter;
 public class Order {
   private Long id;
 
-  private Long sellerId;
+  private Company seller;
 
-  private Long buyerId;
-
-  private Long sellerHubId;
-
-  private Long buyerHubId;
+  private Company buyer;
 
   private String memo;
 
@@ -33,13 +31,16 @@ public class Order {
 
   private List<OrderProduct> orderProducts;
 
-  public static Order create(Long sellerId, Long buyerId, String memo, OrderStatus orderStatus, List<OrderProduct> orderProducts) {
+  private User user;
+
+  public static Order create(Company seller, Company buyerId, String memo, OrderStatus orderStatus, List<OrderProduct> orderProducts, String userId, String userName) {
     return Order.builder()
-        .sellerId(sellerId)
-        .buyerId(buyerId)
+        .seller(seller)
+        .buyer(buyerId)
         .memo(memo)
         .status(orderStatus)
         .orderProducts(orderProducts)
+        .user(User.create(userId, userName))
         .build();
   }
 
