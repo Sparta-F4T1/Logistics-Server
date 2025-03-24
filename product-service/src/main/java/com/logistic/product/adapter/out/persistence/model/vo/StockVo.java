@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockValue {
+public class StockVo {
 
   @Column(name = "quantity", nullable = false)
   private Integer quantity;

@@ -1,5 +1,6 @@
 package com.logistic.product.domain.vo;
 
+import com.logistic.product.domain.exception.CustomBadRequestException.StockNotAvailableException;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,21 +21,17 @@ public class Stock {
     return new Stock(newQuantity);
   }
 
-  public Stock add(final Integer addQuantity) {
-    return new Stock(quantity + addQuantity);
-  }
-
   public Stock decrease(final Integer decreaseQuantity) {
     return new Stock(quantity - decreaseQuantity);
   }
 
+  public Stock increase(final Integer addQuantity) {
+    return new Stock(quantity + addQuantity);
+  }
+
   private void validate(final Integer quantity) {
-    // todo 재고 예외처리 수정
-    if (quantity == null) {
-      throw new IllegalArgumentException("재고는 null일 수 없습니다.");
-    }
     if (quantity < 0) {
-      throw new IllegalArgumentException("재고는 음수일 수 없습니다.");
+      throw new StockNotAvailableException();
     }
   }
 }

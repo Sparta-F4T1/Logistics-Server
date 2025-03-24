@@ -1,8 +1,10 @@
 package com.logistic.product.application.port.out;
 
-import com.logistic.common.passport.model.Passport;
-import com.logistic.product.application.service.dto.CompanyInfo;
+import com.logistic.product.domain.vo.Company;
+import com.logistic.product.domain.vo.Hub;
 
 public interface ProductInternalPort {
-  CompanyInfo findCompany(Long companyId, Passport passport);
+  Company findCompany(Long companyId);
+
+  Hub findHub(Long hubId);
 }
