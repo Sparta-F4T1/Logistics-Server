@@ -1,11 +1,14 @@
 package com.logistic.order.application.service;
 
+import com.logistic.common.passport.model.RoleType;
+import com.logistic.common.passport.model.UserInfo;
 import com.logistic.order.application.port.OrderPersistencePort;
 import com.logistic.order.application.port.in.OrderUseCase;
 import com.logistic.order.application.port.in.command.CreateOrderCommand;
 import com.logistic.order.application.port.out.MessagePort;
 import com.logistic.order.application.port.out.OrderInternalPort;
 import com.logistic.order.domain.Order;
+import com.logistic.order.domain.OrderException.OrderBuyerNotAuthorized;
 import com.logistic.order.domain.OrderStatus;
 import com.logistic.order.domain.vo.OrderProduct;
 import java.util.List;
@@ -35,7 +38,7 @@ public class OrderService implements OrderUseCase {
         command.sellerId(),
         command.buyerId(),
         command.memo(),
-        checkInventory(orderProducts),
+        checkStock(orderProducts),
         orderProducts
     );
 
@@ -73,10 +76,9 @@ public class OrderService implements OrderUseCase {
     return orderPersistencePort.findById(orderId);
   }
 
-
-  private OrderStatus checkInventory(List<OrderProduct> orderProducts){
+  private OrderStatus checkStock(List<OrderProduct> orderProducts){
     try{
-      orderInternalPort.updateProductInventory(orderProducts);
+      orderInternalPort.updateStock(orderProducts);
     }catch (Exception e){
       return OrderStatus.PENDING;
     }
