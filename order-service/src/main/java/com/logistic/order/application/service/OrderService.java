@@ -25,6 +25,8 @@ public class OrderService implements OrderUseCase {
 
   @Override
   public Order createOrder(CreateOrderCommand command) {
+    checkCompanyManager(command.buyerId(), command.userInfo());
+
     List<OrderProduct> orderProducts = command.orderProducts().stream()
         .map(orderProduct -> OrderProduct.create(orderProduct.productId(), orderProduct.quantity()))
         .collect(Collectors.toList());
@@ -80,5 +82,18 @@ public class OrderService implements OrderUseCase {
     }
 
     return OrderStatus.IN_DELIVERY;
+  }
+
+  private void checkCompanyManager(Long buyerId, UserInfo userInfo) {
+    if(!userInfo.getRole().equals(String.valueOf(RoleType.COMPANY_PERSONNEL))) {
+      throw new OrderBuyerNotAuthorized();
+    }
+
+    orderInternalPort.findCompany(buyerId)
+        .userIds()
+        .stream()
+        .filter(userId -> userId.equals(userInfo.getUserId()))
+        .findFirst()
+        .orElseThrow(OrderBuyerNotAuthorized::new);
   }
 }

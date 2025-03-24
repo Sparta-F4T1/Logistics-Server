@@ -1,6 +1,8 @@
 package com.logistic.order.adapter.in.external.web;
 
 import com.logistic.common.annotation.Adapter;
+import com.logistic.common.passport.annotation.WithPassport;
+import com.logistic.common.passport.model.Passport;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.order.adapter.in.external.web.mapper.OrderWebMapper;
 import com.logistic.order.adapter.in.external.web.request.CreateOrderRequest;
@@ -33,8 +35,9 @@ public class OrderWebAdapter {
 
   @PostMapping
   public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
-      @Valid @RequestBody CreateOrderRequest createOrderRequest) {
-    Order order = orderUseCase.createOrder(orderWebMapper.toCreateCommand(createOrderRequest));
+      @Valid @RequestBody CreateOrderRequest createOrderRequest,
+      @WithPassport Passport passport) {
+    Order order = orderUseCase.createOrder(orderWebMapper.toCreateCommand(createOrderRequest, passport));
     ApiResponse<CreateOrderResponse> response = ApiResponse.success(orderWebMapper.toCreateResponse(order));
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
