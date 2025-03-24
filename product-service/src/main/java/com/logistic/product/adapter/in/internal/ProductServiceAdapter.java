@@ -43,14 +43,10 @@ public class ProductServiceAdapter {
   }
 
   @PutMapping("/stock")
-  public void decreaseStock(@RequestBody ProductClientRequest request,
-                            @WithPassport Passport passport) {
-    commandUseCase.decreaseStock(mapper.toUpdateCommand(request, passport));
+  public List<ProductClientResponse> decreaseStock(@RequestBody ProductClientRequest request,
+                                                   @WithPassport Passport passport) {
+    List<Product> productList = commandUseCase.decreaseStock(mapper.toUpdateCommand(request, passport));
+    return productList.stream().map(mapper::toResponse).toList();
   }
 
-  @PutMapping("/stock/increase")
-  public void increaseStock(@RequestBody ProductClientRequest request,
-                            @WithPassport Passport passport) {
-    commandUseCase.increaseStock(mapper.toUpdateCommand(request, passport));
-  }
 }

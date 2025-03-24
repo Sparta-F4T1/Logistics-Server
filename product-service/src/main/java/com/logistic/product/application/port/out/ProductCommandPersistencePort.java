@@ -10,7 +10,7 @@ public interface ProductCommandPersistencePort {
 
   Product findById(Long productId);
 
-  List<Product> findAll(List<Long> productIds);
+  List<Product> findAllByCompanyId(Long companyId);
 
   Page<Product> search(SearchProductQuery searchProductQuery);
 }

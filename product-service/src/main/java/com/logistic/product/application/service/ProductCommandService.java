@@ -3,6 +3,7 @@ package com.logistic.product.application.service;
 import com.logistic.common.annotation.UseCase;
 import com.logistic.product.application.port.in.ProductCommandUseCase;
 import com.logistic.product.application.port.in.command.CreateProductCommand;
+import com.logistic.product.application.port.in.command.DeleteCompanyCommand;
 import com.logistic.product.application.port.in.command.DeleteProductCommand;
 import com.logistic.product.application.port.in.command.UpdateProductCommand;
 import com.logistic.product.application.port.in.command.UpdateStockCommand;
@@ -10,12 +11,12 @@ import com.logistic.product.application.port.out.ProductCommandPersistencePort;
 import com.logistic.product.application.port.out.ProductInternalPort;
 import com.logistic.product.application.port.out.ProductLockPort;
 import com.logistic.product.domain.Product;
-import com.logistic.product.domain.ProductPolicyService;
 import com.logistic.product.domain.command.ProductForCreate;
 import com.logistic.product.domain.command.ProductForUpdate;
 import com.logistic.product.domain.event.StockLockReleaseEvent;
 import com.logistic.product.domain.vo.Company;
 import com.logistic.product.domain.vo.Hub;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
-@Slf4j(topic = "ProductCommandService")
 @Transactional
 @RequiredArgsConstructor
+@Slf4j(topic = "ProductCommandService")
 public class ProductCommandService implements ProductCommandUseCase {
   private final ProductLockPort lockPort;
   private final ProductInternalPort internalPort;
@@ -61,8 +62,9 @@ public class ProductCommandService implements ProductCommandUseCase {
   }
 
   @Override
-  public void decreaseStock(final UpdateStockCommand command) {
+  public List<Product> decreaseStock(final UpdateStockCommand command) {
     final Map<Long, Integer> stockMap = command.stockMap();
+    List<Product> result = new ArrayList<>();
     List<Long> productIds = stockMap.keySet().stream().toList();
     try {
       lockAll(productIds);
@@ -70,6 +72,7 @@ public class ProductCommandService implements ProductCommandUseCase {
         Product product = findProduct(productId);
         Integer origin = product.getStock().getQuantity();
         product.decreaseStock(quantity);
+        result.add(product);
         persistencePort.save(product);
         Integer updated = product.getStock().getQuantity();
         log.info("재고 차감 로직 완료 productId:{},기존 재고: {} ,남은 재고:{} ", product.getId(), origin, updated);
@@ -77,10 +80,11 @@ public class ProductCommandService implements ProductCommandUseCase {
     } finally {
       eventPublisher.publishEvent(new StockLockReleaseEvent(this, productIds));
     }
+    return result;
   }
 
   @Override
-  public void increaseStock(UpdateStockCommand command) {
+  public void increaseStock(final UpdateStockCommand command) {
     final Map<Long, Integer> stockMap = command.stockMap();
     List<Long> productIds = stockMap.keySet().stream().toList();
     try {
@@ -99,6 +103,11 @@ public class ProductCommandService implements ProductCommandUseCase {
   }
 
   @Override
+  public void deleteProductByCompany(final DeleteCompanyCommand command) {
+    findAllByCompanyId(command.companyId()).forEach(Product::delete);
+  }
+
+  @Override
   public void deleteProduct(final DeleteProductCommand command) {
     Product product = findProduct(command.productId());
     final Company company = findCompany(product.getCompanyId());
@@ -110,6 +119,10 @@ public class ProductCommandService implements ProductCommandUseCase {
 
   private Product findProduct(final Long productId) {
     return persistencePort.findById(productId);
+  }
+
+  private List<Product> findAllByCompanyId(final Long companyId) {
+    return persistencePort.findAllByCompanyId(companyId);
   }
 
   private Company findCompany(final Long companyId) {

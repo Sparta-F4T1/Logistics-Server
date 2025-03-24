@@ -1,4 +1,4 @@
-package com.logistic.product.domain;
+package com.logistic.product.application.service;
 
 import com.logistic.common.passport.model.Passport;
 import com.logistic.common.passport.model.RoleType;
