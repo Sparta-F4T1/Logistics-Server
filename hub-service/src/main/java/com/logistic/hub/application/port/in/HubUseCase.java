@@ -2,6 +2,7 @@ package com.logistic.hub.application.port.in;
 
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.HubDeleteCommand;
+import com.logistic.hub.application.port.in.command.HubManagerCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
 import com.logistic.hub.application.port.in.command.RouteDeleteByHubIdCommand;
 import com.logistic.hub.domain.Hub;
@@ -14,4 +15,7 @@ public interface HubUseCase {
 
   void deleteHub(HubDeleteCommand command, RouteDeleteByHubIdCommand routeCommand);
 
+  void assignManager(HubManagerCommand command);
+
+  void deleteManager(HubManagerCommand command);
 }
