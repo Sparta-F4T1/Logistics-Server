@@ -16,6 +16,6 @@ public class MessageAdapter implements MessagePort {
 
   @Override
   public void sendCreateOrder(Order order) {
-    rabbitTemplate.convertAndSend(orderClientMapper.toDeliveryCommand(order));
+    rabbitTemplate.convertAndSend(orderClientMapper.toCreateOrderEvent(order));
   }
 }

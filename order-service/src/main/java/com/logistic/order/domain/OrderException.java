@@ -16,4 +16,22 @@ public class OrderException {
       super("해당 주문 정보가 삭제되었습니다.", ErrorCode.ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
   }
+
+  public static class ExecutionNotAuthorized extends BaseException {
+    public ExecutionNotAuthorized() {
+      super("해당 요청에 대한 권한이 없는 사용자입니다.", ErrorCode.HANDLE_ACCESS_DENIED, HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  public static class OrderBuyerNotAuthorized extends BaseException {
+    public OrderBuyerNotAuthorized() {
+      super("해당 구매 업체에 대한 권한이 없는 사용자입니다.", ErrorCode.HANDLE_ACCESS_DENIED, HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  public static class OrderHubManagerNotAuthorized extends BaseException {
+    public OrderHubManagerNotAuthorized() {
+      super("해당 판매 업체에 대한 권한이 없는 사용자입니다.", ErrorCode.HANDLE_ACCESS_DENIED, HttpStatus.UNAUTHORIZED);
+    }
+  }
 }

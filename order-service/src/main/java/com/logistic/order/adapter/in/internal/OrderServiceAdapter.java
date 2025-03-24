@@ -2,6 +2,8 @@ package com.logistic.order.adapter.in.internal;
 
 import com.logistic.common.annotation.Adapter;
 import com.logistic.common.internal.response.OrderClientResponse;
+import com.logistic.common.passport.model.RoleType;
+import com.logistic.common.passport.model.UserInfo;
 import com.logistic.order.adapter.in.internal.mapper.OrderInternalMapper;
 import com.logistic.order.application.port.in.OrderUseCase;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,8 @@ public class OrderServiceAdapter {
 
   @GetMapping("/{orderId}")
   public OrderClientResponse findOrder(@PathVariable("orderId") Long orderId){
-    return orderInternalMapper.toClientResponse(orderUseCase.findOrder(orderId));
+    UserInfo userInfo = new UserInfo("SYSTEM", String.valueOf(RoleType.MASTER_ADMIN));
+    return orderInternalMapper.toClientResponse(orderUseCase.findOrder(orderId, userInfo));
   }
 
 }

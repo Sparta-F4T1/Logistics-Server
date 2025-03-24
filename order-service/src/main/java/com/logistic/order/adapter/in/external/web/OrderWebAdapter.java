@@ -1,6 +1,8 @@
 package com.logistic.order.adapter.in.external.web;
 
 import com.logistic.common.annotation.Adapter;
+import com.logistic.common.passport.annotation.WithPassport;
+import com.logistic.common.passport.model.Passport;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.order.adapter.in.external.web.mapper.OrderWebMapper;
 import com.logistic.order.adapter.in.external.web.request.CreateOrderRequest;
@@ -33,30 +35,34 @@ public class OrderWebAdapter {
 
   @PostMapping
   public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
-      @Valid @RequestBody CreateOrderRequest createOrderRequest) {
-    Order order = orderUseCase.createOrder(orderWebMapper.toCreateCommand(createOrderRequest));
+      @Valid @RequestBody CreateOrderRequest createOrderRequest,
+      @WithPassport Passport passport) {
+    Order order = orderUseCase.createOrder(orderWebMapper.toCreateCommand(createOrderRequest, passport));
     ApiResponse<CreateOrderResponse> response = ApiResponse.success(orderWebMapper.toCreateResponse(order));
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @PatchMapping("/{orderId}/{status}")
   public ResponseEntity<ApiResponse<UpdateOrderResponse>> updateOrderStatus(@PathVariable Long orderId,
-                                                                            @PathVariable OrderStatus status) {
-    Order order = orderUseCase.updateOrder(orderId, status);
+                                                                            @PathVariable OrderStatus status,
+                                                                            @WithPassport Passport passport) {
+    Order order = orderUseCase.updateOrder(orderId, status, passport.getUserInfo());
     ApiResponse<UpdateOrderResponse> response = ApiResponse.success(orderWebMapper.toUpdateResponse(order));
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }
 
   @DeleteMapping("/{orderId}")
-  public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable Long orderId) {
-    orderUseCase.deleteOrder(orderId, "userId");
+  public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable Long orderId,
+                                                       @WithPassport Passport passport) {
+    orderUseCase.deleteOrder(orderId, passport.getUserInfo());
     ApiResponse<Void> response = ApiResponse.success();
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }
 
   @GetMapping("/{orderId}")
-  public ResponseEntity<ApiResponse<FindOrderResponse>> findOrder(@PathVariable Long orderId) {
-    Order order = orderUseCase.findOrder(orderId);
+  public ResponseEntity<ApiResponse<FindOrderResponse>> findOrder(@PathVariable Long orderId,
+                                                                  @WithPassport Passport passport) {
+    Order order = orderUseCase.findOrder(orderId, passport.getUserInfo());
     ApiResponse<FindOrderResponse> response = ApiResponse.success(orderWebMapper.toReadOrderResponse(order));
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }

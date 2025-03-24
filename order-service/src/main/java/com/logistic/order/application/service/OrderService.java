@@ -1,11 +1,16 @@
 package com.logistic.order.application.service;
 
+import com.logistic.common.passport.model.RoleType;
+import com.logistic.common.passport.model.UserInfo;
 import com.logistic.order.application.port.OrderPersistencePort;
 import com.logistic.order.application.port.in.OrderUseCase;
 import com.logistic.order.application.port.in.command.CreateOrderCommand;
 import com.logistic.order.application.port.out.MessagePort;
 import com.logistic.order.application.port.out.OrderInternalPort;
 import com.logistic.order.domain.Order;
+import com.logistic.order.domain.OrderException.ExecutionNotAuthorized;
+import com.logistic.order.domain.OrderException.OrderBuyerNotAuthorized;
+import com.logistic.order.domain.OrderException.OrderHubManagerNotAuthorized;
 import com.logistic.order.domain.OrderStatus;
 import com.logistic.order.domain.vo.OrderProduct;
 import java.util.List;
@@ -25,6 +30,15 @@ public class OrderService implements OrderUseCase {
 
   @Override
   public Order createOrder(CreateOrderCommand command) {
+    RoleType roleType = getRole(command.userInfo());
+    String userId = command.userInfo().getUserId();
+
+    switch (roleType){
+      case COMPANY_PERSONNEL -> checkCompanyManager(command.buyerId(), userId);
+      case HUB_ADMIN -> checkHubManager(command.sellerId(), userId);
+      case DELIVERY_PERSONNEL -> throw new ExecutionNotAuthorized();
+    }
+
     List<OrderProduct> orderProducts = command.orderProducts().stream()
         .map(orderProduct -> OrderProduct.create(orderProduct.productId(), orderProduct.quantity()))
         .collect(Collectors.toList());
@@ -33,7 +47,7 @@ public class OrderService implements OrderUseCase {
         command.sellerId(),
         command.buyerId(),
         command.memo(),
-        checkInventory(orderProducts),
+        checkStock(orderProducts),
         orderProducts
     );
 
@@ -47,8 +61,21 @@ public class OrderService implements OrderUseCase {
   }
 
   @Override
-  public Order updateOrder(Long orderId, OrderStatus orderStatus) {
+  public Order updateOrder(Long orderId, OrderStatus orderStatus, UserInfo userInfo) {
+    RoleType roleType = getRole(userInfo);
+    String userId = userInfo.getUserId();
+
     Order order = orderPersistencePort.findById(orderId);
+
+    switch (roleType){
+      case COMPANY_PERSONNEL -> {
+        checkAuthorizedOrderStatus(orderStatus, List.of(OrderStatus.CANCELED));
+        checkCompanyManager(order.getBuyerId(), userId);
+      }
+      case HUB_ADMIN -> checkHubManager(order.getSellerId(), userId);
+      case DELIVERY_PERSONNEL -> checkAuthorizedOrderStatus(orderStatus, List.of(OrderStatus.DELIVERED));
+    }
+
     order.updateStatus(orderStatus);
 
     if (orderStatus == OrderStatus.CANCELED){
@@ -62,23 +89,64 @@ public class OrderService implements OrderUseCase {
   }
 
   @Override
-  public void deleteOrder(Long orderId, String userId) {
-    orderPersistencePort.delete(orderId, userId);
+  public void deleteOrder(Long orderId, UserInfo userInfo) {
+    if (getRole(userInfo).equals(RoleType.HUB_ADMIN)){
+      checkHubManager(orderPersistencePort.findById(orderId).getSellerId(), userInfo.getUserId());
+    }
+    orderPersistencePort.delete(orderId, userInfo.getUserId());
   }
 
   @Override
-  public Order findOrder(Long orderId) {
-    return orderPersistencePort.findById(orderId);
+  public Order findOrder(Long orderId, UserInfo userInfo) {
+    RoleType roleType = getRole(userInfo);
+    String userId = userInfo.getUserId();
+
+    Order order = orderPersistencePort.findById(orderId);
+
+    switch (roleType){
+      case COMPANY_PERSONNEL -> checkCompanyManager(order.getBuyerId(), userId);
+      case HUB_ADMIN -> checkHubManager(order.getSellerId(), userId);
+    }
+
+    return order;
   }
 
-
-  private OrderStatus checkInventory(List<OrderProduct> orderProducts){
+  private OrderStatus checkStock(List<OrderProduct> orderProducts){
     try{
-      orderInternalPort.updateProductInventory(orderProducts);
+      orderInternalPort.updateStock(orderProducts);
     }catch (Exception e){
       return OrderStatus.PENDING;
     }
 
     return OrderStatus.IN_DELIVERY;
+  }
+
+  private RoleType getRole(UserInfo userInfo) {
+    return RoleType.valueOf(userInfo.getRole());
+  }
+
+  private void checkAuthorizedOrderStatus(OrderStatus orderStatus, List<OrderStatus> authorizedStatus){
+    authorizedStatus.stream()
+        .filter(status -> status.equals(orderStatus))
+        .findFirst()
+        .orElseThrow(ExecutionNotAuthorized::new);
+  }
+
+  private void checkCompanyManager(Long buyerId, String userId) {
+    orderInternalPort.findCompany(buyerId)
+        .userIds()
+        .stream()
+        .filter(user -> user.equals(userId))
+        .findFirst()
+        .orElseThrow(OrderBuyerNotAuthorized::new);
+  }
+
+  private void checkHubManager(Long sellerId, String userId){
+    orderInternalPort.findHub(sellerId)
+        .userIds()
+        .stream()
+        .filter(user -> user.equals(userId))
+        .findFirst()
+        .orElseThrow(OrderHubManagerNotAuthorized::new);
   }
 }

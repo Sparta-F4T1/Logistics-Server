@@ -1,5 +1,6 @@
 package com.logistic.order.adapter.in.external.web.mapper;
 
+import com.logistic.common.passport.model.Passport;
 import com.logistic.order.adapter.in.external.web.request.CreateOrderRequest;
 import com.logistic.order.adapter.in.external.web.request.SearchOrderRequest;
 import com.logistic.order.adapter.in.external.web.response.CreateOrderResponse;
@@ -14,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 
 @Mapper(componentModel = "spring")
 public interface OrderWebMapper {
-  CreateOrderCommand toCreateCommand(CreateOrderRequest createOrderRequest);
+  CreateOrderCommand toCreateCommand(CreateOrderRequest createOrderRequest, Passport passport);
 
   CreateOrderResponse toCreateResponse(Order order);
 
