@@ -1,12 +1,14 @@
 package com.logistic.product.adapter.in.external.web;
 
 import com.logistic.common.annotation.Adapter;
+import com.logistic.common.passport.annotation.WithPassport;
+import com.logistic.common.passport.model.Passport;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.product.adapter.in.external.web.mapper.ProductWebMapper;
 import com.logistic.product.adapter.in.external.web.request.CreateProductRequest;
 import com.logistic.product.adapter.in.external.web.request.SearchProductRequest;
 import com.logistic.product.adapter.in.external.web.request.UpdateProductRequest;
-import com.logistic.product.adapter.in.external.web.response.FindProductResponse;
+import com.logistic.product.adapter.in.external.web.response.CommandProductResponse;
 import com.logistic.product.application.port.in.ProductCommandUseCase;
 import com.logistic.product.application.port.in.ProductQueryUseCase;
 import com.logistic.product.domain.Product;
@@ -32,51 +34,56 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
 public class ProductWebAdapter {
-  private final ProductCommandUseCase productCommandUseCase;
-  private final ProductWebMapper productWebMapper;
+  private final ProductWebMapper mapper;
   private final ProductQueryUseCase productQueryUseCase;
+  private final ProductCommandUseCase productCommandUseCase;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<FindProductResponse>> createProduct(
-      @Valid @RequestBody final CreateProductRequest request) {
-    final Product product = productCommandUseCase.createProduct(productWebMapper.toCreateCommand(request));
+  public ResponseEntity<ApiResponse<CommandProductResponse>> createProduct(
+      @Valid @RequestBody final CreateProductRequest request,
+      @WithPassport final Passport passport) {
+    final Product product = productCommandUseCase.createProduct(mapper.toCreateCommand(request, passport));
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(ApiResponse.success(productWebMapper.toProductResponse(product)));
+        .body(ApiResponse.success(mapper.toProductResponse(product)));
   }
 
   @PutMapping("/{productId}")
-  public ResponseEntity<ApiResponse<FindProductResponse>> updateProduct(
+  public ResponseEntity<ApiResponse<CommandProductResponse>> updateProduct(
       @PathVariable final Long productId,
-      @RequestBody final UpdateProductRequest request) {
+      @RequestBody final UpdateProductRequest request,
+      @WithPassport final Passport passport) {
     final Product product = productCommandUseCase.updateProduct(
-        productWebMapper.toUpdateInfoCommand(productId, request));
+        mapper.toUpdateInfoCommand(productId, request, passport));
     return ResponseEntity.status(HttpStatus.OK)
-        .body(ApiResponse.success(productWebMapper.toProductResponse(product)));
+        .body(ApiResponse.success(mapper.toProductResponse(product)));
   }
 
   @DeleteMapping("/{productId}")
   public ResponseEntity<ApiResponse<Void>> deleteProduct(
-      @PathVariable final Long productId) {
-    productCommandUseCase.deleteProduct(productWebMapper.toDeleteCommand(productId));
+      @PathVariable final Long productId,
+      @WithPassport final Passport passport) {
+    productCommandUseCase.deleteProduct(mapper.toDeleteCommand(productId, passport));
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.success(null));
   }
 
   @GetMapping("/{productId}")
-  public ResponseEntity<ApiResponse<FindProductResponse>> findProduct(
-      @PathVariable final Long productId) {
-    final Product product = productQueryUseCase.findProduct(productWebMapper.toFindQuery(productId));
+  public ResponseEntity<ApiResponse<CommandProductResponse>> findProduct(
+      @PathVariable final Long productId,
+      @WithPassport final Passport passport) {
+    final Product product = productQueryUseCase.findProduct(mapper.toFindQuery(productId, passport));
     return ResponseEntity.status(HttpStatus.OK)
-        .body(ApiResponse.success(productWebMapper.toProductResponse(product)));
+        .body(ApiResponse.success(mapper.toProductResponse(product)));
   }
 
   @GetMapping
-  public ResponseEntity<ApiResponse<Page<FindProductResponse>>> search(
+  public ResponseEntity<ApiResponse<Page<CommandProductResponse>>> search(
       @Valid @ModelAttribute final SearchProductRequest request,
-      @PageableDefault final Pageable pageable) {
-    final Page<FindProductResponse> response = productQueryUseCase.search(
-            productWebMapper.toSearchQuery(request, pageable))
-        .map(productWebMapper::toProductResponse);
+      @PageableDefault final Pageable pageable,
+      @WithPassport final Passport passport) {
+    final Page<CommandProductResponse> response = productQueryUseCase.search(
+            mapper.toSearchQuery(request, pageable, passport))
+        .map(mapper::toProductResponse);
     return ResponseEntity.status(HttpStatus.OK)
         .body(ApiResponse.success(response));
   }

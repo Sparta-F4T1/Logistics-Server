@@ -5,7 +5,7 @@ import com.logistic.product.domain.Product;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
-public interface ProductPersistencePort {
+public interface ProductCommandPersistencePort {
   Product save(Product product);
 
   Product findById(Long productId);

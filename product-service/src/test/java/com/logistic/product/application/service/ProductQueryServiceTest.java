@@ -2,13 +2,15 @@ package com.logistic.product.application.service;
 
 import com.logistic.product.application.port.in.query.FindProductQuery;
 import com.logistic.product.application.port.in.query.SearchProductQuery;
+import com.logistic.product.application.port.out.ProductCommandPersistencePort;
 import com.logistic.product.application.port.out.ProductInternalPort;
-import com.logistic.product.application.port.out.ProductPersistencePort;
 import com.logistic.product.domain.Product;
 import com.logistic.product.domain.command.ProductForCreate;
+import com.logistic.product.domain.vo.Company;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -25,7 +27,7 @@ class ProductQueryServiceTest {
   @MockitoBean
   private ProductInternalPort productInternalPort;
   @Autowired
-  private ProductPersistencePort productPersistencePort;
+  private ProductCommandPersistencePort productCommandPersistencePort;
 
   @DisplayName("상품 상세조회가 성공한다.")
   @Test
@@ -54,9 +56,10 @@ class ProductQueryServiceTest {
   }
 
   private Product saveProduct() {
-    ProductForCreate forCreate = new ProductForCreate("상품", 100, 1L);
+    Company company = Mockito.mock(Company.class);
+    ProductForCreate forCreate = new ProductForCreate("상품", 100, company);
     Product product = Product.create(forCreate);
-    return productPersistencePort.save(product);
+    return productCommandPersistencePort.save(product);
   }
 
   private void saveProducts() {

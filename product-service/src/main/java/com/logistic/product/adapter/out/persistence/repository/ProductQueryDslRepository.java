@@ -52,11 +52,11 @@ public class ProductQueryDslRepository {
   }
 
   private BooleanExpression isCompanyIdEqual(final Long companyId) {
-    return (companyId == null) ? null : productEntity.info.companyId.eq(companyId);
+    return (companyId == null) ? null : productEntity.companyId.eq(companyId);
   }
 
   private BooleanExpression containsName(final String name) {
-    return (name == null) ? null : productEntity.info.name.containsIgnoreCase(name);
+    return (name == null) ? null : productEntity.name.containsIgnoreCase(name);
   }
 
   private OrderSpecifier<?>[] getOrderSpecifiers(final Pageable pageable) {
