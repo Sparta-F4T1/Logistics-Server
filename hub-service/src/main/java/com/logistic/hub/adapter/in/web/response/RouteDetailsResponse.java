@@ -3,7 +3,7 @@ package com.logistic.hub.adapter.in.web.response;
 import com.logistic.hub.domain.Route;
 
 public record RouteDetailsResponse(
-    Long hubRouteId,
+    Long routeId,
     Long departHubId,
     String departHubName,
     Long arrivalHubId,

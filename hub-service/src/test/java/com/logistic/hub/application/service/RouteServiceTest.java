@@ -5,13 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-import com.logistic.hub.adapter.in.web.response.RouteDetailsResponse;
-import com.logistic.hub.adapter.in.web.response.RouteHistoryListResponse;
+import com.logistic.hub.application.port.in.HubQueryUseCase;
 import com.logistic.hub.application.port.in.HubUseCase;
-import com.logistic.hub.application.port.in.command.DepartArrivalCommand;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
+import com.logistic.hub.application.port.in.command.RouteDeleteCommand;
+import com.logistic.hub.application.port.in.query.RouteFindQuery;
+import com.logistic.hub.application.port.in.query.RouteSearchQuery;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
+import com.logistic.hub.application.service.dto.DepartArrivalDto;
+import com.logistic.hub.application.service.dto.RouteDetailsDto;
+import com.logistic.hub.application.service.dto.RouteHistoryDto;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.Route;
 import com.logistic.hub.domain.command.AddressCommand;
@@ -21,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,16 +37,20 @@ class RouteServiceTest {
   private RouteService routeService;
   @MockitoBean
   private HubUseCase hubUseCase;
+  @MockitoBean
+  private HubQueryUseCase queryUseCase;
   @Autowired
   private HubPersistencePort hubPersistencePort;
+  @Autowired
+  private RouteQueryService routeQueryService;
 
   @Test
   @DisplayName("허브경로 생성")
   void createHubRoute() {
     //given
-    RouteCreateCommand command = new RouteCreateCommand(1L, 2L);
+    RouteCreateCommand command = new RouteCreateCommand(1L, 2L, null);
     Hub mockHub = Hub.builder().build();
-    Mockito.when(hubUseCase.existsHub(any())).thenReturn(true);
+    Mockito.when(queryUseCase.existsHub(any())).thenReturn(true);
 
     //when
     Route route = routeService.createOrUpdateHubRoute(command);
@@ -55,42 +64,44 @@ class RouteServiceTest {
   @DisplayName("허브경로 목록 조회")
   void getHubRouteList() {
     //given
-    HubCreateCommand mockhubCreateCommand1 = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소");
-    HubCreateCommand mockhubCreateCommand2 = new HubCreateCommand("CENTRAL", "경기북부", "도로명주소", "지번주소");
+    HubCreateCommand mockhubCreateCommand1 = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소", null);
+    HubCreateCommand mockhubCreateCommand2 = new HubCreateCommand("CENTRAL", "경기북부", "도로명주소", "지번주소", null);
     AddressCommand mockAddressCommand = new AddressCommand("도로명주소", "지번주소", 300.0, 70.0);
     Hub mockHub1 = Hub.createHub(mockhubCreateCommand1, mockAddressCommand);
     Hub mockHub2 = Hub.createHub(mockhubCreateCommand2, mockAddressCommand);
     Hub save1 = hubPersistencePort.save(mockHub1);
     Hub save2 = hubPersistencePort.save(mockHub2);
 
-    RouteCreateCommand command = new RouteCreateCommand(save1.getId(), save2.getId());
-    Mockito.when(hubUseCase.existsHub(any())).thenReturn(true);
+    RouteCreateCommand command = new RouteCreateCommand(save1.getId(), save2.getId(), null);
+    Mockito.when(queryUseCase.existsHub(any())).thenReturn(true);
     Route route = routeService.createOrUpdateHubRoute(command);
     System.out.println(mockHub1.getId() + " " + mockHub2.getId());
+    RouteSearchQuery query = new RouteSearchQuery(0, 10, "departHubName", null);
     //when
-    RouteHistoryListResponse departHubName = routeService.getHubRouteList(0, 10, "departHubName", null);
+    Page<RouteHistoryDto> hubRouteList = routeQueryService.getHubRouteList(query);
 
     //then
     assertEquals(save1.getId(), route.getDepartHubId());
     assertEquals(save2.getId(), route.getArrivalHubId());
-    assertEquals(1, departHubName.content().size());
+    assertEquals(1, hubRouteList.getSize());
   }
 
   @Test
   @DisplayName("허브경로 상세 조회")
   void getHubRouteDetails() {
     //given
-    RouteCreateCommand command = new RouteCreateCommand(1L, 2L);
-    Mockito.when(hubUseCase.existsHub(any())).thenReturn(true);
+    RouteCreateCommand command = new RouteCreateCommand(1L, 2L, null);
+    Mockito.when(queryUseCase.existsHub(any())).thenReturn(true);
     Route route = routeService.createOrUpdateHubRoute(command);
 
-    DepartArrivalCommand departArrivalCommand = new DepartArrivalCommand("경기남부", "경기북부");
+    DepartArrivalDto departArrivalCommand = new DepartArrivalDto("경기남부", "경기북부");
     Mockito.when(hubUseCase.getHubNameInfo(any(), any())).thenReturn(departArrivalCommand);
+    RouteFindQuery query = new RouteFindQuery(1L);
     //when
-    RouteDetailsResponse routeDetails = routeService.getRouteDetails(1L);
+    RouteDetailsDto routeDetails = routeQueryService.getRouteDetails(query);
 
     //then
-    assertEquals(route.getId(), routeDetails.hubRouteId());
+    assertEquals(route.getId(), routeDetails.routeId());
     assertEquals(1L, route.getDepartHubId());
     assertEquals(2L, route.getArrivalHubId());
     assertEquals("경기남부", routeDetails.departHubName());
@@ -101,13 +112,15 @@ class RouteServiceTest {
   @DisplayName("허브경로 삭제")
   void deleteHubRoute() {
     //given
-    RouteCreateCommand command = new RouteCreateCommand(1L, 2L);
+    RouteCreateCommand command = new RouteCreateCommand(1L, 2L, null);
     Hub mockHub = Hub.builder().build();
-    Mockito.when(hubUseCase.existsHub(any())).thenReturn(true);
+    Mockito.when(queryUseCase.existsHub(any())).thenReturn(true);
     Route route = routeService.createOrUpdateHubRoute(command);
+    RouteFindQuery query = new RouteFindQuery(route.getId());
+    RouteDeleteCommand deleteCommand = new RouteDeleteCommand(route.getId(), null);
     //when
-    routeService.deleteHubRoute(route.getId());
+    routeService.deleteHubRoute(deleteCommand);
     //then
-    assertThrows(RouteAlreadyDeletedException.class, () -> routeService.getRouteDetails(route.getId()));
+    assertThrows(RouteAlreadyDeletedException.class, () -> routeQueryService.getRouteDetails(query));
   }
 }

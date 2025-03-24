@@ -1,14 +1,15 @@
 package com.logistic.hub.adapter.out.persistence;
 
 import com.logistic.common.annotation.Adapter;
-import com.logistic.hub.adapter.in.web.response.HubHistoryResponse;
-import com.logistic.hub.adapter.out.persistence.entity.HubEntity;
 import com.logistic.hub.adapter.out.persistence.mapper.HubPersistenceMapper;
+import com.logistic.hub.adapter.out.persistence.model.HubEntity;
 import com.logistic.hub.adapter.out.persistence.repository.HubJpaRepository;
 import com.logistic.hub.adapter.out.persistence.repository.HubQueryDslRepository;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
+import com.logistic.hub.application.service.dto.HubHistoryDto;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.exception.HubNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,7 @@ public class HubPersistenceAdaptor implements HubPersistencePort {
   }
 
   @Override
-  public Page<HubHistoryResponse> findAllBySearch(String search, Pageable pageable) {
+  public Page<HubHistoryDto> findAllBySearch(String search, Pageable pageable) {
 
     return hubQueryDslRepository.findAllBySearch(search, pageable);
   }
@@ -40,16 +41,23 @@ public class HubPersistenceAdaptor implements HubPersistencePort {
   }
 
   @Override
-  public void delete(Hub hub) {
+  public void delete(Hub hub, String userId) {
     HubEntity hubEntity = hubJpaRepository.findById(hub.getId())
         .orElseThrow(() -> new HubNotFoundException("존재하지 않는 허브입니다"));
 
-    hubEntity.delete(true, "test");
+    hubEntity.delete(true, userId);
   }
 
   @Override
   public boolean existsHub(Long hubId) {
     return hubJpaRepository.existsById(hubId);
+  }
+
+  @Override
+  public List<Hub> findAll(List<Long> ids) {
+    List<HubEntity> list = hubJpaRepository.findAllByIdInAndIsDeletedFalse(ids);
+
+    return list.stream().map(hubPersistenceMapper::toDomain).toList();
   }
 
 }

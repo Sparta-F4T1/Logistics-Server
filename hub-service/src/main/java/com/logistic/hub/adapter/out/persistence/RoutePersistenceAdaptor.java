@@ -1,12 +1,12 @@
 package com.logistic.hub.adapter.out.persistence;
 
 import com.logistic.common.annotation.Adapter;
-import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
-import com.logistic.hub.adapter.out.persistence.entity.RouteEntity;
 import com.logistic.hub.adapter.out.persistence.mapper.RoutePersistenceMapper;
+import com.logistic.hub.adapter.out.persistence.model.RouteEntity;
 import com.logistic.hub.adapter.out.persistence.repository.RouteJpaRepository;
 import com.logistic.hub.adapter.out.persistence.repository.RouteQueryDslRepository;
 import com.logistic.hub.application.port.out.persistence.RoutePersistencePort;
+import com.logistic.hub.application.service.dto.RouteHistoryDto;
 import com.logistic.hub.domain.Route;
 import com.logistic.hub.domain.exception.RouteNotFoundException;
 import java.util.List;
@@ -29,8 +29,8 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
   }
 
   @Override
-  public Page<RouteHistoryResponse> findAllBySearch(String search, Pageable pageable) {
-    return routeQueryDslRepository.findAllBySearch(search, pageable);
+  public Page<RouteHistoryDto> findAllBySearch(String searchType, String search, Pageable pageable) {
+    return routeQueryDslRepository.findAllBySearch(searchType, search, pageable);
   }
 
   @Override
@@ -49,21 +49,31 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
     return routeList;
   }
 
+  @Override
+  public void deleteByHubId(Long hubId, String userId) {
+    List<RouteEntity> all = routeJpaRepository.findAllByIsDeletedFalseAndDepartHubIdOrArrivalHubId(
+        hubId, hubId);
+
+    for (RouteEntity routeEntity : all) {
+      routeEntity.delete(true, userId);
+    }
+  }
+
 
   @Override
-  public Route findById(Long hubRouteId) {
-    RouteEntity routeEntity = routeJpaRepository.findById(hubRouteId)
+  public Route findById(Long routeId) {
+    RouteEntity routeEntity = routeJpaRepository.findById(routeId)
         .orElseThrow(() -> new RouteNotFoundException("존재하지 않는 경로입니다"));
 
     return routePersistenceMapper.toDomain(routeEntity);
   }
 
   @Override
-  public void delete(Route route) {
+  public void delete(Route route, String userId) {
     RouteEntity routeEntity = routeJpaRepository.findById(route.getId())
         .orElseThrow(() -> new RouteNotFoundException("존재하지 않는 경로입니다"));
 
-    routeEntity.delete(true, "test"); //임시
+    routeEntity.delete(true, userId); //임시
   }
 
 

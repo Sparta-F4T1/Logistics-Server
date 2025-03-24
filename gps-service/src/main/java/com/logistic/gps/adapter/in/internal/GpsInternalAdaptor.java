@@ -1,7 +1,6 @@
 package com.logistic.gps.adapter.in.internal;
 
 import com.logistic.common.annotation.Adapter;
-import com.logistic.common.internal.request.GpsClientRequest;
 import com.logistic.common.internal.response.GpsClientResponse;
 import com.logistic.gps.application.port.in.GpsUseCase;
 import com.logistic.gps.application.port.in.command.GpsDistanceCommand;
@@ -10,8 +9,6 @@ import com.logistic.gps.domain.Direction;
 import com.logistic.gps.domain.Gps;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,23 +21,14 @@ public class GpsInternalAdaptor {
   private final GpsUseCase gpsUseCase;
 
 
-  @GetMapping("/{gpsId}")
+  @GetMapping
     //위도, 경도 반환
-  GpsClientResponse findGps(@PathVariable("gpsId") Long gpsId,
-                            @ModelAttribute GpsClientRequest request
-  ) {
+  GpsClientResponse findGps(@RequestParam String road) {
 
-    GpsInfoCommand command = new GpsInfoCommand(request.road());
+    GpsInfoCommand command = new GpsInfoCommand(road);
     Gps gps = gpsUseCase.findGps(command);
 
-    return new GpsClientResponse(gpsId, gps.getRoad(), gps.getJibun(), gps.getLatitude(), gps.getLongitude(), null,
-        null);
-  }
-
-  @GetMapping
-  GpsClientResponse findGpsList(@ModelAttribute GpsClientRequest request) {
-
-    return null;
+    return new GpsClientResponse(gps.getRoad(), gps.getJibun(), gps.getLatitude(), gps.getLongitude(), null, null);
   }
 
   @GetMapping("/direction")
@@ -51,6 +39,6 @@ public class GpsInternalAdaptor {
 
     Direction direction = gpsUseCase.findDistance(command);
 
-    return new GpsClientResponse(null, null, null, null, null, direction.getDistance(), direction.getDuration());
+    return new GpsClientResponse(null, null, null, null, direction.getDuration(), direction.getDistance());
   }
 }

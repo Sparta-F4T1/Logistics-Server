@@ -1,7 +1,7 @@
 package com.logistic.hub.adapter.in.web.response;
 
 public record RouteCreateResponse(
-    Long hubRouteId,
+    Long routeId,
     Double distance,
     Double duration
 ) {

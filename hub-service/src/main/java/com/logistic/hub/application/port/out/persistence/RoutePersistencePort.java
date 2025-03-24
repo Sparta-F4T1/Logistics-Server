@@ -1,6 +1,6 @@
 package com.logistic.hub.application.port.out.persistence;
 
-import com.logistic.hub.adapter.in.web.response.RouteHistoryResponse;
+import com.logistic.hub.application.service.dto.RouteHistoryDto;
 import com.logistic.hub.domain.Route;
 import java.util.List;
 import java.util.Optional;
@@ -10,13 +10,15 @@ import org.springframework.data.domain.Pageable;
 public interface RoutePersistencePort {
   Route save(Route route);
 
-  Route findById(Long hubRouteId);
+  Route findById(Long routeId);
 
-  void delete(Route route);
+  void delete(Route route, String userId);
 
-  Page<RouteHistoryResponse> findAllBySearch(String search, Pageable pageable);
+  Page<RouteHistoryDto> findAllBySearch(String searchType, String search, Pageable pageable);
 
   Optional<Route> findByDepartAndArrival(Long departHubId, Long arrivalHubId);
 
   List<Route> findAll();
+
+  void deleteByHubId(Long hubId, String userId);
 }

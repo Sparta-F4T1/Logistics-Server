@@ -3,11 +3,15 @@ package com.logistic.hub.domain;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
 import com.logistic.hub.application.port.in.command.RouteInfoCommand;
 import com.logistic.hub.domain.exception.RouteInvalidInfoException;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Route {
 
   private Long id;

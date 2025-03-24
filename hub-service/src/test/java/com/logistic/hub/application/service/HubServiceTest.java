@@ -3,9 +3,12 @@ package com.logistic.hub.application.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.logistic.hub.adapter.in.web.response.HubHistoryListResponse;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
+import com.logistic.hub.application.port.in.command.HubDeleteCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
+import com.logistic.hub.application.port.in.query.HubFindQuery;
+import com.logistic.hub.application.port.in.query.HubSearchQuery;
+import com.logistic.hub.application.service.dto.HubHistoryDto;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.HubType;
 import com.logistic.hub.domain.exception.HubAlreadyDeletedException;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -21,12 +25,14 @@ class HubServiceTest {
 
   @Autowired
   private HubService hubService;
+  @Autowired
+  private HubQueryService hubQueryService;
 
   @Test
   @DisplayName("허브 생성")
   void createHub() {
     //given
-    HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소");
+    HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소", null);
     //when
     Hub hub = hubService.createHub(hubCreateCommand);
     //then
@@ -40,17 +46,16 @@ class HubServiceTest {
   @DisplayName("허브 목록 조회")
   void getHubList() {
     // given
-    HubCreateCommand hubCreateCommand1 = new HubCreateCommand("REGIONAL", "부산", "부산 도로명주소", "부산 지번주소");
-    HubCreateCommand hubCreateCommand2 = new HubCreateCommand("CENTRAL", "경기남부", "경기남부 도로명주소", "경기남부 지번주소");
+    HubCreateCommand hubCreateCommand1 = new HubCreateCommand("REGIONAL", "부산", "부산 도로명주소", "부산 지번주소", null);
+    HubCreateCommand hubCreateCommand2 = new HubCreateCommand("CENTRAL", "경기남부", "경기남부 도로명주소", "경기남부 지번주소", null);
     hubService.createHub(hubCreateCommand1);
     hubService.createHub(hubCreateCommand2);
-
+    HubSearchQuery query = new HubSearchQuery(0, 10, null);
     // when
-    HubHistoryListResponse hubs = hubService.getHubList(0, 10, null, null);
+    Page<HubHistoryDto> hubList = hubQueryService.search(query);
 
     // then
-    assertEquals(2, hubs.content().size());
-    assertEquals("경기남부", hubs.content().get(0).hubName());
+    assertEquals(2, hubList.getSize());
 
   }
 
@@ -58,11 +63,11 @@ class HubServiceTest {
   @DisplayName("허브 상세 조회")
   void getHubDetails() {
     // given
-    HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소");
+    HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소", null);
     Hub hub = hubService.createHub(hubCreateCommand);
-
+    HubFindQuery query = new HubFindQuery(hub.getId());
     // when
-    Hub foundHub = hubService.getHubDetails(hub.getId());
+    Hub foundHub = hubQueryService.getHubDetails(query);
 
     // then
     assertEquals(HubType.CENTRAL, hub.getHubType());
@@ -74,13 +79,13 @@ class HubServiceTest {
   @DisplayName("허브 수정")
   void updateHub() {
     // given
-    HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소");
+    HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소", null);
     Hub hub = hubService.createHub(hubCreateCommand);
-    HubUpdateCommand updateCommand = new HubUpdateCommand("REGIONAL", "경기북부", "새 도로명주소", "새 지번주소");
-
+    HubUpdateCommand updateCommand = new HubUpdateCommand(hub.getId(), "REGIONAL", "경기북부", "새 도로명주소", "새 지번주소", null);
+    HubFindQuery query = new HubFindQuery(hub.getId());
     // when
-    hubService.updateHub(hub.getId(), updateCommand);
-    Hub updatedHub = hubService.getHubDetails(hub.getId());
+    hubService.updateHub(updateCommand);
+    Hub updatedHub = hubQueryService.getHubDetails(query);
     // then
     assertEquals(HubType.REGIONAL, updatedHub.getHubType());
     assertEquals("새 도로명주소", updatedHub.getAddress().getRoad());
@@ -91,13 +96,14 @@ class HubServiceTest {
   @DisplayName("허브 삭제")
   void deleteHub() {
     // given
-    HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소");
+    HubCreateCommand hubCreateCommand = new HubCreateCommand("CENTRAL", "경기남부", "도로명주소", "지번주소", null);
     Hub hub = hubService.createHub(hubCreateCommand);
-
+    HubFindQuery query = new HubFindQuery(hub.getId());
+    HubDeleteCommand command = new HubDeleteCommand(hub.getId(), null);
     // when
-    hubService.deleteHub(hub.getId());
+    hubService.deleteHub(command);
 
     // then
-    assertThrows(HubAlreadyDeletedException.class, () -> hubService.getHubDetails(hub.getId()));
+    assertThrows(HubAlreadyDeletedException.class, () -> hubQueryService.getHubDetails(query));
   }
 }
