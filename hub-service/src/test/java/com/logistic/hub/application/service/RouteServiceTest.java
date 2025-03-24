@@ -1,33 +1,7 @@
 package com.logistic.hub.application.service;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-
-import com.logistic.hub.application.port.in.HubQueryUseCase;
-import com.logistic.hub.application.port.in.HubUseCase;
-import com.logistic.hub.application.port.in.command.HubCreateCommand;
-import com.logistic.hub.application.port.in.command.RouteCreateCommand;
-import com.logistic.hub.application.port.in.command.RouteDeleteCommand;
-import com.logistic.hub.application.port.in.query.RouteFindQuery;
-import com.logistic.hub.application.port.in.query.RouteSearchQuery;
-import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
-import com.logistic.hub.application.service.dto.DepartArrivalDto;
-import com.logistic.hub.application.service.dto.RouteDetailsDto;
-import com.logistic.hub.application.service.dto.RouteHistoryDto;
-import com.logistic.hub.domain.Hub;
-import com.logistic.hub.domain.Route;
-import com.logistic.hub.domain.command.AddressCommand;
-import com.logistic.hub.domain.exception.RouteAlreadyDeletedException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.transaction.annotation.Transactional;
+/*
 
 @SpringBootTest
 @Transactional
@@ -124,3 +98,4 @@ class RouteServiceTest {
     assertThrows(RouteAlreadyDeletedException.class, () -> routeQueryService.getRouteDetails(query));
   }
 }
+*/

@@ -6,6 +6,7 @@ import com.logistic.hub.application.port.in.query.HubFindQuery;
 import com.logistic.hub.application.port.in.query.HubListQuery;
 import com.logistic.hub.application.port.in.query.HubSearchQuery;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
+import com.logistic.hub.application.service.dto.DepartArrivalDto;
 import com.logistic.hub.application.service.dto.HubHistoryDto;
 import com.logistic.hub.config.RestPage;
 import com.logistic.hub.domain.Hub;
@@ -43,6 +44,7 @@ public class HubQueryService implements HubQueryUseCase {
   }
 
   @Override
+  @Cacheable(cacheNames = "hub", key = "#hubFindQuery.hubId()")
   public Hub getHubDetails(HubFindQuery hubFindQuery) {
     Hub hub = hubPersistencePort.findById(hubFindQuery.hubId());
     isDeleted(hub);
@@ -50,8 +52,20 @@ public class HubQueryService implements HubQueryUseCase {
   }
 
   @Override
+  public DepartArrivalDto getHubNameInfo(Long departHubId, Long arrivalHubId) {
+    Hub departHub = getOrElseThrow(departHubId);
+    Hub arrivalHub = getOrElseThrow(arrivalHubId);
+
+    return new DepartArrivalDto(departHub.getHubName(), arrivalHub.getHubName());
+  }
+
+  @Override
   public boolean existsHub(Long hubId) {
     return hubPersistencePort.existsHub(hubId);
+  }
+
+  private Hub getOrElseThrow(Long hubId) {
+    return hubPersistencePort.findById(hubId);
   }
 
 

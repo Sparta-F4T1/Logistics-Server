@@ -10,5 +10,9 @@ import org.mapstruct.Mapping;
 public interface HubInternalMapper {
 
   @Mapping(source = "id", target = "hubId")
+  @Mapping(source = "address.road", target = "road")
+  @Mapping(source = "address.jibun", target = "jibun")
+  @Mapping(source = "address.latitude", target = "latitude")
+  @Mapping(source = "address.longitude", target = "longitude")
   HubClientResponse toHubClientResponse(Hub hub);
 }

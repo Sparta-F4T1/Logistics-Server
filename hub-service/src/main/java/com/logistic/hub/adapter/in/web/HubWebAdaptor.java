@@ -54,9 +54,8 @@ public class HubWebAdaptor {
                                                        @WithPassport Passport passport,
                                                        @Valid @RequestBody HubUpdateRequest request) {
     HubUpdateCommand hubCommand = hubWebMapper.toHubUpdateCommand(hubId, request, passport);
-    hubUseCase.updateHub(hubCommand);
     RouteDeleteByHubIdCommand routeCommand = routeWebMapper.toDeleteByHubIdCommand(hubId, passport);
-    routeUseCase.deleteHubRouteByHubId(routeCommand);
+    hubUseCase.updateHub(hubCommand, routeCommand);
 
     ApiResponse<String> response = ApiResponse.success("수정되었습니다");
     return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -66,9 +65,8 @@ public class HubWebAdaptor {
   public ResponseEntity<ApiResponse<String>> deleteHub(@WithPassport Passport passport,
                                                        @PathVariable Long hubId) {
     HubDeleteCommand hubCommand = hubWebMapper.toDeleteCommand(hubId, passport);
-    hubUseCase.deleteHub(hubCommand);
     RouteDeleteByHubIdCommand routeCommand = routeWebMapper.toDeleteByHubIdCommand(hubId, passport);
-    routeUseCase.deleteHubRouteByHubId(routeCommand);
+    hubUseCase.deleteHub(hubCommand, routeCommand);
 
     ApiResponse<String> response = ApiResponse.success("삭제되었습니다");
     return ResponseEntity.status(HttpStatus.OK).body(response);
