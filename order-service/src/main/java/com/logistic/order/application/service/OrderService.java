@@ -33,7 +33,7 @@ public class OrderService implements OrderUseCase {
         command.sellerId(),
         command.buyerId(),
         command.memo(),
-        checkInventory(orderProducts)? OrderStatus.IN_DELIVERY : OrderStatus.PENDING,
+        checkInventory(orderProducts),
         orderProducts
     );
 
@@ -63,15 +63,14 @@ public class OrderService implements OrderUseCase {
     return orderPersistencePort.findById(orderId);
   }
 
-  private boolean checkInventory(List<OrderProduct> orderProducts){
-    Map<Long, Integer> result = orderInternalPort.updateProductInventory(orderProducts);
 
-    for (Long productId : result.keySet()){
-      if (result.get(productId) < 0){
-        return false;
-      }
+  private OrderStatus checkInventory(List<OrderProduct> orderProducts){
+    try{
+      orderInternalPort.updateProductInventory(orderProducts);
+    }catch (Exception e){
+      return OrderStatus.PENDING;
     }
 
-    return true;
+    return OrderStatus.IN_DELIVERY;
   }
 }
