@@ -3,6 +3,7 @@ package com.logistic.hub.application.service;
 import com.logistic.common.annotation.UseCase;
 import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
+import com.logistic.hub.application.port.in.command.HubDeleteCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
 import com.logistic.hub.application.port.out.client.GpsInternalPort;
 import com.logistic.hub.application.port.out.persistence.HubPersistencePort;
@@ -38,13 +39,13 @@ public class HubService implements HubUseCase {
       @CacheEvict(cacheNames = "hubList", allEntries = true),
       @CacheEvict(cacheNames = "routeList", allEntries = true)
   })
-  public void updateHub(Long hubId, HubUpdateCommand command) {
-    Hub hub = getOrElseThrow(hubId);
+  public void updateHub(HubUpdateCommand command) {
+    Hub hub = getOrElseThrow(command.hubId());
     isDeleted(hub);
     AddressCommand addressCommand = gpsInternalPort.getAddressCommand(command.roadAddress(),
         command.jibunAddress());
     hub.update(command, addressCommand);
-    
+
     hubPersistencePort.save(hub);
   }
 
@@ -53,10 +54,10 @@ public class HubService implements HubUseCase {
       @CacheEvict(cacheNames = "hubList", allEntries = true),
       @CacheEvict(cacheNames = "routeList", allEntries = true)
   })
-  public void deleteHub(Long hubId) {
-    Hub hub = getOrElseThrow(hubId);
+  public void deleteHub(HubDeleteCommand command) {
+    Hub hub = getOrElseThrow(command.hubId());
     isDeleted(hub);
-    hubPersistencePort.delete(hub);
+    hubPersistencePort.delete(hub, command.passport().getUserInfo().getUserId());
   }
 
   private Hub getOrElseThrow(Long hubId) {

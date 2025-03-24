@@ -12,7 +12,7 @@ public interface RoutePersistencePort {
 
   Route findById(Long routeId);
 
-  void delete(Route route);
+  void delete(Route route, String userId);
 
   Page<RouteHistoryDto> findAllBySearch(String searchType, String search, Pageable pageable);
 
@@ -20,5 +20,5 @@ public interface RoutePersistencePort {
 
   List<Route> findAll();
 
-  void deleteByHubId(Long hubId);
+  void deleteByHubId(Long hubId, String userId);
 }

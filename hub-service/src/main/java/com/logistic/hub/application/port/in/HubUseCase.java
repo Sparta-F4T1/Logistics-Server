@@ -1,6 +1,7 @@
 package com.logistic.hub.application.port.in;
 
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
+import com.logistic.hub.application.port.in.command.HubDeleteCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
 import com.logistic.hub.application.service.dto.DepartArrivalDto;
 import com.logistic.hub.domain.Hub;
@@ -9,9 +10,9 @@ public interface HubUseCase {
 
   Hub createHub(HubCreateCommand command);
 
-  void updateHub(Long hubId, HubUpdateCommand command);
+  void updateHub(HubUpdateCommand command);
 
-  void deleteHub(Long hubId);
+  void deleteHub(HubDeleteCommand command);
 
   DepartArrivalDto getHubNameInfo(Long departHubId, Long arrivalHubId);
 }

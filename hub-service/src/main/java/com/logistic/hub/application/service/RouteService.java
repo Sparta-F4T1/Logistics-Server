@@ -4,6 +4,8 @@ import com.logistic.common.annotation.UseCase;
 import com.logistic.hub.application.port.in.HubQueryUseCase;
 import com.logistic.hub.application.port.in.RouteUseCase;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
+import com.logistic.hub.application.port.in.command.RouteDeleteByHubIdCommand;
+import com.logistic.hub.application.port.in.command.RouteDeleteCommand;
 import com.logistic.hub.application.port.in.command.RouteInfoCommand;
 import com.logistic.hub.application.port.in.query.HubFindQuery;
 import com.logistic.hub.application.port.out.client.GpsInternalPort;
@@ -69,15 +71,15 @@ public class RouteService implements RouteUseCase {
       @CacheEvict(cacheNames = "routeList", allEntries = true),
       @CacheEvict(cacheNames = "shorestPath", allEntries = true)
   })
-  public void deleteHubRoute(Long routeId) {
-    Route route = getOrElseThrow(routeId);
+  public void deleteHubRoute(RouteDeleteCommand command) {
+    Route route = getOrElseThrow(command.routeId());
     isDeleted(route);
-    routePersistencePort.delete(route);
+    routePersistencePort.delete(route, command.passport().getUserInfo().getUserId());
   }
 
   @Override
-  public void deleteHubRouteByHubId(Long hubId) {
-    routePersistencePort.deleteByHubId(hubId);
+  public void deleteHubRouteByHubId(RouteDeleteByHubIdCommand command) {
+    routePersistencePort.deleteByHubId(command.hubId(), command.passport().getUserInfo().getUserId());
 
   }
 

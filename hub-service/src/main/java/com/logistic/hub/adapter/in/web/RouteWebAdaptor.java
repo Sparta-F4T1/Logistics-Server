@@ -1,12 +1,15 @@
 package com.logistic.hub.adapter.in.web;
 
 import com.logistic.common.annotation.Adapter;
+import com.logistic.common.passport.annotation.WithPassport;
+import com.logistic.common.passport.model.Passport;
 import com.logistic.common.response.ApiResponse;
 import com.logistic.hub.adapter.in.web.mapper.RouteWebMapper;
 import com.logistic.hub.adapter.in.web.request.RouteCreateRequest;
 import com.logistic.hub.adapter.in.web.response.RouteCreateResponse;
 import com.logistic.hub.application.port.in.RouteUseCase;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
+import com.logistic.hub.application.port.in.command.RouteDeleteCommand;
 import com.logistic.hub.domain.Route;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +31,9 @@ public class RouteWebAdaptor {
   private final RouteWebMapper routeWebMapper;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<RouteCreateResponse>> createHubRoute(//@WithPassport Passport passport,
+  public ResponseEntity<ApiResponse<RouteCreateResponse>> createHubRoute(@WithPassport Passport passport,
                                                                          @Valid @RequestBody RouteCreateRequest request) {
-    RouteCreateCommand command = routeWebMapper.toRouteCreateCommand(request);
+    RouteCreateCommand command = routeWebMapper.toRouteCreateCommand(request, passport);
     Route route = routeUseCase.createOrUpdateHubRoute(command);
     RouteCreateResponse routeResponse = routeWebMapper.toRouteCreateResponse(route);
     ApiResponse<RouteCreateResponse> response = ApiResponse.success(routeResponse);
@@ -39,10 +42,11 @@ public class RouteWebAdaptor {
 
 
   @DeleteMapping("/{routeId}")
-  public ResponseEntity<ApiResponse<String>> deleteHubRoute(//@WithPassport Passport passport,
+  public ResponseEntity<ApiResponse<String>> deleteHubRoute(@WithPassport Passport passport,
                                                             @PathVariable Long routeId) {
 
-    routeUseCase.deleteHubRoute(routeId);
+    RouteDeleteCommand command = routeWebMapper.toRouteDeleteCommand(routeId, passport);
+    routeUseCase.deleteHubRoute(command);
 
     ApiResponse<String> response = ApiResponse.success("삭제되었습니다");
     return ResponseEntity.status(HttpStatus.OK).body(response);

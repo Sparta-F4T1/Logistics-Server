@@ -39,7 +39,7 @@ public class HubQueryService implements HubQueryUseCase {
 
   @Override
   public List<Hub> findHubList(HubListQuery query) {
-    return List.of();
+    return hubPersistencePort.findAll(query.hubIds());
   }
 
   @Override

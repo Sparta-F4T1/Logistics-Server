@@ -50,12 +50,12 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
   }
 
   @Override
-  public void deleteByHubId(Long hubId) {
+  public void deleteByHubId(Long hubId, String userId) {
     List<RouteEntity> all = routeJpaRepository.findAllByIsDeletedFalseAndDepartHubIdOrArrivalHubId(
         hubId, hubId);
 
     for (RouteEntity routeEntity : all) {
-      routeEntity.delete(true, "test");
+      routeEntity.delete(true, userId);
     }
   }
 
@@ -69,11 +69,11 @@ public class RoutePersistenceAdaptor implements RoutePersistencePort {
   }
 
   @Override
-  public void delete(Route route) {
+  public void delete(Route route, String userId) {
     RouteEntity routeEntity = routeJpaRepository.findById(route.getId())
         .orElseThrow(() -> new RouteNotFoundException("존재하지 않는 경로입니다"));
 
-    routeEntity.delete(true, "test"); //임시
+    routeEntity.delete(true, userId); //임시
   }
 
 
