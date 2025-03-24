@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,10 +47,46 @@ public class GatewayConfig {
 
   @Bean
   public RouteLocator routeLocator(RouteLocatorBuilder builder) {
-    RouteLocatorBuilder.Builder routes = builder.routes();
+    Builder routes = builder.routes();
     TokenExtractorFilter tokenExtractorFilter = tokenExtractorFilter();
     AuthenticationFilter authenticationFilter = jwtAuthFilter();
     AuthorizationFilter authorizationFilter = authorizationFilter();
+
+    addAuthServiceRoute(routes, tokenExtractorFilter, authorizationFilter);
+
+    addSecuredServiceRoute(routes, RouteId.USER, ServiceUri.USER,
+        tokenExtractorFilter, authorizationFilter, ApiPath.Api.USERS_ALL);
+
+    addSecuredServiceRoute(routes, RouteId.AI, ServiceUri.AI,
+        tokenExtractorFilter, authorizationFilter, ApiPath.Api.USERS_ALL);
+
+    addSecuredServiceRoute(routes, RouteId.COMPANY, ServiceUri.COMPANY,
+        tokenExtractorFilter, authorizationFilter, ApiPath.Api.COMPANY_ALL);
+
+    addSecuredServiceRoute(routes, RouteId.DELIVERY, ServiceUri.DELIVERY,
+        tokenExtractorFilter, authorizationFilter, ApiPath.Api.DELIVERY_ALL);
+
+    addSecuredServiceRoute(routes, RouteId.DRIVER, ServiceUri.DRIVER,
+        tokenExtractorFilter, authorizationFilter, ApiPath.Api.DRIVER_ALL);
+
+    addSecuredServiceRoute(routes, RouteId.GPS, ServiceUri.GPS,
+        tokenExtractorFilter, authorizationFilter, ApiPath.Api.GPS_ALL);
+
+    addSecuredServiceRoute(routes, RouteId.HUB, ServiceUri.HUB,
+        tokenExtractorFilter, authorizationFilter,
+        ApiPath.Api.HUB_ALL, ApiPath.Api.HUB_ROUTES_ALL);
+
+    addSecuredServiceRoute(routes, RouteId.ORDER, ServiceUri.ORDER,
+        tokenExtractorFilter, authorizationFilter, ApiPath.Api.ORDER_ALL);
+
+    addSecuredServiceRoute(routes, RouteId.PRODUCT, ServiceUri.PRODUCT,
+        tokenExtractorFilter, authorizationFilter, ApiPath.Api.PRODUCT_ALL);
+
+    return routes.build();
+  }
+
+  private void addAuthServiceRoute(Builder routes, TokenExtractorFilter tokenExtractorFilter,
+                                   AuthorizationFilter authorizationFilter) {
 
     routes.route(RouteId.AUTH, r -> r
         .path(ApiPath.Api.AUTH_ALL)
@@ -72,17 +109,22 @@ public class GatewayConfig {
         )
         .uri(ServiceUri.AUTH)
     );
+  }
 
-    routes.route(RouteId.USER, r -> r
-        .path(ApiPath.Api.USERS_ALL)
+  private void addSecuredServiceRoute(Builder routes, String routeId, String serviceUri,
+                                      TokenExtractorFilter tokenExtractorFilter,
+                                      AuthorizationFilter authorizationFilter,
+                                      String... apiPaths) {
+
+    routes.route(routeId, r -> r
+        .path(apiPaths)
         .filters(f -> f
             .filter((exchange, chain) ->
                 tokenExtractorFilter.filter(exchange, exch ->
                     authorizationFilter.filter(exch, chain))
             )
         )
-        .uri(ServiceUri.USER)
+        .uri(serviceUri)
     );
-    return routes.build();
   }
 }

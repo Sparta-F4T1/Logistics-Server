@@ -67,7 +67,7 @@ public class AuthenticationCommandService implements AuthenticationCommandUseCas
   @Override
   public void logout(final LogoutCommand command) {
     TokenValidationResult validationResult = validateAndCheckBlacklist(command.accessToken());
-    invalidateToken(validationResult.tokenId(), validationResult.userId(), validationResult.expiration());
+    invalidateOldTokenIfNeeded(command.accessToken(), validationResult.tokenId(), validationResult.userId());
     log.info("로그아웃 성공: TokenId={}", validationResult.tokenId().value());
   }
 
@@ -92,12 +92,8 @@ public class AuthenticationCommandService implements AuthenticationCommandUseCas
   private void invalidateOldTokenIfNeeded(String accessToken, TokenId tokenId, UserId userId) {
     Instant expirationTime = jwtPort.getExpirationTime(accessToken);
     if (expirationTime.isAfter(Instant.now())) {
-      invalidateToken(tokenId, userId, expirationTime);
+      persistencePort.addToBlacklist(tokenId, expirationTime);
     }
-  }
-
-  private void invalidateToken(TokenId tokenId, UserId userId, Instant expiration) {
-    persistencePort.addToBlacklist(tokenId, expiration);
     persistencePort.removeRefreshToken(tokenId, userId);
   }
 
