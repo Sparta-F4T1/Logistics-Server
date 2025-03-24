@@ -69,17 +69,11 @@ public class OrderService implements OrderUseCase {
 
     switch (roleType){
       case COMPANY_PERSONNEL -> {
-          if (!orderStatus.equals(OrderStatus.CANCELED)){
-            throw new ExecutionNotAuthorized();
-          }
-          checkCompanyManager(order.getBuyerId(), userId);
+        checkAuthorizedOrderStatus(orderStatus, List.of(OrderStatus.CANCELED));
+        checkCompanyManager(order.getBuyerId(), userId);
       }
       case HUB_ADMIN -> checkHubManager(order.getSellerId(), userId);
-      case DELIVERY_PERSONNEL -> {
-        if (!orderStatus.equals(OrderStatus.DELIVERED)){
-          throw new ExecutionNotAuthorized();
-        }
-      }
+      case DELIVERY_PERSONNEL -> checkAuthorizedOrderStatus(orderStatus, List.of(OrderStatus.DELIVERED));
     }
 
     order.updateStatus(orderStatus);
@@ -116,6 +110,13 @@ public class OrderService implements OrderUseCase {
 
   private RoleType getRole(UserInfo userInfo) {
     return RoleType.valueOf(userInfo.getRole());
+  }
+
+  private void checkAuthorizedOrderStatus(OrderStatus orderStatus, List<OrderStatus> authorizedStatus){
+    authorizedStatus.stream()
+        .filter(status -> status.equals(orderStatus))
+        .findFirst()
+        .orElseThrow(ExecutionNotAuthorized::new);
   }
 
   private void checkCompanyManager(Long buyerId, String userId) {
