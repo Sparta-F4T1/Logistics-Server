@@ -25,9 +25,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
-@Slf4j(topic = "ProductCommandService")
 @Transactional
 @RequiredArgsConstructor
+@Slf4j(topic = "ProductCommandService")
 public class ProductCommandService implements ProductCommandUseCase {
   private final ProductLockPort lockPort;
   private final ProductInternalPort internalPort;
