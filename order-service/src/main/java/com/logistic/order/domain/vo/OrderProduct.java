@@ -22,4 +22,8 @@ public class OrderProduct {
         .quantity(quantity)
         .build();
   }
+
+  public void cancelStock() {
+    this.quantity = quantity * -1;
+  }
 }

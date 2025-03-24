@@ -50,6 +50,14 @@ public class OrderService implements OrderUseCase {
   public Order updateOrder(Long orderId, OrderStatus orderStatus) {
     Order order = orderPersistencePort.findById(orderId);
     order.updateStatus(orderStatus);
+
+    if (orderStatus == OrderStatus.CANCELED){
+      order.getOrderProducts()
+          .forEach(OrderProduct::cancelStock);
+
+      messagePort.sendCreateOrder(order);
+    }
+
     return orderPersistencePort.save(order);
   }
 
