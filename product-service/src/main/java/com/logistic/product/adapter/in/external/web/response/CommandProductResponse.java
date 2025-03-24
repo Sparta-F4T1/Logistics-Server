@@ -1,6 +1,6 @@
 package com.logistic.product.adapter.in.external.web.response;
 
-public record FindProductResponse(
+public record CommandProductResponse(
     Long productId,
     String name,
     Long companyId,
