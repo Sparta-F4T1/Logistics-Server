@@ -10,13 +10,14 @@ import com.logistic.hub.adapter.in.web.request.HubCreateRequest;
 import com.logistic.hub.adapter.in.web.request.HubUpdateRequest;
 import com.logistic.hub.adapter.in.web.response.HubCreateResponse;
 import com.logistic.hub.application.port.in.HubUseCase;
-import com.logistic.hub.application.port.in.RouteUseCase;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.HubDeleteCommand;
+import com.logistic.hub.application.port.in.command.HubManagerCommand;
 import com.logistic.hub.application.port.in.command.HubUpdateCommand;
 import com.logistic.hub.application.port.in.command.RouteDeleteByHubIdCommand;
 import com.logistic.hub.domain.Hub;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/hubs")
 public class HubWebAdaptor {
   private final HubUseCase hubUseCase;
-  private final RouteUseCase routeUseCase;
   private final HubWebMapper hubWebMapper;
   private final RouteWebMapper routeWebMapper;
 
@@ -54,9 +54,8 @@ public class HubWebAdaptor {
                                                        @WithPassport Passport passport,
                                                        @Valid @RequestBody HubUpdateRequest request) {
     HubUpdateCommand hubCommand = hubWebMapper.toHubUpdateCommand(hubId, request, passport);
-    hubUseCase.updateHub(hubCommand);
     RouteDeleteByHubIdCommand routeCommand = routeWebMapper.toDeleteByHubIdCommand(hubId, passport);
-    routeUseCase.deleteHubRouteByHubId(routeCommand);
+    hubUseCase.updateHub(hubCommand, routeCommand);
 
     ApiResponse<String> response = ApiResponse.success("수정되었습니다");
     return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -66,11 +65,34 @@ public class HubWebAdaptor {
   public ResponseEntity<ApiResponse<String>> deleteHub(@WithPassport Passport passport,
                                                        @PathVariable Long hubId) {
     HubDeleteCommand hubCommand = hubWebMapper.toDeleteCommand(hubId, passport);
-    hubUseCase.deleteHub(hubCommand);
     RouteDeleteByHubIdCommand routeCommand = routeWebMapper.toDeleteByHubIdCommand(hubId, passport);
-    routeUseCase.deleteHubRouteByHubId(routeCommand);
+    hubUseCase.deleteHub(hubCommand, routeCommand);
 
     ApiResponse<String> response = ApiResponse.success("삭제되었습니다");
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  @PostMapping("/{hubId}/managers")
+  public ResponseEntity<ApiResponse<String>> assignHubManager(@WithPassport Passport passport,
+                                                              @PathVariable Long hubId,
+                                                              @Valid @RequestBody List<String> userIds) {
+    HubManagerCommand command = hubWebMapper.toHubManagerAssignCommand(hubId, userIds, passport);
+
+    hubUseCase.assignManager(command);
+
+    ApiResponse<String> response = ApiResponse.success("허브 담당자 배정이 완료되었습니다");
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  @DeleteMapping("/{hubId}/managers")
+  public ResponseEntity<ApiResponse<String>> deleteHubManager(@WithPassport Passport passport,
+                                                              @PathVariable Long hubId,
+                                                              @Valid @RequestBody List<String> userIds) {
+    HubManagerCommand command = hubWebMapper.toHubManagerAssignCommand(hubId, userIds, passport);
+
+    hubUseCase.deleteManager(command);
+
+    ApiResponse<String> response = ApiResponse.success("허브 담당자 배정이 완료되었습니다");
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }

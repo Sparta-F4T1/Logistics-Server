@@ -1,6 +1,8 @@
 package com.logistic.hub.application.service;
 
 import com.logistic.common.annotation.UseCase;
+import com.logistic.common.passport.model.Passport;
+import com.logistic.common.passport.model.RoleType;
 import com.logistic.hub.application.port.in.HubQueryUseCase;
 import com.logistic.hub.application.port.in.RouteUseCase;
 import com.logistic.hub.application.port.in.command.RouteCreateCommand;
@@ -8,11 +10,12 @@ import com.logistic.hub.application.port.in.command.RouteDeleteByHubIdCommand;
 import com.logistic.hub.application.port.in.command.RouteDeleteCommand;
 import com.logistic.hub.application.port.in.command.RouteInfoCommand;
 import com.logistic.hub.application.port.in.query.HubFindQuery;
-import com.logistic.hub.application.port.out.client.GpsInternalPort;
+import com.logistic.hub.application.port.out.client.HubInternalPort;
 import com.logistic.hub.application.port.out.persistence.RoutePersistencePort;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.Route;
 import com.logistic.hub.domain.exception.HubNotFoundException;
+import com.logistic.hub.domain.exception.HubPermissionDeniedException;
 import com.logistic.hub.domain.exception.HubSameSelectionException;
 import com.logistic.hub.domain.exception.RouteAlreadyDeletedException;
 import jakarta.transaction.Transactional;
@@ -27,7 +30,7 @@ import org.springframework.cache.annotation.Caching;
 public class RouteService implements RouteUseCase {
   private final RoutePersistencePort routePersistencePort;
   private final HubQueryUseCase hubQueryUseCase;
-  private final GpsInternalPort gpsInternalPort;
+  private final HubInternalPort hubInternalPort;
 
   @Override
   @Caching(evict = {
@@ -35,14 +38,14 @@ public class RouteService implements RouteUseCase {
       @CacheEvict(cacheNames = "shorestPath", allEntries = true)
   })
   public Route createOrUpdateHubRoute(RouteCreateCommand routeCommand) {
-
+    checkAuthority(routeCommand.passport());
     Hub departHub = hubQueryUseCase.getHubDetails(new HubFindQuery(routeCommand.departHubId()));
     Hub arrivalHub = hubQueryUseCase.getHubDetails(new HubFindQuery(routeCommand.arrivalHubId()));
 
     String departGps = departHub.getAddress().getLatitude() + "," + departHub.getAddress().getLongitude();
     String arrivalGps = arrivalHub.getAddress().getLatitude() + "," + arrivalHub.getAddress().getLongitude();
 
-    RouteInfoCommand routeInfoCommand = gpsInternalPort.getRouteInfo(departGps, arrivalGps);
+    RouteInfoCommand routeInfoCommand = hubInternalPort.getRouteInfo(departGps, arrivalGps);
     Long departHubId = routeCommand.departHubId();
     Long arrivalHubId = routeCommand.arrivalHubId();
     if (departHubId.equals(arrivalHubId)) {
@@ -62,6 +65,7 @@ public class RouteService implements RouteUseCase {
     return routePersistencePort.save(route);
   }
 
+
   private Route getOrElseThrow(Long routeId) {
     return routePersistencePort.findById(routeId);
   }
@@ -72,6 +76,7 @@ public class RouteService implements RouteUseCase {
       @CacheEvict(cacheNames = "shorestPath", allEntries = true)
   })
   public void deleteHubRoute(RouteDeleteCommand command) {
+    checkAuthority(command.passport());
     Route route = getOrElseThrow(command.routeId());
     isDeleted(route);
     routePersistencePort.delete(route, command.passport().getUserInfo().getUserId());
@@ -79,6 +84,7 @@ public class RouteService implements RouteUseCase {
 
   @Override
   public void deleteHubRouteByHubId(RouteDeleteByHubIdCommand command) {
+    checkAuthority(command.passport());
     routePersistencePort.deleteByHubId(command.hubId(), command.passport().getUserInfo().getUserId());
 
   }
@@ -89,4 +95,11 @@ public class RouteService implements RouteUseCase {
     }
   }
 
+  private void checkAuthority(Passport passport) {
+    RoleType roleType = RoleType.valueOf(passport.getUserInfo().getRole());
+
+    if (roleType != RoleType.MASTER_ADMIN) {
+      throw new HubPermissionDeniedException("권한이 없습니다");
+    }
+  }
 }
