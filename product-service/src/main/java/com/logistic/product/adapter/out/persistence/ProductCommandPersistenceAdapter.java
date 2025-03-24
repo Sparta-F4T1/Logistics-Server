@@ -31,8 +31,8 @@ public class ProductCommandPersistenceAdapter implements ProductCommandPersisten
   }
 
   @Override
-  public List<Product> findAll(final List<Long> productIds) {
-    return jpaRepository.findAllById(productIds).stream().map(mapper::toDomain).toList();
+  public List<Product> findAllByCompanyId(final Long companyId) {
+    return jpaRepository.findAllByCompanyId(companyId).stream().map(mapper::toDomain).toList();
   }
 
   @Override
