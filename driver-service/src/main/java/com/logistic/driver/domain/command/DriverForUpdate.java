@@ -7,5 +7,6 @@ import com.logistic.driver.domain.model.vo.Hub;
 public record DriverForUpdate(
     DriverType type,
     DriverStatus status,
-    Hub departHub) {
+    Hub departHub,
+    Long arrivalHubId) {
 }

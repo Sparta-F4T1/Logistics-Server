@@ -11,11 +11,12 @@ public record CreateDriverCommand(
     String driverId,
     DriverType type,
     DriverStatus status,
-    Long hubId,
+    Long departHubId,
+    Long arrivalHubId,
     Passport passport) {
 
-  public DriverForCreate toForCreate(User user, Hub hub) {
+  public DriverForCreate toForCreate(User user, Hub departHub) {
     return new DriverForCreate(
-        user, type, status, hub);
+        user, type, status, departHub, arrivalHubId);
   }
 }

@@ -16,7 +16,8 @@ public class Driver {
   private String id;
   private DriverType type;
   private DriverStatus status;
-  private Long hubId;
+  private Long departHubId;
+  private Long arrivalHubId;
   private Boolean isDeleted;
 
   public static Driver create(final DriverForCreate forCreate) {
@@ -24,7 +25,8 @@ public class Driver {
         .id(forCreate.user().driverId())
         .type(forCreate.type())
         .status(forCreate.status())
-        .hubId(forCreate.departHub().hubId())
+        .departHubId(forCreate.departHub().hubId())
+        .arrivalHubId(forCreate.arrivalHubId())
         .isDeleted(false)
         .build();
   }
@@ -32,7 +34,8 @@ public class Driver {
   public void update(final DriverForUpdate forUpdate) {
     this.type = forUpdate.type();
     this.status = forUpdate.status();
-    this.hubId = forUpdate.departHub().hubId();
+    this.departHubId = forUpdate.departHub().hubId();
+    this.arrivalHubId = forUpdate.arrivalHubId();
   }
 
   public void delete() {

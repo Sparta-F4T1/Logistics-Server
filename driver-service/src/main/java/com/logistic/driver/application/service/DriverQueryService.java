@@ -5,7 +5,7 @@ import com.logistic.driver.application.port.in.DriverQueryUseCase;
 import com.logistic.driver.application.port.in.query.FindDriverQuery;
 import com.logistic.driver.application.port.in.query.ListDriverQuery;
 import com.logistic.driver.application.port.in.query.SearchDriverQuery;
-import com.logistic.driver.application.port.out.DriverQueryPersistencePort;
+import com.logistic.driver.application.port.out.persistence.DriverQueryPersistencePort;
 import com.logistic.driver.domain.model.DriverView;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DriverQueryService implements DriverQueryUseCase {
   private final DriverQueryPersistencePort persistencePort;
-  
+
   @Override
   public DriverView findDriver(final FindDriverQuery query) {
     return persistencePort.findById(query.driverId());

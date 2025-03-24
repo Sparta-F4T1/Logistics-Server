@@ -34,8 +34,11 @@ public class DriverEntity extends TimeStamped {
   @Column(name = "status", nullable = false)
   private DriverStatus status;
 
-  @Column(name = "hub_id", nullable = false)
-  private Long hubId;
+  @Column(name = "depart_hub_id", nullable = false)
+  private Long departHubId;
+
+  @Column(name = "arrival_hub_id", nullable = false)
+  private Long arrivalHubId;
 
   @Column(name = "is_deleted")
   private Boolean isDeleted;
