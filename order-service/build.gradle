@@ -24,6 +24,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.projectlombok:lombok:1.18.22'
     implementation 'org.mapstruct:mapstruct:1.6.3'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation project(path: ':common-server')
 
     implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
@@ -36,6 +37,7 @@ dependencies {
 
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
