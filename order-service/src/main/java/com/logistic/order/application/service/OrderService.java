@@ -40,7 +40,7 @@ public class OrderService implements OrderUseCase {
     order = orderPersistencePort.save(order);
 
     if (order.getStatus() == OrderStatus.IN_DELIVERY){
-      messagePort.sendCreateDelivery(order);
+      messagePort.sendCreateOrder(order);
     }
 
     return order;
