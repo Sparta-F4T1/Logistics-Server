@@ -3,11 +3,13 @@ package com.logistic.order.adapter.out.internal;
 import com.logistic.common.annotation.Adapter;
 import com.logistic.common.internal.request.ProductClientRequest;
 import com.logistic.order.adapter.out.internal.client.CompanyFeignClient;
+import com.logistic.order.adapter.out.internal.client.HubFeignClient;
 import com.logistic.order.adapter.out.internal.client.ProductFeignClient;
 import com.logistic.order.adapter.out.internal.client.UserFeignClient;
 import com.logistic.order.adapter.out.internal.mapper.OrderClientMapper;
 import com.logistic.order.application.port.out.OrderInternalPort;
 import com.logistic.order.application.service.dto.CompanyDto;
+import com.logistic.order.application.service.dto.HubDto;
 import com.logistic.order.application.service.dto.UserDto;
 import com.logistic.order.domain.vo.OrderProduct;
 import java.util.List;
@@ -20,6 +22,7 @@ public class OrderInternalAdapter implements OrderInternalPort {
   private final ProductFeignClient productFeignClient;
   private final UserFeignClient userFeignClient;
   private final CompanyFeignClient companyFeignClient;
+  private final HubFeignClient hubFeignClient;
   private final OrderClientMapper orderClientMapper;
 
   public void updateStock(List<OrderProduct> orderProducts){
@@ -31,6 +34,11 @@ public class OrderInternalAdapter implements OrderInternalPort {
   @Override
   public CompanyDto findCompany(Long companyId) {
     return orderClientMapper.toCompanyDto(companyFeignClient.findCompany(companyId));
+  }
+
+  @Override
+  public HubDto findHub(Long hubId) {
+    return orderClientMapper.toHubDto(hubFeignClient.findHub(hubId));
   }
 
   @Override

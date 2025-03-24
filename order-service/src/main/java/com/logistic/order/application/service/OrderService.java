@@ -8,7 +8,9 @@ import com.logistic.order.application.port.in.command.CreateOrderCommand;
 import com.logistic.order.application.port.out.MessagePort;
 import com.logistic.order.application.port.out.OrderInternalPort;
 import com.logistic.order.domain.Order;
+import com.logistic.order.domain.OrderException.ExecutionNotAuthorized;
 import com.logistic.order.domain.OrderException.OrderBuyerNotAuthorized;
+import com.logistic.order.domain.OrderException.OrderHubManagerNotAuthorized;
 import com.logistic.order.domain.OrderStatus;
 import com.logistic.order.domain.vo.OrderProduct;
 import java.util.List;
@@ -28,7 +30,14 @@ public class OrderService implements OrderUseCase {
 
   @Override
   public Order createOrder(CreateOrderCommand command) {
-    checkCompanyManager(command.buyerId(), command.userInfo());
+    RoleType roleType = getRole(command.userInfo());
+    String userId = command.userInfo().getUserId();
+
+    switch (roleType){
+      case COMPANY_PERSONNEL -> checkCompanyManager(command.buyerId(), userId);
+      case HUB_ADMIN -> checkHubManager(command.sellerId(), userId);
+      case DELIVERY_PERSONNEL -> throw new ExecutionNotAuthorized();
+    }
 
     List<OrderProduct> orderProducts = command.orderProducts().stream()
         .map(orderProduct -> OrderProduct.create(orderProduct.productId(), orderProduct.quantity()))
@@ -86,16 +95,25 @@ public class OrderService implements OrderUseCase {
     return OrderStatus.IN_DELIVERY;
   }
 
-  private void checkCompanyManager(Long buyerId, UserInfo userInfo) {
-    if(!userInfo.getRole().equals(String.valueOf(RoleType.COMPANY_PERSONNEL))) {
-      throw new OrderBuyerNotAuthorized();
-    }
+  private RoleType getRole(UserInfo userInfo) {
+    return RoleType.valueOf(userInfo.getRole());
+  }
 
+  private void checkCompanyManager(Long buyerId, String userId) {
     orderInternalPort.findCompany(buyerId)
         .userIds()
         .stream()
-        .filter(userId -> userId.equals(userInfo.getUserId()))
+        .filter(user -> user.equals(userId))
         .findFirst()
         .orElseThrow(OrderBuyerNotAuthorized::new);
+  }
+
+  private void checkHubManager(Long sellerId, String userId){
+    orderInternalPort.findHub(sellerId)
+        .userIds()
+        .stream()
+        .filter(user -> user.equals(userId))
+        .findFirst()
+        .orElseThrow(OrderHubManagerNotAuthorized::new);
   }
 }

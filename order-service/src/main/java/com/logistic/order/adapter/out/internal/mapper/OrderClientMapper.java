@@ -2,8 +2,10 @@ package com.logistic.order.adapter.out.internal.mapper;
 
 import com.logistic.common.internal.message.CreateOrderEvent;
 import com.logistic.common.internal.response.CompanyClientResponse;
+import com.logistic.common.internal.response.HubClientResponse;
 import com.logistic.common.internal.response.UserClientResponse;
 import com.logistic.order.application.service.dto.CompanyDto;
+import com.logistic.order.application.service.dto.HubDto;
 import com.logistic.order.application.service.dto.UserDto;
 import com.logistic.order.domain.Order;
 import org.mapstruct.Mapper;
@@ -22,4 +24,6 @@ public interface OrderClientMapper {
   CompanyDto toCompanyDto(CompanyClientResponse companyClientResponse);
 
   UserDto toUserDto(UserClientResponse userClientResponse);
+
+  HubDto toHubDto(HubClientResponse hubClientResponse);
 }
