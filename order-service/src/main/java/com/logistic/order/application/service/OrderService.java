@@ -97,8 +97,18 @@ public class OrderService implements OrderUseCase {
   }
 
   @Override
-  public Order findOrder(Long orderId) {
-    return orderPersistencePort.findById(orderId);
+  public Order findOrder(Long orderId, UserInfo userInfo) {
+    RoleType roleType = getRole(userInfo);
+    String userId = userInfo.getUserId();
+
+    Order order = orderPersistencePort.findById(orderId);
+
+    switch (roleType){
+      case COMPANY_PERSONNEL -> checkCompanyManager(order.getBuyerId(), userId);
+      case HUB_ADMIN -> checkHubManager(order.getSellerId(), userId);
+    }
+
+    return order;
   }
 
   private OrderStatus checkStock(List<OrderProduct> orderProducts){

@@ -60,8 +60,9 @@ public class OrderWebAdapter {
   }
 
   @GetMapping("/{orderId}")
-  public ResponseEntity<ApiResponse<FindOrderResponse>> findOrder(@PathVariable Long orderId) {
-    Order order = orderUseCase.findOrder(orderId);
+  public ResponseEntity<ApiResponse<FindOrderResponse>> findOrder(@PathVariable Long orderId,
+                                                                  @WithPassport Passport passport) {
+    Order order = orderUseCase.findOrder(orderId, passport.getUserInfo());
     ApiResponse<FindOrderResponse> response = ApiResponse.success(orderWebMapper.toReadOrderResponse(order));
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }
