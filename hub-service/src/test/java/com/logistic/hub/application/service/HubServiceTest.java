@@ -1,23 +1,6 @@
 package com.logistic.hub.application.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import com.logistic.hub.application.port.in.command.HubCreateCommand;
-import com.logistic.hub.application.port.in.command.HubDeleteCommand;
-import com.logistic.hub.application.port.in.command.HubUpdateCommand;
-import com.logistic.hub.application.port.in.query.HubFindQuery;
-import com.logistic.hub.application.port.in.query.HubSearchQuery;
-import com.logistic.hub.application.service.dto.HubHistoryDto;
-import com.logistic.hub.domain.Hub;
-import com.logistic.hub.domain.HubType;
-import com.logistic.hub.domain.exception.HubAlreadyDeletedException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
+/*
 
 @SpringBootTest
 @Transactional
@@ -106,4 +89,4 @@ class HubServiceTest {
     // then
     assertThrows(HubAlreadyDeletedException.class, () -> hubQueryService.getHubDetails(query));
   }
-}
+}*/

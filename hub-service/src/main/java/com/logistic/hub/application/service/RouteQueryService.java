@@ -3,7 +3,7 @@ package com.logistic.hub.application.service;
 import static java.util.Comparator.comparingInt;
 
 import com.logistic.common.annotation.UseCase;
-import com.logistic.hub.application.port.in.HubUseCase;
+import com.logistic.hub.application.port.in.HubQueryUseCase;
 import com.logistic.hub.application.port.in.RouteQueryUseCase;
 import com.logistic.hub.application.port.in.command.DepartArrivalIdCommand;
 import com.logistic.hub.application.port.in.query.RouteFindQuery;
@@ -37,7 +37,7 @@ import org.springframework.data.domain.Sort.Direction;
 @RequiredArgsConstructor
 public class RouteQueryService implements RouteQueryUseCase {
   private final RoutePersistencePort routePersistencePort;
-  private final HubUseCase hubUseCase;
+  private final HubQueryUseCase hubQueryUseCase;
 
   @Override
   @Cacheable(cacheNames = "routeList", key = "{#routeSearchQuery.page(),#routeSearchQuery.size(),#routeSearchQuery.searchType(), #routeSearchQuery.search()}")
@@ -57,7 +57,7 @@ public class RouteQueryService implements RouteQueryUseCase {
     Route route = routePersistencePort.findById(routeFindQuery.routeId());
 
     isDeleted(route);
-    DepartArrivalDto command = hubUseCase.getHubNameInfo(route.getDepartHubId(), route.getArrivalHubId());
+    DepartArrivalDto command = hubQueryUseCase.getHubNameInfo(route.getDepartHubId(), route.getArrivalHubId());
     RouteDetailsDto routeDetails = RouteDetailsDto.from(route, command.departHubName(),
         command.arrivalHubName());
     return routeDetails;
@@ -79,6 +79,11 @@ public class RouteQueryService implements RouteQueryUseCase {
     return routeList;
   }
 
+  private void isDeleted(Route route) {
+    if (route.getIsDeleted()) {
+      throw new RouteAlreadyDeletedException("이미 삭제된 허브입니다.");
+    }
+  }
 
   @Override
   @Cacheable(cacheNames = "shortestPath", key = "{ #command.departHubId(),#command.arrivalHubId() }")
@@ -133,11 +138,6 @@ public class RouteQueryService implements RouteQueryUseCase {
     return shortestPath;
   }
 
-  private void isDeleted(Route route) {
-    if (route.getIsDeleted()) {
-      throw new RouteAlreadyDeletedException("이미 삭제된 허브입니다.");
-    }
-  }
 
   @Cacheable(cacheNames = "AllRouteList")
   public List<Route> getAllRoutes() {
