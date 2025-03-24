@@ -6,8 +6,10 @@ import com.logistic.order.adapter.in.external.web.mapper.OrderWebMapper;
 import com.logistic.order.adapter.in.external.web.request.SearchOrderRequest;
 import com.logistic.order.adapter.in.external.web.response.SearchOrderResponse;
 import com.logistic.order.application.port.in.OrderQueryUseCase;
-import com.logistic.order.domain.Order;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +28,13 @@ public class OrderQueryAdapter {
 
   @GetMapping
   public ResponseEntity<ApiResponse<PagedModel<SearchOrderResponse>>> searchOrder(
-      @ModelAttribute SearchOrderRequest searchOrderRequest) {
-    PagedModel<Order> orders = orderQueryUseCase.search(orderWebMapper.toSearchQuery(searchOrderRequest));
-    ApiResponse<PagedModel<SearchOrderResponse>> response = ApiResponse.success(
-        orderWebMapper.toSearchOrderResponse(orders));
+      @ModelAttribute SearchOrderRequest searchOrderRequest,
+      @PageableDefault Pageable pageable) {
+    Page<SearchOrderResponse> orders = orderQueryUseCase
+        .search(orderWebMapper.toSearchQuery(searchOrderRequest, pageable))
+        .map(orderWebMapper::toSearchOrderResponse);
+
+    ApiResponse<PagedModel<SearchOrderResponse>> response = ApiResponse.success(new PagedModel<>(orders));
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }
 }

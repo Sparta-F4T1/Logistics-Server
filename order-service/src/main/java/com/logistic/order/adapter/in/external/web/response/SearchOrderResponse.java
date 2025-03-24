@@ -8,7 +8,7 @@ public record SearchOrderResponse(
     Long buyerId,
     String memo,
     String status,
-    List<OrderProduct> orderProductList) {
+    List<OrderProduct> orderProducts) {
 
   public record OrderProduct(
       Long productId,

@@ -10,7 +10,7 @@ import com.logistic.order.application.port.in.command.CreateOrderCommand;
 import com.logistic.order.application.port.in.query.SearchOrderQuery;
 import com.logistic.order.domain.Order;
 import org.mapstruct.Mapper;
-import org.springframework.data.web.PagedModel;
+import org.springframework.data.domain.Pageable;
 
 @Mapper(componentModel = "spring")
 public interface OrderWebMapper {
@@ -22,7 +22,7 @@ public interface OrderWebMapper {
 
   FindOrderResponse toReadOrderResponse(Order order);
 
-  SearchOrderQuery toSearchQuery(SearchOrderRequest searchOrderRequest);
+  SearchOrderQuery toSearchQuery(SearchOrderRequest searchOrderRequest, Pageable pageable);
 
-  PagedModel<SearchOrderResponse> toSearchOrderResponse(PagedModel<Order> orders);
+  SearchOrderResponse toSearchOrderResponse(Order orders);
 }
