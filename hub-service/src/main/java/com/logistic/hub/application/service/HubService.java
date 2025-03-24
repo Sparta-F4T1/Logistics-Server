@@ -120,7 +120,6 @@ public class HubService implements HubUseCase {
   }
 
   private void checkAuthority(Passport passport) {
-    System.out.println(passport.getUserInfo().getRole() + " " + passport.getUserInfo().getUserId());
     RoleType roleType = RoleType.valueOf(passport.getUserInfo().getRole());
 
     if (roleType != RoleType.MASTER_ADMIN) {
