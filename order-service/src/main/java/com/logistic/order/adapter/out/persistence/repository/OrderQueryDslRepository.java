@@ -55,7 +55,8 @@ public class OrderQueryDslRepository {
                                                 Long buyerId) {
     return orderEntity.isDeleted.isFalse()
         .and(dateBetween(dateStart, dateEnd))
-        .and(companiesEqual(sellerId, buyerId));
+        .and(isSellerCompany(sellerId))
+        .and(isBuyerCompany(buyerId));
   }
 
   private BooleanExpression dateBetween(LocalDateTime dateStart, LocalDateTime dateEnd) {
@@ -72,16 +73,13 @@ public class OrderQueryDslRepository {
     return null;
   }
 
-  private BooleanExpression companiesEqual(Long sellerId, Long buyerId) {
-    if (sellerId != null) {
-      return orderEntity.sellerId.eq(sellerId);
-    }
 
-    if (buyerId != null) {
-      return orderEntity.buyerId.eq(buyerId);
-    }
+  private BooleanExpression isSellerCompany(Long sellerId){
+    return sellerId != null? orderEntity.sellerId.eq(sellerId) : null;
+  }
 
-    return null;
+  private BooleanExpression isBuyerCompany(Long buyerId){
+    return buyerId != null? orderEntity.buyerId.eq(buyerId) : null;
   }
 
   private List<OrderSpecifier<?>> getAllOrderSpecifiers(Pageable pageable) {
