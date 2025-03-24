@@ -9,5 +9,6 @@ public record DriverForCreate(
     User user,
     DriverType type,
     DriverStatus status,
-    Hub departHub) {
+    Hub departHub,
+    Long arrivalHubId) {
 }

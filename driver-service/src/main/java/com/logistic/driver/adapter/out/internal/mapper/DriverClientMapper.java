@@ -1,7 +1,9 @@
 package com.logistic.driver.adapter.out.internal.mapper;
 
+import com.logistic.common.internal.response.CompanyClientResponse;
 import com.logistic.common.internal.response.HubClientResponse;
 import com.logistic.common.internal.response.UserClientResponse;
+import com.logistic.driver.domain.model.vo.Company;
 import com.logistic.driver.domain.model.vo.Hub;
 import com.logistic.driver.domain.model.vo.User;
 import org.mapstruct.Mapper;
@@ -11,4 +13,6 @@ public interface DriverClientMapper {
   Hub toHub(HubClientResponse hubClientResponse);
 
   User toUser(UserClientResponse userClientResponse);
+
+  Company toCompany(CompanyClientResponse companyClientResponse);
 }

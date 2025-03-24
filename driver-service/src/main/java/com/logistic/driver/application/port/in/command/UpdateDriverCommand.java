@@ -10,10 +10,11 @@ public record UpdateDriverCommand(
     String driverId,
     DriverType type,
     DriverStatus status,
-    Long hubId,
+    Long departHubId,
+    Long arrivalHubId,
     Passport passport) {
   public DriverForUpdate toForUpdate(Hub hub) {
     return new DriverForUpdate(
-        type, status, hub);
+        type, status, hub, arrivalHubId);
   }
 }
