@@ -44,8 +44,9 @@ public class OrderWebAdapter {
 
   @PatchMapping("/{orderId}/{status}")
   public ResponseEntity<ApiResponse<UpdateOrderResponse>> updateOrderStatus(@PathVariable Long orderId,
-                                                                            @PathVariable OrderStatus status) {
-    Order order = orderUseCase.updateOrder(orderId, status);
+                                                                            @PathVariable OrderStatus status,
+                                                                            @WithPassport Passport passport) {
+    Order order = orderUseCase.updateOrder(orderId, status, passport.getUserInfo());
     ApiResponse<UpdateOrderResponse> response = ApiResponse.success(orderWebMapper.toUpdateResponse(order));
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }

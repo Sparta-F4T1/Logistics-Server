@@ -61,8 +61,27 @@ public class OrderService implements OrderUseCase {
   }
 
   @Override
-  public Order updateOrder(Long orderId, OrderStatus orderStatus) {
+  public Order updateOrder(Long orderId, OrderStatus orderStatus, UserInfo userInfo) {
+    RoleType roleType = getRole(userInfo);
+    String userId = userInfo.getUserId();
+
     Order order = orderPersistencePort.findById(orderId);
+
+    switch (roleType){
+      case COMPANY_PERSONNEL -> {
+          if (!orderStatus.equals(OrderStatus.CANCELED)){
+            throw new ExecutionNotAuthorized();
+          }
+          checkCompanyManager(order.getBuyerId(), userId);
+      }
+      case HUB_ADMIN -> checkHubManager(order.getSellerId(), userId);
+      case DELIVERY_PERSONNEL -> {
+        if (!orderStatus.equals(OrderStatus.DELIVERED)){
+          throw new ExecutionNotAuthorized();
+        }
+      }
+    }
+
     order.updateStatus(orderStatus);
 
     if (orderStatus == OrderStatus.CANCELED){
