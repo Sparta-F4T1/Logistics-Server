@@ -1,5 +1,6 @@
 package com.logistic.driver.adapter.out.persistence.repository;
 
+
 import static com.logistic.driver.adapter.out.persistence.model.entity.QDriverEntity.driverEntity;
 
 import com.logistic.driver.adapter.out.persistence.model.entity.DriverEntity;
@@ -12,6 +13,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,6 +41,22 @@ public class DriverQueryDslRepository {
     return new PageImpl<>(contents, pageable, total);
   }
 
+  public Optional<DriverEntity> getHubDriver(final Long departHubId, final Long arrivalHubId) {
+    final BooleanExpression searchExpression = getHubDriverCondition(departHubId, arrivalHubId);
+    return Optional.ofNullable(
+        queryFactory.selectFrom(driverEntity)
+            .where(searchExpression)
+            .fetchOne());
+  }
+
+  public List<DriverEntity> getCompanyDrivers(final Long departHubId) {
+    final BooleanExpression searchExpression = getCompanyDriversCondition(departHubId);
+    return queryFactory
+        .selectFrom(driverEntity)
+        .where(searchExpression)
+        .fetch();
+  }
+
   private List<DriverEntity> fetchContents(final Pageable pageable, final BooleanExpression searchExpression) {
     return queryFactory
         .selectFrom(driverEntity)
@@ -51,13 +69,35 @@ public class DriverQueryDslRepository {
 
   private BooleanExpression getSearchCondition(final Long hubId, final DriverType type, final DriverStatus status) {
     return driverEntity.isDeleted.isFalse()
-        .and(isHubIdEqual(hubId))
+        .and(isDepartHubIdEqual(hubId))
         .and(isTypeEqual(type))
         .and(isStatusEqual(status));
   }
 
-  private BooleanExpression isHubIdEqual(final Long hubId) {
-    return (hubId == null) ? null : driverEntity.hubId.eq(hubId);
+  private BooleanExpression getHubDriverCondition(final Long departHubId, final Long arrivalHubId) {
+    return driverEntity.isDeleted.isFalse()
+        .and(isTypeEqual(DriverType.HUB))
+        .and(isStatusEqual(DriverStatus.AVAILABLE))
+        .and(
+            (isDepartHubIdEqual(departHubId).and(isArrivalHubIdEqual(arrivalHubId)))
+                .or(isDepartHubIdEqual(arrivalHubId).and(isArrivalHubIdEqual(departHubId)))
+        );
+  }
+
+  private BooleanExpression getCompanyDriversCondition(final Long departHubId) {
+    return driverEntity.isDeleted.isFalse()
+        .and(isTypeEqual(DriverType.COMPANY))
+        .and(isStatusEqual(DriverStatus.AVAILABLE))
+        .and(isDepartHubIdEqual(departHubId));
+  }
+
+
+  private BooleanExpression isDepartHubIdEqual(final Long departHubId) {
+    return (departHubId == null) ? null : driverEntity.departHubId.eq(departHubId);
+  }
+
+  private BooleanExpression isArrivalHubIdEqual(final Long arrivalHubId) {
+    return (arrivalHubId == null) ? null : driverEntity.arrivalHubId.eq(arrivalHubId);
   }
 
   private BooleanExpression isTypeEqual(final DriverType type) {

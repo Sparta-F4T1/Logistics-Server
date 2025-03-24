@@ -6,7 +6,7 @@ import com.logistic.driver.adapter.out.persistence.model.entity.DriverViewEntity
 import com.logistic.driver.adapter.out.persistence.repository.DriverViewJpaRepository;
 import com.logistic.driver.adapter.out.persistence.repository.DriverViewQueryDslRepository;
 import com.logistic.driver.application.port.in.query.SearchDriverQuery;
-import com.logistic.driver.application.port.out.DriverQueryPersistencePort;
+import com.logistic.driver.application.port.out.persistence.DriverQueryPersistencePort;
 import com.logistic.driver.domain.exception.CustomNotFoundException.DriverNotFoundException;
 import com.logistic.driver.domain.model.DriverView;
 import java.util.List;

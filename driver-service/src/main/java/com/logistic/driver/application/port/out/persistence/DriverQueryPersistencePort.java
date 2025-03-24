@@ -1,4 +1,4 @@
-package com.logistic.driver.application.port.out;
+package com.logistic.driver.application.port.out.persistence;
 
 import com.logistic.driver.application.port.in.query.SearchDriverQuery;
 import com.logistic.driver.domain.model.DriverView;
