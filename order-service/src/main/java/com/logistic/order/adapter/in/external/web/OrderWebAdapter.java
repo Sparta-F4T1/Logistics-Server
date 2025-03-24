@@ -52,8 +52,9 @@ public class OrderWebAdapter {
   }
 
   @DeleteMapping("/{orderId}")
-  public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable Long orderId) {
-    orderUseCase.deleteOrder(orderId, "userId");
+  public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable Long orderId,
+                                                       @WithPassport Passport passport) {
+    orderUseCase.deleteOrder(orderId, passport.getUserInfo());
     ApiResponse<Void> response = ApiResponse.success();
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }

@@ -89,8 +89,11 @@ public class OrderService implements OrderUseCase {
   }
 
   @Override
-  public void deleteOrder(Long orderId, String userId) {
-    orderPersistencePort.delete(orderId, userId);
+  public void deleteOrder(Long orderId, UserInfo userInfo) {
+    if (getRole(userInfo).equals(RoleType.HUB_ADMIN)){
+      checkHubManager(orderPersistencePort.findById(orderId).getSellerId(), userInfo.getUserId());
+    }
+    orderPersistencePort.delete(orderId, userInfo.getUserId());
   }
 
   @Override
