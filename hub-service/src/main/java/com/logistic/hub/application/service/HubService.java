@@ -1,6 +1,8 @@
 package com.logistic.hub.application.service;
 
 import com.logistic.common.annotation.UseCase;
+import com.logistic.common.passport.model.Passport;
+import com.logistic.common.passport.model.RoleType;
 import com.logistic.hub.application.port.in.HubUseCase;
 import com.logistic.hub.application.port.in.command.HubCreateCommand;
 import com.logistic.hub.application.port.in.command.HubDeleteCommand;
@@ -11,6 +13,7 @@ import com.logistic.hub.application.service.dto.DepartArrivalDto;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.command.AddressCommand;
 import com.logistic.hub.domain.exception.HubAlreadyDeletedException;
+import com.logistic.hub.domain.exception.HubPermissionDeniedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,6 +29,7 @@ public class HubService implements HubUseCase {
   @Override
   @CacheEvict(cacheNames = "hubList", allEntries = true)
   public Hub createHub(HubCreateCommand hubCommand) {
+    checkAuthority(hubCommand.passport());
     AddressCommand addressCommand = gpsInternalPort.getAddressCommand(hubCommand.roadAddress(),
         hubCommand.jibunAddress());
     Hub hub = Hub.createHub(hubCommand, addressCommand);
@@ -33,13 +37,13 @@ public class HubService implements HubUseCase {
     return hubPersistencePort.save(hub);
   }
 
-
   @Override
   @Caching(evict = {
       @CacheEvict(cacheNames = "hubList", allEntries = true),
       @CacheEvict(cacheNames = "routeList", allEntries = true)
   })
   public void updateHub(HubUpdateCommand command) {
+    checkAuthority(command.passport());
     Hub hub = getOrElseThrow(command.hubId());
     isDeleted(hub);
     AddressCommand addressCommand = gpsInternalPort.getAddressCommand(command.roadAddress(),
@@ -55,6 +59,7 @@ public class HubService implements HubUseCase {
       @CacheEvict(cacheNames = "routeList", allEntries = true)
   })
   public void deleteHub(HubDeleteCommand command) {
+    checkAuthority(command.passport());
     Hub hub = getOrElseThrow(command.hubId());
     isDeleted(hub);
     hubPersistencePort.delete(hub, command.passport().getUserInfo().getUserId());
@@ -77,5 +82,14 @@ public class HubService implements HubUseCase {
       throw new HubAlreadyDeletedException("이미 삭제된 허브입니다.");
     }
   }
+
+  private void checkAuthority(Passport passport) {
+    RoleType roleType = RoleType.valueOf(passport.getUserInfo().getRole());
+
+    if (roleType != RoleType.MASTER_ADMIN) {
+      throw new HubPermissionDeniedException("권한이 없습니다");
+    }
+  }
+
 }
 
