@@ -14,7 +14,10 @@ import com.logistic.delivery.domain.HubDeliveryHistory;
 import com.logistic.delivery.domain.vo.Distance;
 import com.logistic.delivery.domain.vo.Sequence;
 import com.logistic.delivery.domain.vo.Time;
+import com.logistic.delivery.domain.vo.dto.HubDriverInfo;
+import com.logistic.delivery.domain.vo.dto.HubRouteInfo;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,16 +34,16 @@ public class DeliveryService implements DeliveryUseCase {
   @Override
   public Delivery createDelivery(DeliveryCreateCommand command) {
     // 1. 허브 경로 가져오기
-//    List<HubRouteInfo> hubRouteInfos = internalClientPort.getHubRoute(command.departHubId(),command.arrivalHubId());
+    List<HubRouteInfo> hubRoutes = internalClientPort.getHubRoutes(command.departHubId(),command.arrivalHubId());
 
-    // 2. 허브 배송 담당자 가져오기?
-//    List<HubDriverInfo> hubDrivers = internalClientPort.getHubDriver(List<hubRouteDto> hubRoutes);
+    // 2. 허브 배송 담당자 가져오기
+    List<HubDriverInfo> hubDrivers = internalClientPort.getHubDrivers(hubRoutes);
 
     // todo : client에서 던지는 예외처리
     // todo : hub route 조회 및 List<HubDeliveryHistory> 로 변환
 
-//    List<HubDeliveryHistory> histories = new ArrayList<>();  //임시
-    List<HubDeliveryHistory> histories = createTestHubDeliveryHistory(); //임시
+//    List<HubDeliveryHistory> histories = createTestHubDeliveryHistory(); //임시
+    List<HubDeliveryHistory> histories = createHubDeliveryHistory(hubRoutes,hubDrivers);
 
     return deliveryPersistencePort.save(
         Delivery.create(
@@ -53,40 +56,6 @@ public class DeliveryService implements DeliveryUseCase {
             histories
         )
     );
-  }
-
-  private List<HubDeliveryHistory> createTestHubDeliveryHistory() {
-    HubDeliveryHistory history1 = HubDeliveryHistory.builder()
-        .sequence(new Sequence(1, 3))
-        .departHubId(6L)
-        .arrivalHubId(7L)
-        .time(new Time(720))
-        .distance(new Distance(3.12))
-        .status(DeliveryStatus.HUB_TRANSIT)
-        .driverId("driver1")
-        .build();
-
-    HubDeliveryHistory history2 = HubDeliveryHistory.builder()
-        .sequence(new Sequence(2, 3))
-        .departHubId(7L)
-        .arrivalHubId(8L)
-        .time(new Time(720))
-        .distance(new Distance(3.12))
-        .status(DeliveryStatus.HUB_TRANSIT)
-        .driverId("driver2")
-        .build();
-
-    HubDeliveryHistory history3 = HubDeliveryHistory.builder()
-        .sequence(new Sequence(3, 3))
-        .departHubId(8L)
-        .arrivalHubId(9L)
-        .time(new Time(720))
-        .distance(new Distance(3.12))
-        .status(DeliveryStatus.HUB_TRANSIT)
-        .driverId("driver3")
-        .build();
-
-    return List.of(history1, history2, history3);
   }
 
   @Override
@@ -123,4 +92,69 @@ public class DeliveryService implements DeliveryUseCase {
     delivery.delete();
     deliveryPersistencePort.save(delivery);
   }
+
+  private List<HubDeliveryHistory> createHubDeliveryHistory(
+      List<HubRouteInfo> hubRoutes,
+      List<HubDriverInfo> hubDrivers
+  ) {
+    int endIndex = hubRoutes.size();
+    AtomicInteger index = new AtomicInteger(1);
+
+    return hubRoutes.stream()
+        .flatMap(route -> hubDrivers.stream()
+            .filter(driver ->
+                route.departHubId().equals(driver.departHubId()) &&
+                route.arrivalHubId().equals(driver.arrivalHubId()))
+            .map(driver -> {
+              Time time = new Time(route.duration());
+              Distance distance = new Distance(route.distance().doubleValue());
+              Sequence sequence = new Sequence(index.getAndIncrement(), endIndex);
+
+              return HubDeliveryHistory.builder()
+                  .sequence(sequence)
+                  .departHubId(route.departHubId())
+                  .arrivalHubId(route.arrivalHubId())
+                  .time(time)
+                  .distance(distance)
+                  .status(DeliveryStatus.HUB_WAITING)
+                  .driverId(driver.driverId())
+                  .build();
+            }))
+        .toList();
+  }
+
+  private List<HubDeliveryHistory> createTestHubDeliveryHistory() {
+    HubDeliveryHistory history1 = HubDeliveryHistory.builder()
+        .sequence(new Sequence(1, 3))
+        .departHubId(6L)
+        .arrivalHubId(7L)
+        .time(new Time(720))
+        .distance(new Distance(3.12))
+        .status(DeliveryStatus.HUB_TRANSIT)
+        .driverId("driver1")
+        .build();
+
+    HubDeliveryHistory history2 = HubDeliveryHistory.builder()
+        .sequence(new Sequence(2, 3))
+        .departHubId(7L)
+        .arrivalHubId(8L)
+        .time(new Time(720))
+        .distance(new Distance(3.12))
+        .status(DeliveryStatus.HUB_TRANSIT)
+        .driverId("driver2")
+        .build();
+
+    HubDeliveryHistory history3 = HubDeliveryHistory.builder()
+        .sequence(new Sequence(3, 3))
+        .departHubId(8L)
+        .arrivalHubId(9L)
+        .time(new Time(720))
+        .distance(new Distance(3.12))
+        .status(DeliveryStatus.HUB_TRANSIT)
+        .driverId("driver3")
+        .build();
+
+    return List.of(history1, history2, history3);
+  }
+
 }
