@@ -2,7 +2,9 @@ package com.logistic.hub.adapter.out.persistence.model;
 
 import com.logistic.hub.adapter.out.persistence.AddressValue;
 import com.logistic.hub.domain.HubType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,7 +12,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,4 +47,8 @@ public class HubEntity extends BaseEntity {
 
   @Embedded
   private AddressValue address;
+
+  @ElementCollection
+  @CollectionTable(name = "manager_ids", joinColumns = @JoinColumn(name = "hub_id"))
+  private List<String> managerIds;
 }

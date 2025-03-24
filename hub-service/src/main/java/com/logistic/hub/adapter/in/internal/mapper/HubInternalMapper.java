@@ -14,5 +14,6 @@ public interface HubInternalMapper {
   @Mapping(source = "address.jibun", target = "jibun")
   @Mapping(source = "address.latitude", target = "latitude")
   @Mapping(source = "address.longitude", target = "longitude")
+  @Mapping(source = "managerIds", target = "userIds")
   HubClientResponse toHubClientResponse(Hub hub);
 }

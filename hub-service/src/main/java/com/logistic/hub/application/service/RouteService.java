@@ -10,7 +10,7 @@ import com.logistic.hub.application.port.in.command.RouteDeleteByHubIdCommand;
 import com.logistic.hub.application.port.in.command.RouteDeleteCommand;
 import com.logistic.hub.application.port.in.command.RouteInfoCommand;
 import com.logistic.hub.application.port.in.query.HubFindQuery;
-import com.logistic.hub.application.port.out.client.GpsInternalPort;
+import com.logistic.hub.application.port.out.client.HubInternalPort;
 import com.logistic.hub.application.port.out.persistence.RoutePersistencePort;
 import com.logistic.hub.domain.Hub;
 import com.logistic.hub.domain.Route;
@@ -30,7 +30,7 @@ import org.springframework.cache.annotation.Caching;
 public class RouteService implements RouteUseCase {
   private final RoutePersistencePort routePersistencePort;
   private final HubQueryUseCase hubQueryUseCase;
-  private final GpsInternalPort gpsInternalPort;
+  private final HubInternalPort hubInternalPort;
 
   @Override
   @Caching(evict = {
@@ -45,7 +45,7 @@ public class RouteService implements RouteUseCase {
     String departGps = departHub.getAddress().getLatitude() + "," + departHub.getAddress().getLongitude();
     String arrivalGps = arrivalHub.getAddress().getLatitude() + "," + arrivalHub.getAddress().getLongitude();
 
-    RouteInfoCommand routeInfoCommand = gpsInternalPort.getRouteInfo(departGps, arrivalGps);
+    RouteInfoCommand routeInfoCommand = hubInternalPort.getRouteInfo(departGps, arrivalGps);
     Long departHubId = routeCommand.departHubId();
     Long arrivalHubId = routeCommand.arrivalHubId();
     if (departHubId.equals(arrivalHubId)) {
