@@ -13,14 +13,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderProduct {
   private Long orderId;
-  private Long productId;
+  private Product product;
   private int quantity;
 
-  public static OrderProduct create(Long productId, int quantity) {
+  public static OrderProduct create(Long productId, String productName, int quantity) {
     return OrderProduct.builder()
-        .productId(productId)
+        .product(Product.create(productId, productName))
         .quantity(quantity)
         .build();
+  }
+
+  public Long getProductId(){
+    return  product.getProductId();
   }
 
   public void cancelStock() {

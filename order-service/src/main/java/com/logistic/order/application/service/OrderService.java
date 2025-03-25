@@ -7,11 +7,14 @@ import com.logistic.order.application.port.in.OrderUseCase;
 import com.logistic.order.application.port.in.command.CreateOrderCommand;
 import com.logistic.order.application.port.out.MessagePort;
 import com.logistic.order.application.port.out.OrderInternalPort;
+import com.logistic.order.application.service.dto.CompanyDto;
+import com.logistic.order.application.service.dto.UserDto;
 import com.logistic.order.domain.Order;
 import com.logistic.order.domain.OrderException.ExecutionNotAuthorized;
 import com.logistic.order.domain.OrderException.OrderBuyerNotAuthorized;
 import com.logistic.order.domain.OrderException.OrderHubManagerNotAuthorized;
 import com.logistic.order.domain.OrderStatus;
+import com.logistic.order.domain.vo.Company;
 import com.logistic.order.domain.vo.OrderProduct;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,24 +43,35 @@ public class OrderService implements OrderUseCase {
     }
 
     List<OrderProduct> orderProducts = command.orderProducts().stream()
-        .map(orderProduct -> OrderProduct.create(orderProduct.productId(), orderProduct.quantity()))
+        .map(orderProduct -> OrderProduct.create(orderProduct.productId(),
+            orderInternalPort.findProduct(orderProduct.productId()).getProductName(),
+            orderProduct.quantity()))
         .collect(Collectors.toList());
 
+    UserDto userDto = orderInternalPort.findUser(userId);
+
     Order order = Order.create(
-        command.sellerId(),
-        command.buyerId(),
+        getCompany(command.sellerId()),
+        getCompany(command.buyerId()),
         command.memo(),
         checkStock(orderProducts),
-        orderProducts
+        orderProducts,
+        userId,
+        userDto.userName()
     );
 
     order = orderPersistencePort.save(order);
 
     if (order.getStatus() == OrderStatus.IN_DELIVERY){
-      messagePort.sendCreateOrder(order);
+      messagePort.sendCreateOrder(order, userDto.slackEmail());
     }
 
     return order;
+  }
+
+  private Company getCompany(Long companyId) {
+    CompanyDto companyDto = orderInternalPort.findCompany(companyId);
+    return Company.create(companyDto.companyId(), companyDto.companyName(), companyDto.hubId());
   }
 
   @Override
@@ -70,9 +84,9 @@ public class OrderService implements OrderUseCase {
     switch (roleType){
       case COMPANY_PERSONNEL -> {
         checkAuthorizedOrderStatus(orderStatus, List.of(OrderStatus.CANCELED));
-        checkCompanyManager(order.getBuyerId(), userId);
+        checkCompanyManager(order.getBuyer().getCompanyId(), userId);
       }
-      case HUB_ADMIN -> checkHubManager(order.getSellerId(), userId);
+      case HUB_ADMIN -> checkHubManager(order.getSeller().getCompanyId(), userId);
       case DELIVERY_PERSONNEL -> checkAuthorizedOrderStatus(orderStatus, List.of(OrderStatus.DELIVERED));
     }
 
@@ -82,7 +96,6 @@ public class OrderService implements OrderUseCase {
       order.getOrderProducts()
           .forEach(OrderProduct::cancelStock);
 
-      messagePort.sendCreateOrder(order);
     }
 
     return orderPersistencePort.save(order);
@@ -91,7 +104,7 @@ public class OrderService implements OrderUseCase {
   @Override
   public void deleteOrder(Long orderId, UserInfo userInfo) {
     if (getRole(userInfo).equals(RoleType.HUB_ADMIN)){
-      checkHubManager(orderPersistencePort.findById(orderId).getSellerId(), userInfo.getUserId());
+      checkHubManager(orderPersistencePort.findById(orderId).getSeller().getCompanyId(), userInfo.getUserId());
     }
     orderPersistencePort.delete(orderId, userInfo.getUserId());
   }
@@ -104,8 +117,8 @@ public class OrderService implements OrderUseCase {
     Order order = orderPersistencePort.findById(orderId);
 
     switch (roleType){
-      case COMPANY_PERSONNEL -> checkCompanyManager(order.getBuyerId(), userId);
-      case HUB_ADMIN -> checkHubManager(order.getSellerId(), userId);
+      case COMPANY_PERSONNEL -> checkCompanyManager(order.getBuyer().getCompanyId(), userId);
+      case HUB_ADMIN -> checkHubManager(order.getSeller().getCompanyId(), userId);
     }
 
     return order;

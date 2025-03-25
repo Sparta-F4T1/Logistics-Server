@@ -12,6 +12,7 @@ import com.logistic.order.application.service.dto.CompanyDto;
 import com.logistic.order.application.service.dto.HubDto;
 import com.logistic.order.application.service.dto.UserDto;
 import com.logistic.order.domain.vo.OrderProduct;
+import com.logistic.order.domain.vo.Product;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,10 @@ public class OrderInternalAdapter implements OrderInternalPort {
   @Override
   public UserDto findUser(String userId) {
     return orderClientMapper.toUserDto(userFeignClient.findUser(userId));
+  }
+
+  @Override
+  public Product findProduct(Long productId) {
+    return orderClientMapper.toProduct(productFeignClient.findProduct(productId));
   }
 }

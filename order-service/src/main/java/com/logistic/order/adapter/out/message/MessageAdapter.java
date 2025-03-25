@@ -15,7 +15,7 @@ public class MessageAdapter implements MessagePort {
   private final OrderClientMapper orderClientMapper;
 
   @Override
-  public void sendCreateOrder(Order order) {
-    rabbitTemplate.convertAndSend(orderClientMapper.toCreateOrderEvent(order));
+  public void sendCreateOrder(Order order, String slackEmail) {
+    rabbitTemplate.convertAndSend(orderClientMapper.toCreateOrderEvent(order, slackEmail));
   }
 }
