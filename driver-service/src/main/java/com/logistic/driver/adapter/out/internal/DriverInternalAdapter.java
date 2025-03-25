@@ -1,5 +1,6 @@
 package com.logistic.driver.adapter.out.internal;
 
+import com.logistic.common.internal.response.GpsClientResponse;
 import com.logistic.driver.adapter.out.internal.client.CompanyFeignClient;
 import com.logistic.driver.adapter.out.internal.client.GpsFeignClient;
 import com.logistic.driver.adapter.out.internal.client.HubFeignClient;
@@ -85,9 +86,23 @@ public class DriverInternalAdapter implements DriverInternalPort {
   public List<Direction> getDirections(final List<Company> companyList) {
     try {
       List<Direction> directions = new ArrayList<>();
+      for (int i = 0; i < companyList.size() - 1; i++) {
+        Company departCompany = companyList.get(i);
+        Company arrivalCompany = companyList.get(i + 1);
+        String depart = getCoordinates(departCompany);
+        String arrival = getCoordinates(arrivalCompany);
+        GpsClientResponse response = gpsFeignClient.findDistanceAndDuration(depart, arrival);
+        Direction direction = new Direction(departCompany.companyId(), arrivalCompany.companyId(), response.distance(),
+            response.duration());
+        directions.add(direction);
+      }
       return directions;
     } catch (FeignException e) {
       throw new GpsNotFoundException();
     }
+  }
+
+  private String getCoordinates(Company company) {
+    return company.latitude() + "," + company.longitude();
   }
 }
