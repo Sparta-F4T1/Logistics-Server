@@ -13,6 +13,7 @@
 |<img src="https://github.com/user-attachments/assets/56fa839e-94f8-45ad-9b48-d1668b0872da" width="150px;" alt=""/><br /><sub><b>[박보현](https://github.com/unKnownKade)</b></sub></a><br />|`주문`/`상품` 서비스 구현, <br/> 주문 - 상품 및 주문 - 배송 간 RabbitMQ 비동기 통신 환경 구축, Redis 캐싱 환경 구축
 |<img src="https://github.com/user-attachments/assets/4d908017-4544-4cc1-aefb-4e24884e327e" width="150px;" alt=""/><br /><sub><b>[차상준](https://github.com/Ssan0613)</b></sub></a><br />|`허브`/`허브 간 이동정보`서비스 구현, <br/> Redis 캐싱 환경 구축, dijkstra 활용 허브 최단거리 구현, Naver API 연동|
 |<img src="https://github.com/user-attachments/assets/9ffcc909-e26e-411d-8232-fcd749fc707a" width="150px;" alt=""/><br /><sub><b>[최성민](https://github.com/seongmin1117)</b></sub></a><br />|`업체`/`상품`/`배송담당자` 서비스 구현, <br/> Redisson 분산락 구축, KMeans 와 Greedy를 활용한 배송 경로 최적화 알고리즘 구현
+
 <br/><br/>
 
 ## ✨ 서버 아키텍처
@@ -93,12 +94,6 @@
 
 <br/>
 
-
-<br/><br/>
-
-
-<br/><br/>
-
 ## ✨ 사용기술 및 개발환경
 
 **Development**
@@ -136,10 +131,8 @@
 <img src="https://img.shields.io/badge/DockerCompose-2496ED?style=flat-square&logo=docker&logoColor=white"/>
 </p>
 
-<br/><br/>
-
-
+<br/>
 
 ## ✨ ERD
 
-<img src ="https://github.com/user-attachments/assets/6129150e-ebe1-40db-a646-45f28d5bbd1a"/>
+<img width = "1518" alt = "image" src ="https://github.com/user-attachments/assets/6129150e-ebe1-40db-a646-45f28d5bbd1a"/>
