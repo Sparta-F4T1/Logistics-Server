@@ -13,8 +13,4 @@ public interface ProductPersistenceMapper {
 
   @Mapping(source = "stock", target = "stock")
   ProductEntity toEntity(Product product);
-
-  ProductCache toCache(Product product);
-
-  Product toView(ProductCache productCache);
 }
