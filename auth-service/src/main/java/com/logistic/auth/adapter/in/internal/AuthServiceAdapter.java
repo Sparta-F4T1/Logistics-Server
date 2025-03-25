@@ -9,6 +9,7 @@ import com.logistic.common.annotation.Adapter;
 import com.logistic.common.internal.request.AuthClientRequest;
 import com.logistic.common.internal.response.AuthClientResponse;
 import com.logistic.common.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Hidden
 @Adapter
 @RestController
 @RequestMapping("/internal/v1/auth")

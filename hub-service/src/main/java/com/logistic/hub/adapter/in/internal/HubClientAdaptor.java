@@ -7,6 +7,7 @@ import com.logistic.hub.application.port.in.HubQueryUseCase;
 import com.logistic.hub.application.port.in.query.HubFindQuery;
 import com.logistic.hub.application.port.in.query.HubListQuery;
 import com.logistic.hub.domain.Hub;
+import io.swagger.v3.oas.annotations.Hidden;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Hidden
 @Adapter
 @RestController
 @RequiredArgsConstructor
