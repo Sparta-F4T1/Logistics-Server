@@ -1,5 +1,6 @@
 package com.logistic.order.adapter.out.internal.mapper;
 
+import com.logistic.common.internal.message.CancelOrderEvent;
 import com.logistic.common.internal.message.CreateOrderEvent;
 import com.logistic.common.internal.response.CompanyClientResponse;
 import com.logistic.common.internal.response.HubClientResponse;
@@ -10,6 +11,7 @@ import com.logistic.order.application.service.dto.HubDto;
 import com.logistic.order.application.service.dto.UserDto;
 import com.logistic.order.domain.Order;
 import com.logistic.order.domain.vo.Product;
+import java.util.Map;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -30,4 +32,6 @@ public interface OrderClientMapper {
   HubDto toHubDto(HubClientResponse hubClientResponse);
 
   Product toProduct(ProductClientResponse product);
+
+  CancelOrderEvent toCancelOrderEvent(Map<Long, Integer> stockMap);
 }

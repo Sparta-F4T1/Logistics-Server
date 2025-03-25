@@ -11,5 +11,5 @@ public interface HubInternalClient {
   HubClientResponse findHub(@PathVariable("hubId") Long hubId);
 
   @GetMapping("/internal/v1/hubs")
-  List<HubClientResponse> findHubList(@RequestParam List<Long> hubId);
+  List<HubClientResponse> findHubList(@RequestParam("hubId") List<Long> hubId);
 }
