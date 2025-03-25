@@ -7,6 +7,7 @@ import com.logistic.hub.application.port.in.RouteQueryUseCase;
 import com.logistic.hub.application.port.in.command.DepartArrivalIdCommand;
 import com.logistic.hub.application.port.in.query.RouteFindQuery;
 import com.logistic.hub.domain.Route;
+import io.swagger.v3.oas.annotations.Hidden;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Hidden
 @Adapter
 @RestController
 @RequiredArgsConstructor

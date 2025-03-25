@@ -10,6 +10,7 @@ import com.logistic.driver.application.port.in.DriverCommandUseCase;
 import com.logistic.driver.application.port.in.DriverQueryUseCase;
 import com.logistic.driver.domain.model.Driver;
 import com.logistic.driver.domain.model.DriverView;
+import io.swagger.v3.oas.annotations.Hidden;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Hidden
 @Adapter
 @RestController
 @RequiredArgsConstructor
