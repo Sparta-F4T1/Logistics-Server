@@ -118,6 +118,6 @@ class CompanyServiceTest {
   }
 
   private UserInfo createUserInfo() {
-    return new UserInfo("master", "MASTER_ADMIN", null);
+    return new UserInfo("master", "MASTER_ADMIN");
   }
 }

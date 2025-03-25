@@ -36,6 +36,6 @@ public class TestFixtures {
   }
 
   public static UserInfo createUserInfo() {
-    return new UserInfo("master", "MASTER_ADMIN", null);
+    return new UserInfo("master", "MASTER_ADMIN");
   }
 }
