@@ -93,9 +93,7 @@ public class OrderService implements OrderUseCase {
     order.updateStatus(orderStatus);
 
     if (orderStatus == OrderStatus.CANCELED){
-      order.getOrderProducts()
-          .forEach(OrderProduct::cancelStock);
-
+      messagePort.sendCancelOrder(order.getOrderProducts());
     }
 
     return orderPersistencePort.save(order);

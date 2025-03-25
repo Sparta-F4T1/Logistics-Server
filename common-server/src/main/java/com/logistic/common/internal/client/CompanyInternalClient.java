@@ -11,5 +11,5 @@ public interface CompanyInternalClient {
   CompanyClientResponse findCompany(@PathVariable("companyId") Long companyId);
 
   @GetMapping("/internal/v1/companies")
-  List<CompanyClientResponse> findCompanyList(@RequestParam List<Long> companyIds);
+  List<CompanyClientResponse> findCompanyList(@RequestParam("companyIds") List<Long> companyIds);
 }

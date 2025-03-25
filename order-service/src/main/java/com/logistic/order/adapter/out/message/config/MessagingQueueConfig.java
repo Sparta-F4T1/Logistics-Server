@@ -15,12 +15,21 @@ import org.springframework.context.annotation.Configuration;
 public class MessagingQueueConfig {
   @Value("${message.exchange}")
   private String exchange;
+
   @Value("${message.queue.delivery}")
   private String queueDelivery;
+
+  @Value("${message.queue.product}")
+  private String queueProduct;
 
   @Bean
   Queue queueDelivery(){
     return new Queue(queueDelivery);
+  }
+
+  @Bean
+  Queue queueProduct(){
+    return new Queue(queueProduct);
   }
 
   @Bean
@@ -31,6 +40,11 @@ public class MessagingQueueConfig {
   @Bean
   Binding bindingDelivery(){
     return BindingBuilder.bind(queueDelivery()).to(exchange()).with(queueDelivery);
+  }
+
+  @Bean
+  Binding bindingProduct(){
+    return BindingBuilder.bind(queueProduct()).to(exchange()).with(queueProduct);
   }
 
   @Bean

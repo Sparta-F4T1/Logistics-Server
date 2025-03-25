@@ -11,6 +11,6 @@ public interface UserInternalClient {
   UserClientResponse findUser(@PathVariable("userId") String userId);
 
   @GetMapping("/internal/v1/users")
-  List<UserClientResponse> findUserList(@RequestParam List<String> userIds);
+  List<UserClientResponse> findUserList(@RequestParam(value = "userIds") List<String> userIds);
 }
 
