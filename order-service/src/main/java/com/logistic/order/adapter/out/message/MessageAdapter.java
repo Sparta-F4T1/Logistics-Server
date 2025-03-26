@@ -1,12 +1,12 @@
 package com.logistic.order.adapter.out.message;
 
 import com.logistic.common.annotation.Adapter;
+import com.logistic.common.internal.message.CancelOrderEvent;
 import com.logistic.order.adapter.out.internal.mapper.OrderClientMapper;
 import com.logistic.order.application.port.out.MessagePort;
 import com.logistic.order.domain.Order;
-import com.logistic.order.domain.vo.OrderProduct;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +30,12 @@ public class MessageAdapter implements MessagePort {
   }
 
   @Override
-  public void sendCancelOrder(List<OrderProduct> orderProducts) {
-    rabbitTemplate.convertAndSend(queueProduct, orderClientMapper.toCancelOrderEvent(orderProducts.stream()
-        .collect(Collectors.toMap(OrderProduct::getProductId, OrderProduct::getQuantity))));
+  public void sendCancelOrder(Order order) {
+    Map<Long, Integer> stockMap = new HashMap<>();
+    order.getOrderProducts().forEach(product -> {
+      stockMap.put(product.getProductId(), product.getQuantity());
+    });
+    CancelOrderEvent cancelOrderEvent = new CancelOrderEvent(stockMap);
+    rabbitTemplate.convertAndSend(queueProduct, cancelOrderEvent);
   }
 }

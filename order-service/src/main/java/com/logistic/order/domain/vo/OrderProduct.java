@@ -23,11 +23,8 @@ public class OrderProduct {
         .build();
   }
 
-  public Long getProductId(){
-    return  product.getProductId();
+  public Long getProductId() {
+    return product.getProductId();
   }
 
-  public void cancelStock() {
-    this.quantity = quantity * -1;
-  }
 }
