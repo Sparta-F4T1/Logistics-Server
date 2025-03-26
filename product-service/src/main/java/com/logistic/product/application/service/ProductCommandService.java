@@ -79,6 +79,7 @@ public class ProductCommandService implements ProductCommandUseCase {
       });
     } finally {
       eventPublisher.publishEvent(new StockLockReleaseEvent(this, productIds));
+      log.info("[락 해제 이벤트 발신] event:{}, productIds: {}", this, productIds.toString());
     }
     return result;
   }

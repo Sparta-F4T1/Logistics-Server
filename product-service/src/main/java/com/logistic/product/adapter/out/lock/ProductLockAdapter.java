@@ -22,9 +22,7 @@ public class ProductLockAdapter implements ProductLockPort {
 
     RLock lock = redissonClient.getLock(RedisKeyFactory.getLockKey(productId));
     try {
-      log.info("락 획득 시도 {}", lock.getName());
       boolean isLocked = lock.tryLock(1000, 30, TimeUnit.SECONDS);
-      log.info("락 획득 결과 {}: {}", lock.getName(), isLocked);
       if (!isLocked) {
         throw new ProductLockException("락 획득에 실패했습니다.");
       }
@@ -39,9 +37,7 @@ public class ProductLockAdapter implements ProductLockPort {
     for (Long productId : productIds) {
       RLock lock = redissonClient.getLock(RedisKeyFactory.getLockKey(productId));
       try {
-        log.info("락 일부 획득 시도 {}", lock.getName());
         boolean isLocked = lock.tryLock(1000, 30, TimeUnit.SECONDS);
-        log.info("락 일부 획득 결과 {}: {}", lock.getName(), isLocked);
         if (!isLocked) {
           throw new ProductLockException("락 일부 획득에 실패했습니다.");
         }
@@ -60,7 +56,6 @@ public class ProductLockAdapter implements ProductLockPort {
       try {
         if (lock.isHeldByCurrentThread()) {
           lock.unlock();
-          log.info("락 일부 해제 {}", lock.getName());
         }
       } catch (Exception e) {
         log.error("락 일부 해제 중 오류 발생", e);
