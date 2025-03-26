@@ -19,9 +19,11 @@ import com.logistic.order.domain.vo.OrderProduct;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j(topic = "OrderService")
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -35,10 +37,9 @@ public class OrderService implements OrderUseCase {
   public Order createOrder(CreateOrderCommand command) {
     RoleType roleType = getRole(command.userInfo());
     String userId = command.userInfo().getUserId();
-
-    switch (roleType){
+    switch (roleType) {
       case COMPANY_PERSONNEL -> checkCompanyManager(command.buyerId(), userId);
-      case HUB_ADMIN -> checkHubManager(command.sellerId(), userId);
+      case HUB_ADMIN -> throw new ExecutionNotAuthorized();
       case DELIVERY_PERSONNEL -> throw new ExecutionNotAuthorized();
     }
 
@@ -62,7 +63,7 @@ public class OrderService implements OrderUseCase {
 
     order = orderPersistencePort.save(order);
 
-    if (order.getStatus() == OrderStatus.IN_DELIVERY){
+    if (order.getStatus() == OrderStatus.IN_DELIVERY) {
       messagePort.sendCreateOrder(order, userDto.slackEmail());
     }
 
@@ -81,19 +82,19 @@ public class OrderService implements OrderUseCase {
 
     Order order = orderPersistencePort.findById(orderId);
 
-    switch (roleType){
+    switch (roleType) {
       case COMPANY_PERSONNEL -> {
         checkAuthorizedOrderStatus(orderStatus, List.of(OrderStatus.CANCELED));
         checkCompanyManager(order.getBuyer().getCompanyId(), userId);
       }
-      case HUB_ADMIN -> checkHubManager(order.getSeller().getCompanyId(), userId);
+      case HUB_ADMIN -> checkHubManager(order.getSeller().getHubId(), userId);
       case DELIVERY_PERSONNEL -> checkAuthorizedOrderStatus(orderStatus, List.of(OrderStatus.DELIVERED));
     }
 
     order.updateStatus(orderStatus);
 
-    if (orderStatus == OrderStatus.CANCELED){
-      messagePort.sendCancelOrder(order.getOrderProducts());
+    if (orderStatus == OrderStatus.CANCELED) {
+      messagePort.sendCancelOrder(order);
     }
 
     return orderPersistencePort.save(order);
@@ -101,8 +102,8 @@ public class OrderService implements OrderUseCase {
 
   @Override
   public void deleteOrder(Long orderId, UserInfo userInfo) {
-    if (getRole(userInfo).equals(RoleType.HUB_ADMIN)){
-      checkHubManager(orderPersistencePort.findById(orderId).getSeller().getCompanyId(), userInfo.getUserId());
+    if (getRole(userInfo).equals(RoleType.HUB_ADMIN)) {
+      checkHubManager(orderPersistencePort.findById(orderId).getSeller().getHubId(), userInfo.getUserId());
     }
     orderPersistencePort.delete(orderId, userInfo.getUserId());
   }
@@ -114,18 +115,18 @@ public class OrderService implements OrderUseCase {
 
     Order order = orderPersistencePort.findById(orderId);
 
-    switch (roleType){
+    switch (roleType) {
       case COMPANY_PERSONNEL -> checkCompanyManager(order.getBuyer().getCompanyId(), userId);
-      case HUB_ADMIN -> checkHubManager(order.getSeller().getCompanyId(), userId);
+      case HUB_ADMIN -> checkHubManager(order.getSeller().getHubId(), userId);
     }
 
     return order;
   }
 
-  private OrderStatus checkStock(List<OrderProduct> orderProducts){
-    try{
+  private OrderStatus checkStock(List<OrderProduct> orderProducts) {
+    try {
       orderInternalPort.updateStock(orderProducts);
-    }catch (Exception e){
+    } catch (Exception e) {
       return OrderStatus.PENDING;
     }
 
@@ -136,7 +137,7 @@ public class OrderService implements OrderUseCase {
     return RoleType.valueOf(userInfo.getRole());
   }
 
-  private void checkAuthorizedOrderStatus(OrderStatus orderStatus, List<OrderStatus> authorizedStatus){
+  private void checkAuthorizedOrderStatus(OrderStatus orderStatus, List<OrderStatus> authorizedStatus) {
     authorizedStatus.stream()
         .filter(status -> status.equals(orderStatus))
         .findFirst()
@@ -152,7 +153,7 @@ public class OrderService implements OrderUseCase {
         .orElseThrow(OrderBuyerNotAuthorized::new);
   }
 
-  private void checkHubManager(Long sellerId, String userId){
+  private void checkHubManager(Long sellerId, String userId) {
     orderInternalPort.findHub(sellerId)
         .userIds()
         .stream()

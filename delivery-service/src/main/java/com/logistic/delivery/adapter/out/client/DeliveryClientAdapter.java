@@ -19,24 +19,37 @@ public class DeliveryClientAdapter implements DeliveryInternalPort {
   private final RouteFeignClient routeFeignClient;
 
   public List<HubRouteInfo> getHubRoutes(Long departHubId, Long arrivalHubId) {
-    return routeFeignClient.shortestPath(departHubId, arrivalHubId)
-        .stream()
-        .map(mapper::toHubRoute)
-        .toList();
+    try {
+      return routeFeignClient.shortestPath(departHubId, arrivalHubId)
+          .stream()
+          .map(mapper::toHubRoute)
+          .toList();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public List<HubDriverInfo> getHubDrivers(List<HubRouteInfo> hubRoutes) {
-    return driverFeignClient.getHubDriver(createDriverClientRequest(hubRoutes))
-        .stream()
-        .map(mapper::toHubDriver)
-        .toList();
+    try {
+      return driverFeignClient.getHubDriver(createDriverClientRequest(hubRoutes))
+          .stream()
+          .map(mapper::toHubDriver)
+          .toList();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
   }
 
-  private DriverClientRequest createDriverClientRequest(List<HubRouteInfo> hubRoutes){
-    List<hubRoute> hubRouteList = hubRoutes.stream()
-        .map(route -> new hubRoute(route.departHubId(), route.arrivalHubId()))
-        .toList();
-    return new DriverClientRequest(hubRouteList);
+  private DriverClientRequest createDriverClientRequest(List<HubRouteInfo> hubRoutes) {
+    try {
+      List<hubRoute> hubRouteList = hubRoutes.stream()
+          .map(route -> new hubRoute(route.departHubId(), route.arrivalHubId()))
+          .toList();
+      return new DriverClientRequest(hubRouteList);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

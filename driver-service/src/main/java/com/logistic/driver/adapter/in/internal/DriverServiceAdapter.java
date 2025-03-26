@@ -46,8 +46,8 @@ public class DriverServiceAdapter {
     return mapper.toResponseList(driverViewList);
   }
 
-  @GetMapping("/hub")
-  public List<DriverClientResponse> getHubDriver(@ModelAttribute final DriverClientRequest request,
+  @PostMapping("/hub")
+  public List<DriverClientResponse> getHubDriver(@RequestBody final DriverClientRequest request,
                                                  @WithPassport final Passport passport) {
     List<Driver> hubDriverList = commandUseCase.getHubDriverList(mapper.toGetHubDriverCommand(request, passport));
     return hubDriverList.stream().map(mapper::toResponse).toList();

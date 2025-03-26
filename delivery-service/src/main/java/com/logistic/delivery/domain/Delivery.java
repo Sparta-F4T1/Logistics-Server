@@ -30,7 +30,7 @@ public class Delivery {
       Long departHubId,
       Long arrivalHubId,
       List<HubDeliveryHistory> hubDeliveryHistoriesHistories
-  ){
+  ) {
     return Delivery.builder()
         .orderId(orderId)
         .status(status)
@@ -39,6 +39,7 @@ public class Delivery {
         .departHubId(departHubId)
         .arrivalHubId(arrivalHubId)
         .hubDeliveryHistories(hubDeliveryHistoriesHistories)
+        .isDeleted(false)
         .build();
   }
 
@@ -50,5 +51,7 @@ public class Delivery {
     this.driverId = driverId;
   }
 
-  public void delete(){ this.isDeleted = true; }
+  public void delete() {
+    this.isDeleted = true;
+  }
 }

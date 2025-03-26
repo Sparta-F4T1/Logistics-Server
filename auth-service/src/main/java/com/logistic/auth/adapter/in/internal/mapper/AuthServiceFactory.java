@@ -29,8 +29,7 @@ public class AuthServiceFactory {
 
     com.logistic.common.passport.model.UserInfo userInfo = new com.logistic.common.passport.model.UserInfo(
         domainPassport.getUserId().value(),
-        domainPassport.getRole(),
-        null
+        domainPassport.getRole()
     );
 
     com.logistic.common.passport.model.SessionInfo sessionInfo = new com.logistic.common.passport.model.SessionInfo(
