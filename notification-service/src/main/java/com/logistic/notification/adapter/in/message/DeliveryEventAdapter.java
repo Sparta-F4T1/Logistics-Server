@@ -13,7 +13,7 @@ public class DeliveryEventAdapter {
   private final NotificationUseCase useCase;
   private final NotificationClientMapper mapper;
 
-  @RabbitListener(queues = "${rabbitmq.order.queue.name}")
+  @RabbitListener(queues = "${message.queue.delivery.notification}")
   public void receiveDeliveryEvent(CreateDeliveryEvent event) {
     useCase.createSlackMessage(mapper.toCommand(event));
   }
