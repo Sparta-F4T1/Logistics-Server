@@ -67,7 +67,7 @@ class ProductServiceTest {
   void softDelete_success() {
     // given
     Product saved = saveProduct();
-    DeleteProductCommand command = new DeleteProductCommand(saved.getId(), null);
+    DeleteProductCommand command = new DeleteProductCommand(saved.getId(), null, null);
     // when
     productService.deleteProduct(command);
     Product product = productCommandPersistencePort.findById(saved.getId());
