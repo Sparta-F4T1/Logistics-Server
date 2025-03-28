@@ -33,10 +33,11 @@ public class Order {
 
   private User user;
 
-  public static Order create(Company seller, Company buyerId, String memo, OrderStatus orderStatus, List<OrderProduct> orderProducts, String userId, String userName) {
+  public static Order create(Company seller, Company buyer, String memo, OrderStatus orderStatus,
+                             List<OrderProduct> orderProducts, String userId, String userName) {
     return Order.builder()
         .seller(seller)
-        .buyer(buyerId)
+        .buyer(buyer)
         .memo(memo)
         .status(orderStatus)
         .orderProducts(orderProducts)

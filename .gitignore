@@ -95,7 +95,9 @@ Temporary Items
 *.icloud
 
 ### .yml .properties ###
-*.yml
+application-common.yml
+application-mysql.yml
+application-database.yml
 *.properties
 src/main/resources/credentials.json
 src/main/resources/log4j2.xml

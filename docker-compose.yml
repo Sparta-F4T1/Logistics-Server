@@ -1,0 +1,247 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+  ############## service registry ###############
+  eureka:
+    build: service-registry
+    container_name: service-registry
+    ports:
+      - "${EUREKA_PORT}:${EUREKA_PORT}"
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - zipkin
+    env_file:
+      - .env
+
+  ############## Gateway Service ###############
+  gateway:
+    build: api-gateway
+    container_name: api-gateway
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - zipkin
+      - eureka
+    env_file:
+      - .env
+
+  ############## Auth Service ###############
+  auth:
+    build: auth-service
+    container_name: auth-service
+    ports:
+      - "${AUTH_PORT}:${AUTH_PORT}"
+    depends_on:
+      - mysql
+      - eureka
+      - gateway
+      - redis
+      - zipkin
+    env_file:
+      - .env
+
+  ############## User Service ###############
+  user:
+    build: user-service
+    container_name: user-service
+    ports:
+      - "${USER_PORT}:${USER_PORT}"
+    depends_on:
+      - mysql
+      - eureka
+      - gateway
+      - redis
+      - zipkin
+    env_file:
+      - .env
+
+  ############## Order Service ###############
+  order:
+    build: order-service
+    container_name: order-service
+    ports:
+      - "${ORDER_PORT}:${ORDER_PORT}"
+    depends_on:
+      - mysql
+      - eureka
+      - gateway
+      - rabbitmq
+      - redis
+      - zipkin
+    env_file:
+      - .env
+
+  ############## Product Service ###############
+  product:
+    build: product-service
+    container_name: product-service
+    ports:
+      - "${PRODUCT_PORT}:${PRODUCT_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - redis
+      - zipkin
+      - rabbitmq
+      - eureka
+      - gateway
+
+  ############## Hub Service ###############
+  hub:
+    build: hub-service
+    container_name: hub-service
+    ports:
+      - "${HUB_PORT}:${HUB_PORT}"
+    depends_on:
+      - mysql
+      - zipkin
+      - rabbitmq
+      - eureka
+      - gateway
+      - redis
+    env_file:
+      - .env
+
+  ############## Company Service ###############
+  company:
+    build: company-service
+    container_name: company-service
+    ports:
+      - "${COMPANY_PORT}:${COMPANY_PORT}"
+    depends_on:
+      - mysql
+      - zipkin
+      - redis
+      - eureka
+      - gateway
+      - rabbitmq
+    env_file:
+      - .env
+
+  ############## Delivery Service ###############
+  delivery:
+    build: delivery-service
+    container_name: delivery-service
+    ports:
+      - "${DELIVERY_PORT}:${DELIVERY_PORT}"
+    depends_on:
+      - mysql
+      - eureka
+      - gateway
+      - redis
+      - zipkin
+      - rabbitmq
+    env_file:
+      - .env
+
+  ############## Driver Service ###############
+  driver:
+    build: driver-service
+    container_name: driver-service
+    ports:
+      - "${DRIVER_PORT}:${DRIVER_PORT}"
+    depends_on:
+      - mysql
+      - eureka
+      - gateway
+      - redis
+      - zipkin
+      - rabbitmq
+    env_file:
+      - .env
+
+  ############## Gps Service ###############
+  gps:
+    build: gps-service
+    container_name: gps-service
+    ports:
+      - "${GPS_PORT}:${GPS_PORT}"
+    depends_on:
+      - mysql
+      - eureka
+      - redis
+      - rabbitmq
+      - zipkin
+      - gateway
+    env_file:
+      - .env
+
+      ############## Ai Service ###############
+  ai:
+    build: ai-service
+    container_name: ai-service
+    ports:
+      - "${AI_PORT}:${AI_PORT}"
+    depends_on:
+      - mysql
+      - eureka
+      - redis
+      - zipkin
+      - rabbitmq
+      - gateway
+    env_file:
+      - .env
+
+  ############## Notification Service ###############
+  notification:
+    build: notification-service
+    container_name: notification-service
+    ports:
+      - "${NOTIFICATION_PORT}:${NOTIFICATION_PORT}"
+    depends_on:
+      - mysql
+      - eureka
+      - redis
+      - zipkin
+      - gateway
+      - rabbitmq
+    env_file:
+      - .env
+
+  ############## Redis ###############
+  redis:
+    image: redis/redis-stack
+    container_name: logistics-redis
+    restart: always
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+      - "8001:8001"
+    env_file:
+      - .env
+
+  ############## RabbitMQ ###############
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: logistics-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "${RABBITMQ_PORT}:${RABBITMQ_PORT}"
+      - "15672:15672"
+    env_file:
+      - .env
+
+  ############## zipkin ###############
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: logistics-zipkin
+    restart: unless-stopped
+    ports:
+      - "${ZIPKIN_PORT}:${ZIPKIN_PORT}"
+    env_file:
+      - .env
