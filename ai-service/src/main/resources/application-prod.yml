@@ -1,0 +1,55 @@
+server:
+  port: ${AI_PORT}
+spring:
+  application:
+    name: ai-service
+  # MySQL
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  # JPA
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  # Redis
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  # RabbitMQ
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    listener:
+      simple:
+        default-requeue-rejected: false
+management:
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST}:${ZIPKIN_PORT}/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/
+  instance:
+    hostname: ${EUREKA_HOST}    # 추가: 호스트명 명시적 설정
+    preferIpAddress: true
+    instanceId: ${spring.application.name}:${server.port}  # 추가: 인스턴스 ID 설정
+openai:
+  key: ${OPENAI_KEY}
+  model: gpt-3.5-turbo
+  url: https://api.openai.com/v1/chat/completions
+  prompt: You are the one who calculates the final delivery deadline. Delivery is done to the manufacturer, hub, and destination. I will give you the order creation time, hub delivery time (unit:hours), final hub address, and destination address. You calculate the driving time between the final hub address and the destination address based on the road name address, and tell me the final expected delivery deadline to the destination. Tell me in Korean, and tell me the format only in month, day, and time. An example is as follows. 12월 10일 오전 9시
+  maxToken: 60

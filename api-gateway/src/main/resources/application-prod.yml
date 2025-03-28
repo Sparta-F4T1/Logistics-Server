@@ -1,0 +1,56 @@
+server:
+  port: ${GATEWAY_PORT}
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true  # Eureka 서비스 디스커버리를 통해 동적으로 라우팅 설정
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"  # 모든 도메인에서의 요청 허용
+            allowedMethods: "*"   # 모든 HTTP 메서드 허용 (GET, POST, PUT, DELETE 등)
+            allowedHeaders: "*"   # 모든 헤더 허용
+  main:
+    web-application-type: reactive  # API Gateway는 Spring WebFlux 기반의 Reactive 애플리케이션
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST}:${ZIPKIN_PORT}/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway  # Actuator에서 제공하는 health, info, gateway 엔드포인트 활성화
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/
+  instance:
+    preferIpAddress: true
+    instanceId: ${spring.application.name}:${server.port}  # 추가: 인스턴스 ID 설정
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      passportService:
+        slidingWindowSize: 10  # 최근 10개의 요청을 기준으로 장애 비율 계산
+        failureRateThreshold: 50  # 장애율이 50% 이상이면 서킷 브레이커 오픈
+        waitDurationInOpenState: 10000  # 오픈 상태 유지 시간 (10초 후 다시 Half-Open 시도)
+        permittedNumberOfCallsInHalfOpenState: 5  # Half-Open 상태에서 허용되는 요청 수
+        registerHealthIndicator: true  # 서킷 브레이커 상태를 Actuator health endpoint에 노출
+
+
+# 로깅 설정
+logging:
+  level:
+    com.logistic: DEBUG  # 프로젝트 내 com.logistic 패키지의 로그 레벨을 DEBUG로 설정
+    org.springframework.data.redis: INFO  # Redis 관련 로그 레벨을 INFO로 설정
