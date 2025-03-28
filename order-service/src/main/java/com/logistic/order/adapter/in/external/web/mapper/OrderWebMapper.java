@@ -11,12 +11,15 @@ import com.logistic.order.application.port.in.command.CreateOrderCommand;
 import com.logistic.order.application.port.in.query.SearchOrderQuery;
 import com.logistic.order.domain.Order;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.data.domain.Pageable;
 
 @Mapper(componentModel = "spring")
 public interface OrderWebMapper {
   CreateOrderCommand toCreateCommand(CreateOrderRequest createOrderRequest, Passport passport);
 
+  @Mapping(target = "sellerId", source = "seller.companyId")
+  @Mapping(target = "buyerId", source = "buyer.companyId")
   CreateOrderResponse toCreateResponse(Order order);
 
   UpdateOrderResponse toUpdateResponse(Order order);
