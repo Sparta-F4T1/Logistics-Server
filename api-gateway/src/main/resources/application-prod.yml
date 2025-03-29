@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: gateway-service
+    name: api-gateway
   cloud:
     gateway:
       discovery:
@@ -28,7 +28,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway  # Actuator에서 제공하는 health, info, gateway 엔드포인트 활성화
+        include: health,info,gateway,prometheus  # Actuator에서 제공하는 health, info, gateway 엔드포인트 활성화
 
 eureka:
   client:
