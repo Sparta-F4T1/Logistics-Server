@@ -11,6 +11,10 @@ management:
       endpoint: http://${ZIPKIN_HOST}:${ZIPKIN_PORT}/api/v2/spans
   tracing:
     enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
 
 eureka:
   client:
