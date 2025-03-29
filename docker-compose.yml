@@ -245,3 +245,28 @@ services:
       - "${ZIPKIN_PORT}:${ZIPKIN_PORT}"
     env_file:
       - .env
+
+  ############## Prometheus ###############
+  prometheus:
+    image: prom/prometheus
+    container_name: logistics-prometheus
+    restart: unless-stopped
+    ports:
+      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  
+  ############## Grafana ###############
+  grafana:
+    image: grafana/grafana
+    container_name: logistics-grafana
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+    depends_on:
+      - prometheus
