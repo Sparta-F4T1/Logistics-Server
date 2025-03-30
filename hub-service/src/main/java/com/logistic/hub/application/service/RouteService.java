@@ -42,8 +42,8 @@ public class RouteService implements RouteUseCase {
     Hub departHub = hubQueryUseCase.getHubDetails(new HubFindQuery(routeCommand.departHubId()));
     Hub arrivalHub = hubQueryUseCase.getHubDetails(new HubFindQuery(routeCommand.arrivalHubId()));
 
-    String departGps = departHub.getAddress().getLatitude() + "," + departHub.getAddress().getLongitude();
-    String arrivalGps = arrivalHub.getAddress().getLatitude() + "," + arrivalHub.getAddress().getLongitude();
+    String departGps = departHub.getAddress().getLongitude() + "," + departHub.getAddress().getLatitude();
+    String arrivalGps = arrivalHub.getAddress().getLongitude() + "," + arrivalHub.getAddress().getLatitude();
 
     RouteInfoCommand routeInfoCommand = hubInternalPort.getRouteInfo(departGps, arrivalGps);
     Long departHubId = routeCommand.departHubId();
