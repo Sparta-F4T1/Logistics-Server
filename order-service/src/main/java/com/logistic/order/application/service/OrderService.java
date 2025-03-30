@@ -50,10 +50,12 @@ public class OrderService implements OrderUseCase {
         .collect(Collectors.toList());
 
     UserDto userDto = orderInternalPort.findUser(userId);
+    Company seller = getCompany(command.sellerId());
+    Company buyer = getCompany(command.buyerId());
 
     Order order = Order.create(
-        getCompany(command.sellerId()),
-        getCompany(command.buyerId()),
+        seller,
+        buyer,
         command.memo(),
         checkStock(orderProducts),
         orderProducts,
@@ -61,13 +63,11 @@ public class OrderService implements OrderUseCase {
         userDto.userName()
     );
 
-    order = orderPersistencePort.save(order);
-
+    Order saved = orderPersistencePort.save(order);
     if (order.getStatus() == OrderStatus.IN_DELIVERY) {
       messagePort.sendCreateOrder(order, userDto.slackEmail());
     }
-
-    return order;
+    return saved;
   }
 
   private Company getCompany(Long companyId) {
@@ -96,7 +96,6 @@ public class OrderService implements OrderUseCase {
     if (orderStatus == OrderStatus.CANCELED) {
       messagePort.sendCancelOrder(order);
     }
-
     return orderPersistencePort.save(order);
   }
 

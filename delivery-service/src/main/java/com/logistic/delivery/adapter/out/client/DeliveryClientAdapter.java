@@ -4,6 +4,7 @@ package com.logistic.delivery.adapter.out.client;
 import com.logistic.common.annotation.Adapter;
 import com.logistic.common.internal.request.DriverClientRequest;
 import com.logistic.common.internal.request.DriverClientRequest.hubRoute;
+import com.logistic.common.internal.request.RouteClientRequest;
 import com.logistic.delivery.adapter.out.client.mapper.DeliveryClientMapper;
 import com.logistic.delivery.application.port.out.DeliveryInternalPort;
 import com.logistic.delivery.domain.vo.dto.HubDriverInfo;
@@ -20,7 +21,8 @@ public class DeliveryClientAdapter implements DeliveryInternalPort {
 
   public List<HubRouteInfo> getHubRoutes(Long departHubId, Long arrivalHubId) {
     try {
-      return routeFeignClient.shortestPath(departHubId, arrivalHubId)
+      RouteClientRequest request = new RouteClientRequest(departHubId, arrivalHubId);
+      return routeFeignClient.shortestPath(request)
           .stream()
           .map(mapper::toHubRoute)
           .toList();
