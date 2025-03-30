@@ -7,6 +7,7 @@ import com.logistic.company.application.port.in.query.ListCompanyQuery;
 import com.logistic.company.domain.model.CompanyView;
 import java.util.List;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CompanyServiceMapper {
@@ -15,5 +16,6 @@ public interface CompanyServiceMapper {
 
   ListCompanyQuery toListQuery(List<Long> companyIds, Passport passport);
 
+  @Mapping(source = "hub.hubId", target = "hubId")
   CompanyClientResponse toCompanyResponse(CompanyView companyView);
 }
