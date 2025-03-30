@@ -25,6 +25,17 @@ services:
     env_file:
       - .env
 
+  ############## config server ###############
+  config-server:
+    build: config-server
+    container_name: config-server
+    ports:
+      - "${CONFIG_PORT}:${CONFIG_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - eureka
+
   ############## Gateway Service ###############
   gateway:
     build: api-gateway
@@ -37,6 +48,7 @@ services:
       - rabbitmq
       - zipkin
       - eureka
+      - config-server
     env_file:
       - .env
 
@@ -52,6 +64,7 @@ services:
       - gateway
       - redis
       - zipkin
+      - config-server
     env_file:
       - .env
 
