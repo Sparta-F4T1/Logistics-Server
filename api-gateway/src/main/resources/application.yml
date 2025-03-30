@@ -1,5 +1,18 @@
+server:
+  port: 8080
+
 spring:
-  profiles:
-    active: prod
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
 
-
+  config:
+    import: optional:configserver:http://${CONFIG_HOST}:${CONFIG_PORT}
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      profile: prod
+    # label: main
