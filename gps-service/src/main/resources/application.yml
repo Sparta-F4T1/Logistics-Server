@@ -4,13 +4,12 @@ server:
 spring:
   application:
     name: gps-service
+  profiles:
+    active: prod
 
   config:
     import: optional:configserver:http://${CONFIG_HOST}:${CONFIG_PORT}
   cloud:
     config:
-      discovery:
-        enabled: true
-        service-id: config-server
       profile: prod
     # label: main
