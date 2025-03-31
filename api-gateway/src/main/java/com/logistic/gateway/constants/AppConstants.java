@@ -5,6 +5,11 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AppConstants {
+  public static class Trace {
+    public static final String TRACE_ID = "traceId";
+    public static final String SPAN_ID = "spanId";
+  }
+
   public static class Filter {
     public static final String TOKEN_ATTR = "token";
     public static final String ERROR_MISSING_TOKEN = "토큰이 존재하지 않습니다.";
