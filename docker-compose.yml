@@ -1,6 +1,56 @@
 version: '3.8'
 
 services:
+  ############## ELK Stack ###############
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: ${ELASTIC_HOST}
+    platform: linux/amd64
+    ports:
+      - "${ELASTIC_PORT}:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    env_file:
+      - .env
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.10.0
+    container_name: ${LOGSTASH_HOST}
+    platform: linux/amd64
+    ports:
+      - "${LOGSTASH_TCP_PORT}:5044"
+      - "${LOGSTASH_MONITORING_PORT}:9600"
+    volumes:
+      - ${LOGSTASH_CONFIG_PATH}:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.1
+    container_name: ${KIBANA_HOST}
+    platform: linux/amd64
+    ports:
+      - "${KIBANA_PORT}:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://${ELASTIC_HOST}:9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  ############## MySQL ###############
   mysql:
     image: mysql
     container_name: mysql
@@ -10,6 +60,8 @@ services:
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - .env
 
   ############## service registry ###############
   eureka:
@@ -195,7 +247,7 @@ services:
     env_file:
       - .env
 
-      ############## Ai Service ###############
+  ############## Ai Service ###############
   ai:
     build: ai-service
     container_name: ai-service
@@ -270,7 +322,7 @@ services:
       - .env
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  
+
   ############## Grafana ###############
   grafana:
     image: grafana/grafana
