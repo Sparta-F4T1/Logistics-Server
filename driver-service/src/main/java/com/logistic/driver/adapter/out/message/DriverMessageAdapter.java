@@ -17,9 +17,9 @@ public class DriverMessageAdapter implements DriverMessagePort {
 
   @Override
   public void sendCompanyDriver(final Map<String, List<Company>> companyMap) {
-    companyMap.forEach((companyId, value) -> {
-      List<Long> companyList = value.stream().map(Company::companyId).toList();
-      AssignedDriverToDeliveryEvent event = new AssignedDriverToDeliveryEvent(companyId, companyList);
+    companyMap.forEach((driverId, value) -> {
+      List<Long> companyIds = value.stream().map(Company::companyId).toList();
+      AssignedDriverToDeliveryEvent event = new AssignedDriverToDeliveryEvent(driverId, companyIds);
       rabbitTemplate.convertAndSend(event);
     });
   }

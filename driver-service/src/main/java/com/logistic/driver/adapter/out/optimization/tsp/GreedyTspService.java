@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 public class GreedyTspService {
 
   public List<Company> tryTsp(final List<Company> companyList, final Hub hub) {
-    double startX = hub.hubLatitude();
-    double startY = hub.hubLongitude();
+    double startX = hub.latitude();
+    double startY = hub.longitude();
 
     List<Company> route = new ArrayList<>();
     boolean[] visited = new boolean[companyList.size()];
@@ -23,7 +23,7 @@ public class GreedyTspService {
 
     while (route.size() < companyList.size() + 1) {
       double minDistance = Double.MAX_VALUE;
-      Company nextCompany = null;
+      int nextIndex = 0;
 
       for (int i = 0; i < companyList.size(); i++) {
         if (!visited[i]) {
@@ -31,14 +31,14 @@ public class GreedyTspService {
               companyList.get(i).latitude(), companyList.get(i).longitude());
           if (dist < minDistance) {
             minDistance = dist;
-            nextCompany = companyList.get(i);
+            nextIndex = i;
           }
         }
       }
 
-      route.add(nextCompany);
-      visited[companyList.indexOf(nextCompany)] = true;
-      currentCompany = nextCompany;
+      route.add(companyList.get(nextIndex));
+      visited[nextIndex] = true;
+      currentCompany = companyList.get(nextIndex);
     }
 
     return route;
