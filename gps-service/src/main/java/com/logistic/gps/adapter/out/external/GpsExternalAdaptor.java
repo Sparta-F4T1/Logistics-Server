@@ -31,7 +31,7 @@ public class GpsExternalAdaptor implements GpsExternalPort {
   @Override
   public Direction getDistance(GpsDistanceCommand command) {
     NaverDirectionResponse distanceInfo = naverFeignClient.getDistanceInfo(command.depart(), command.arrival(),
-        clientId, clientSecret, "application/json");
+        clientId, clientSecret);
 
     return Direction.createDirection(distanceInfo);
   }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "naverClient", url = "https://naveropenapi.apigw.ntruss.com")
+@FeignClient(name = "naverClient", url = "https://maps.apigw.ntruss.com")
 public interface NaverFeignClient {
 
 
@@ -24,7 +24,6 @@ public interface NaverFeignClient {
       @RequestParam String start,
       @RequestParam String goal,
       @RequestHeader("x-ncp-apigw-api-key-id") String clientId,
-      @RequestHeader("x-ncp-apigw-api-key") String clientSecret,
-      @RequestHeader("accept") String accept
+      @RequestHeader("x-ncp-apigw-api-key") String clientSecret
   );
 }
