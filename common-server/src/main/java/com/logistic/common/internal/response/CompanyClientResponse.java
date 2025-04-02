@@ -2,7 +2,8 @@ package com.logistic.common.internal.response;
 
 import java.util.List;
 
-public record CompanyClientResponse(
+public record
+CompanyClientResponse(
     Long companyId,
     String companyName,
     String type,

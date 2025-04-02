@@ -1,11 +1,10 @@
 package com.logistic.driver.application.port.in.command;
 
+import com.logistic.common.passport.model.Passport;
 import java.util.List;
 
 public record AssignCompanyDriversCommand(
-    List<CompanyRoute> companyRoutes) {
-  public record CompanyRoute(
-      Long hubId,
-      List<Long> companyIds) {
-  }
+    Long hubId,
+    List<Long> companyIds,
+    Passport passport) {
 }

@@ -11,9 +11,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Hidden
@@ -34,7 +34,7 @@ public class CompanyServiceAdapter {
   }
 
   @GetMapping
-  public List<CompanyClientResponse> findCompanyList(@ModelAttribute final List<Long> companyIds,
+  public List<CompanyClientResponse> findCompanyList(@RequestParam final List<Long> companyIds,
                                                      @WithPassport Passport passport) {
     return queryUseCase.findCompanyList(mapper.toListQuery(companyIds, passport))
         .stream().map(mapper::toCompanyResponse).toList();

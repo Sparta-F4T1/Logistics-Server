@@ -17,5 +17,7 @@ public interface CompanyServiceMapper {
   ListCompanyQuery toListQuery(List<Long> companyIds, Passport passport);
 
   @Mapping(source = "hub.hubId", target = "hubId")
+  @Mapping(source = "gps.latitude", target = "latitude")
+  @Mapping(source = "gps.longitude", target = "longitude")
   CompanyClientResponse toCompanyResponse(CompanyView companyView);
 }

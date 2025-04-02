@@ -1,7 +1,3 @@
-global:
-  scrape_interval: 15s  # 메트릭 수집 주기
-  evaluation_interval: 15s # 규칙 평가 주기
-
 # 유레카를 통해 동적으로 서비스 가져오기
 scrape_configs:
   - job_name: 'eureka'

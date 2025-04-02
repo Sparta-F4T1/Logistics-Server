@@ -3,7 +3,6 @@ package com.logistic.driver.application.service;
 import com.logistic.common.annotation.UseCase;
 import com.logistic.driver.application.port.in.DriverCommandUseCase;
 import com.logistic.driver.application.port.in.command.AssignCompanyDriversCommand;
-import com.logistic.driver.application.port.in.command.AssignCompanyDriversCommand.CompanyRoute;
 import com.logistic.driver.application.port.in.command.CreateDriverCommand;
 import com.logistic.driver.application.port.in.command.DeleteDriverCommand;
 import com.logistic.driver.application.port.in.command.GetHubDriverCommand;
@@ -24,9 +23,11 @@ import com.logistic.driver.domain.model.vo.User;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @UseCase
 @Transactional
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class DriverCommandService implements DriverCommandUseCase {
   private final DriverClusteringPort clusteringPort;
   private final ApplicationEventPublisher eventPublisher;
   private final DriverCommandPersistencePort persistencePort;
-
+  
   @Override
   public Driver createDriver(final CreateDriverCommand command) {
     final User user = findUser(command.driverId());
@@ -78,15 +79,16 @@ public class DriverCommandService implements DriverCommandUseCase {
 
   @Override
   public void assignCompanyDrivers(final AssignCompanyDriversCommand command) {
-    final List<CompanyRoute> companyRoutes = command.companyRoutes();
-    final Map<Long, Hub> hubMap = getHubMap(companyRoutes);
-    companyRoutes.forEach(companyRoute -> assignCompanyDriver(companyRoute, hubMap));
+    log.info("[AssignCompanyDrivers] command: {}", command);
+    final Long hubId = command.hubId();
+    final List<Long> companyIds = command.companyIds();
+    final Hub hub = findHub(hubId);
+    assignCompanyDriver(hub, companyIds);
   }
 
-  private void assignCompanyDriver(final CompanyRoute companyRoute, final Map<Long, Hub> hubMap) {
-    final Hub hub = hubMap.get(companyRoute.hubId());
-    final List<Driver> companyDrivers = findCompanyDriverList(companyRoute);
-    final List<Company> companyList = findCompanyList(companyRoute.companyIds());
+  private void assignCompanyDriver(final Hub hub, final List<Long> companyIds) {
+    final List<Driver> companyDrivers = findCompanyDriverList(hub.hubId());
+    final List<Company> companyList = findCompanyList(companyIds);
     final Map<String, List<Company>> clustering = processClustering(companyList, companyDrivers);
     sendCompanyDriverAssignment(clustering);
     publishNotificationEvent(clustering, hub);
@@ -105,8 +107,8 @@ public class DriverCommandService implements DriverCommandUseCase {
     eventPublisher.publishEvent(new DriverRouteNotificationEvent(clustering, hub));
   }
 
-  private List<Driver> findCompanyDriverList(final CompanyRoute companyRoute) {
-    return persistencePort.getCompanyDrivers(companyRoute.hubId());
+  private List<Driver> findCompanyDriverList(final Long hubId) {
+    return persistencePort.getCompanyDrivers(hubId);
   }
 
   private Driver findDriver(final String driverId) {
@@ -126,14 +128,4 @@ public class DriverCommandService implements DriverCommandUseCase {
     return internalPort.findUser(userId);
   }
 
-  private Map<Long, Hub> findHubMap(final List<Long> hubIds) {
-    return internalPort.findHubMap(hubIds);
-  }
-
-  private Map<Long, Hub> getHubMap(List<CompanyRoute> companyRoutes) {
-    List<Long> hubIds = companyRoutes.stream()
-        .map(CompanyRoute::hubId)
-        .toList();
-    return findHubMap(hubIds);
-  }
 }

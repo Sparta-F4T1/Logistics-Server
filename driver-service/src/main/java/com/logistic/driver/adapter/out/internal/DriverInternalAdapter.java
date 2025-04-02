@@ -7,6 +7,7 @@ import com.logistic.driver.adapter.out.internal.client.HubFeignClient;
 import com.logistic.driver.adapter.out.internal.client.UserFeignClient;
 import com.logistic.driver.adapter.out.internal.mapper.DriverClientMapper;
 import com.logistic.driver.application.port.out.DriverInternalPort;
+import com.logistic.driver.domain.exception.CustomNotFoundException.CompanyNotFoundException;
 import com.logistic.driver.domain.exception.CustomNotFoundException.GpsNotFoundException;
 import com.logistic.driver.domain.exception.CustomNotFoundException.HubNotFoundException;
 import com.logistic.driver.domain.exception.CustomNotFoundException.UserNotFoundException;
@@ -20,9 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DriverInternalAdapter implements DriverInternalPort {
@@ -64,7 +66,7 @@ public class DriverInternalAdapter implements DriverInternalPort {
     try {
       return companyFeignClient.findCompanyList(companyIds).stream().map(mapper::toCompany).toList();
     } catch (FeignException e) {
-      throw new HubNotFoundException();
+      throw new CompanyNotFoundException();
     }
   }
 
@@ -103,6 +105,6 @@ public class DriverInternalAdapter implements DriverInternalPort {
   }
 
   private String getCoordinates(Company company) {
-    return company.latitude() + "," + company.longitude();
+    return company.longitude() + "," + company.latitude();
   }
 }
